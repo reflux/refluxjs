@@ -10,9 +10,15 @@ module.exports = function(grunt) {
         src: ['test/**/*.spec.js']
       }
     },
+    browserify: {
+      dist: {
+        src: 'src/**/*.js',
+        dest: 'dist/reflux-<%= pkg.version %>.js'
+      }
+    },
     watch: {
       files: ['<%= jshint.files %>'],
-      tasks: ['test']
+      tasks: ['test', 'browserify']
     }
   });
 
@@ -20,6 +26,8 @@ module.exports = function(grunt) {
 
   grunt.registerTask('test', ['jshint', 'mochaTest']);
 
-  grunt.registerTask('default', ['jshint']);
+  grunt.registerTask('build', ['test', 'browserify']);
+
+  grunt.registerTask('default', ['watch']);
 
 };
