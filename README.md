@@ -62,7 +62,9 @@ Invoke actions as if they were functions:
 
 See `test/index.js` for more example on how to use the package.
 
-# [BSD 3-Clause License](http://opensource.org/licenses/BSD-3-Clause)
+# License
+
+## [BSD 3-Clause License](http://opensource.org/licenses/BSD-3-Clause)
 
 Copyright (c) 2014, Mikael Brassman
 All rights reserved.
