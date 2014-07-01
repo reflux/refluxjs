@@ -1,13 +1,13 @@
 {
   "name": "reflux",
   "version": "0.0.1",
-  "description": "A simple library for uni-directional dataflow architecture",
+  "description": "A simple library for uni-directional dataflow application architecture inspired by ReactJS Flux",
   "main": "src/index.js",
   "scripts": {
     "test": "node test/index.js"
   },
   "author": "Mikael Brassman",
-  "license": "BSD-2-Clause",
+  "license": "BSD-3-Clause",
   "dependencies": {
     "lodash": "~2.4.1"
   }
