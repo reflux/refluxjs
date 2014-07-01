@@ -13,12 +13,24 @@ module.exports = function(grunt) {
     browserify: {
       dist: {
         src: 'src/**/*.js',
-        dest: 'dist/reflux-<%= pkg.version %>.js'
+        dest: 'dist/reflux-<%= pkg.version %>.js',
+        options: {
+          alias: ['lodash:_', 'events:events'],
+          ignore: ['lodash', 'events'],
+          standalone: 'Reflux',
+          'ignore-missing': true
+        },
+      }
+    },
+    uglify: {
+      dist: {
+        src: 'dist/reflux-<%= pkg.version %>.js',
+        dest: 'dist/reflux-<%= pkg.version %>-min.js'
       }
     },
     watch: {
       files: ['<%= jshint.files %>'],
-      tasks: ['test', 'browserify']
+      tasks: ['build']
     }
   });
 
@@ -26,7 +38,7 @@ module.exports = function(grunt) {
 
   grunt.registerTask('test', ['jshint', 'mochaTest']);
 
-  grunt.registerTask('build', ['test', 'browserify']);
+  grunt.registerTask('build', ['test', 'browserify', 'uglify']);
 
   grunt.registerTask('default', ['watch']);
 
