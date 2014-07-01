@@ -8,6 +8,10 @@
   },
   "author": "Mikael Brassman",
   "license": "BSD-3-Clause",
+  "repository" : { 
+    "type" : "git", 
+    "url" : "http://github.com/spoike/reflux.git"
+  },
   "dependencies": {
     "lodash": "~2.4.1"
   }
