@@ -12,6 +12,8 @@ You can currently install the package as a npm package:
 
 Create an action by calling `createAction`.
 
+    var Reflux = require('reflux');
+
     var statusUpdate = Reflux.createAction();
 
 Create a data store by passing a definition object to `createStore`.
