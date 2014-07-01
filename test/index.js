@@ -61,7 +61,7 @@ function ConsoleComponent() {
     storyStore.listen(function(story) {
         console.log('story: ', story);
     });
-};
+}
 
 var consoleComponent = new ConsoleComponent();
 

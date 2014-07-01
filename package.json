@@ -8,11 +8,17 @@
   },
   "author": "Mikael Brassman",
   "license": "BSD-3-Clause",
-  "repository" : { 
-    "type" : "git", 
-    "url" : "http://github.com/spoike/reflux.git"
+  "repository": {
+    "type": "git",
+    "url": "http://github.com/spoike/reflux.git"
   },
   "dependencies": {
     "lodash": "~2.4.1"
+  },
+  "devDependencies": {
+    "grunt": "^0.4.5",
+    "grunt-contrib-jshint": "^0.10.0",
+    "grunt-contrib-watch": "^0.6.1",
+    "matchdep": "^0.3.0"
   }
 }
