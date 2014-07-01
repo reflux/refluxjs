@@ -10,7 +10,57 @@ You can currently install the package as a npm package:
 
 # Usage
 
-See `test/index.js` for an example on how to use the package.
+Create an action by calling `createAction`.
+
+    var statusUpdate = Reflux.createAction();
+
+Create a data store by passing a definition object to `createStore`.
+
+    // Creates a DataStore
+    var statusStore = Reflux.createStore({
+
+        // Initial setup
+        init: function() {
+
+            // Register statusUpdate action
+            this.listenTo(statusUpdate, this.output);
+        },
+
+        // Callback
+        output: function(flag) {
+            var status = flag ? 'ONLINE' : 'OFFLINE';
+            this.trigger(status);
+        }
+
+    });
+
+In your component, register to listen to your data store like this:
+
+    // Fairly simple view component that outputs to console
+    function ConsoleComponent() {
+
+        // Registers a console logging callback to the statusStore updates
+        statusStore.listen(function(status) {
+            console.log('status: ', status);
+        });
+    };
+
+    var consoleComponent = new ConsoleComponent();
+
+Invoke actions as if they were functions:
+
+    statusUpdate(true);
+    statusUpdate(false);
+
+    /**
+     * Will output:
+     * status:  ONLINE
+     * status:  OFFLINE
+     *
+     */
+
+
+See `test/index.js` for more example on how to use the package.
 
 # [BSD 3-Clause License](http://opensource.org/licenses/BSD-3-Clause)
 
