@@ -12,13 +12,13 @@ module.exports = function(grunt) {
     },
     browserify: {
       dist: {
-        src: 'src/**/*.js',
+        src: 'src/index.js',
         dest: 'dist/reflux-<%= pkg.version %>.js',
         options: {
-          alias: ['lodash:_', 'events:events'],
-          ignore: ['lodash', 'events'],
-          standalone: 'Reflux',
-          'ignore-missing': true
+          bundleOptions: {
+            transform: ['debowerify', 'decomponentify', 'deamdify', 'deglobalify'],
+            standalone: 'Reflux'
+          }
         },
       }
     },

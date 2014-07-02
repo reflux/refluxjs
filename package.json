@@ -17,6 +17,10 @@
   },
   "devDependencies": {
     "chai": "^1.9.1",
+    "deamdify": "^0.1.1",
+    "debowerify": "^0.7.1",
+    "decomponentify": "0.0.3",
+    "deglobalify": "^0.2.0",
     "grunt": "^0.4.5",
     "grunt-browserify": "^2.1.2",
     "grunt-contrib-jshint": "^0.10.0",
