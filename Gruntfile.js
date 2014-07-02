@@ -13,7 +13,7 @@ module.exports = function(grunt) {
     browserify: {
       dist: {
         src: ['src/index.js'],
-        dest: 'dist/<%= pkg.name %>-<%= pkg.version %>.js',
+        dest: 'dist/<%= pkg.name %>.js',
         options: {
           bundleOptions: {
             standalone: 'Reflux'
@@ -23,8 +23,8 @@ module.exports = function(grunt) {
     },
     uglify: {
       dist: {
-        src: 'dist/reflux-<%= pkg.version %>.js',
-        dest: 'dist/reflux-<%= pkg.version %>-min.js'
+        src: 'dist/reflux.js',
+        dest: 'dist/reflux.min.js'
       }
     },
     watch: {

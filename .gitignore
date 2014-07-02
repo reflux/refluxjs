@@ -20,4 +20,4 @@ node_modules
 .DS_Store
 
 # Build artifacts
-dist
+tmp
