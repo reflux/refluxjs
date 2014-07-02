@@ -24,5 +24,8 @@
     "Gruntfile.js",
     "package.json",
     "README.md"
-  ]
+  ],
+  "dependencies": {
+    "lodash": "~2.4.1"
+  }
 }
