@@ -12,15 +12,21 @@
     "type": "git",
     "url": "http://github.com/spoike/reflux.git"
   },
+  "browserify": {
+    "transform": [
+      "browserify-shim"
+    ]
+  },
+  "browserify-shim": {
+    "lodash": "global:_"
+  },
   "dependencies": {
     "lodash": "~2.4.1"
   },
   "devDependencies": {
+    "browserify": "^4.2.0",
+    "browserify-shim": "^3.6.0",
     "chai": "^1.9.1",
-    "deamdify": "^0.1.1",
-    "debowerify": "^0.7.1",
-    "decomponentify": "0.0.3",
-    "deglobalify": "^0.2.0",
     "grunt": "^0.4.5",
     "grunt-browserify": "^2.1.2",
     "grunt-contrib-jshint": "^0.10.0",
