@@ -2,13 +2,13 @@
 
 A simple library for uni-directional dataflow architecture inspired by ReactJS [Flux](http://facebook.github.io/react/blog/2014/05/06/flux.html).
 
-# Installation
+## Installation
 
 You can currently install the package as a npm package:
 
     npm install reflux
 
-# Usage
+## Usage
 
 Create an action by calling `createAction`.
 
@@ -70,9 +70,9 @@ statusUpdate(false);
 
 See `test/index.js` for more example on how to use the package.
 
-# License
+## License
 
-## [BSD 3-Clause License](http://opensource.org/licenses/BSD-3-Clause)
+### [BSD 3-Clause License](http://opensource.org/licenses/BSD-3-Clause)
 
 Copyright (c) 2014, Mikael Brassman
 All rights reserved.
