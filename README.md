@@ -30,15 +30,21 @@ It will also download lodash as a dependency.
 
 ## Usage
 
-Create an action by calling `createAction`.
+For a full example check the [`test/index.js`](test/index.js) file.
+
+### Creating actions
+
+Create an action by calling `Reflux.createAction`.
 
 ```javascript
-var Reflux = require('reflux');
-
 var statusUpdate = Reflux.createAction();
 ```
 
-Create a data store by passing a definition object to `createStore`.
+It is as simple as that.
+
+### Creating data stores
+
+Create a data store much like ReactJS's own `React.createClass` by passing a definition object to `Reflux.createStore`. You may set up all action listeners in the `init` function and register them by calling the store's own `listenTo` function.
 
 ```javascript
 // Creates a DataStore
@@ -60,7 +66,11 @@ var statusStore = Reflux.createStore({
 });
 ```
 
-In your component, register to listen to your data store like this:
+In the above example, whenever the action is called, the store's `output` callback will be called with whatever parameters was sent in the action. E.g. if the action is called as `statusUpdate(true)` then the flag argument in `output` function is `true`.
+
+### Listening to changes in data store
+
+In your component, register to listen to changes in your data store like this:
 
 ```javascript
 // Fairly simple view component that outputs to console
@@ -80,15 +90,14 @@ Invoke actions as if they were functions:
 ```javascript
 statusUpdate(true);
 statusUpdate(false);
-
-/**
- * Will output:
- * status:  ONLINE
- * status:  OFFLINE
- */
 ```
 
-See `test/index.js` for more example on how to use the package.
+With the setup above this will output the following in the console:
+
+```
+status:  ONLINE
+status:  OFFLINE
+```
 
 ## License
 
