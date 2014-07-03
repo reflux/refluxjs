@@ -2,13 +2,24 @@
 
 A simple library for uni-directional dataflow architecture inspired by ReactJS [Flux](http://facebook.github.io/react/blog/2014/05/06/flux.html).
 
-You can read an overview of Flux [here](http://facebook.github.io/react/docs/flux-overview.html), however the gist of it is to introduce a more functional programming style architecture by eschewing MVC like pattern and adopting a single data flow pattern. The pattern is composed of dispatching actions and data stores. Every data manipulating event needs to pass through the actions that will then appropriately dispatch the event among the data stores that listen to relevant actions.
+You can read an overview of Flux [here](http://facebook.github.io/react/docs/flux-overview.html), however the gist of it is to introduce a more functional programming style architecture by eschewing MVC like pattern and adopting a single data flow pattern. 
 
-The goal of the project is to get this architecture easily up and running in your web application, both client-side or server-side. And there are some differences between how this project works and how Facebook's variant works:
+```
+╔═════════╗       ╔════════╗       ╔═════════════════╗
+║ Actions ║──────>║ Stores ║──────>║ View Components ║
+╚═════════╝       ╚════════╝       ╚═════════════════╝
+     ^                                      │
+     └──────────────────────────────────────┘
 
-* Every action is a listenable event handler, essentially incorporating the singleton dispatcher inside each one of them
-* No more type checking with strings! Since data stores know what actions they listen to, they should do just that and let the actions dispatch accordingly.
-* Data stores are also listenable event handlers, and you may build an aggregate data store by listening to changes made by other data stores.
+```
+
+The pattern is composed of actions and data stores, where actions initiate new data to pass through data stores before coming back to the view components again. If a view component has an event that needs to make a change in the application's data stores, they need to do so by signalling to the stores through the actions available.
+
+The goal of the project is to get this architecture easily up and running in your web application, both client-side or server-side. There are some differences between how this project works and how Facebook's proposed Flux architecture works:
+
+* Instead of a singleton dispatcher, every action is a dispatcher by themselves
+* No more type checking with strings, just let the stores listen to actions and don't worry!
+* Data stores are also dispatchers and stores may listen for changes on other stores
 
 ## Installation
 
@@ -98,6 +109,58 @@ With the setup above this will output the following in the console:
 status:  ONLINE
 status:  OFFLINE
 ```
+
+#### ReactJS example
+
+Register your component to listen for changes in your data stores, preferably in the `componentDidMount` [lifecycle method](http://facebook.github.io/react/docs/component-specs.html) and unregister in the `componentWillUnmount`, like this:
+
+```javascript
+var Status = React.createClass({
+    initialize: function() { },
+    onStatusChange: function(status) {
+        this.setState({
+            currentStatus: status
+        });
+    },
+    componentDidMount: function() {
+        this.unsubscribe = statusStore.listen(this.onStatusChange);
+    },
+    componentWillUnmount: function() {
+        this.unsubscribe();
+    },
+    render: function() {
+        // render specifics
+    }
+});
+```
+
+### Listening to changes in other data stores (aggregate data stores)
+
+A store may listen to another store's change, making it possible to safetly chain stores for aggregated data without affecting other parts of the application. A store may listen to other stores using the same `listenTo` function as with actions:
+
+```javascript
+// Creates a DataStore that listens to statusStore
+var statusHistoryStore = Reflux.createStore({
+    init: function() {
+
+        // Register statusStore's changes
+        this.listenTo(statusStore, this.output);
+
+        this.history = [];
+    },
+
+    // Callback
+    output: function(statusString) {
+        this.history.push({
+                date: new Date(),
+                status: statusString
+            });
+        this.trigger(this.history);
+    }
+
+});
+```
+
 
 ## License
 
