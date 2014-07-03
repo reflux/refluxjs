@@ -167,4 +167,6 @@ var statusHistoryStore = Reflux.createStore({
 
 ## License
 
-This project is licensed under [BSD 3-Clause License](http://opensource.org/licenses/BSD-3-Clause). Copyright (c) 2014, Mikael Brassman. For more information [read the LICENSE.md file](LICENSE.md).
+This project is licensed under [BSD 3-Clause License](http://opensource.org/licenses/BSD-3-Clause). Copyright (c) 2014, Mikael Brassman.
+
+For more information about the license for this particular project [read the LICENSE.md file](LICENSE.md).
