@@ -71,6 +71,8 @@ var statusStore = Reflux.createStore({
     // Callback
     output: function(flag) {
         var status = flag ? 'ONLINE' : 'OFFLINE';
+
+        // Pass on to listeners
         this.trigger(status);
     }
 
@@ -152,9 +154,10 @@ var statusHistoryStore = Reflux.createStore({
     // Callback
     output: function(statusString) {
         this.history.push({
-                date: new Date(),
-                status: statusString
-            });
+            date: new Date(),
+            status: statusString
+        });
+        // Pass the data on to listeners
         this.trigger(this.history);
     }
 
