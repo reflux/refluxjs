@@ -19,7 +19,7 @@ describe('Creating action', function() {
         var promise;
 
         beforeEach(function() {
-            promise = Q.promise(function(resolve, reject) {
+            promise = Q.promise(function(resolve) {
                 action.listen(function() {
                     resolve(Array.prototype.slice.call(arguments, 0));
                 });
@@ -39,7 +39,7 @@ describe('Creating action', function() {
                     assert.equal(args[0], testArgs[0]);
                     assert.equal(args[1], testArgs[1]);
                     done();
-                });
+                }).catch(done);
             });
 
         });
