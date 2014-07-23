@@ -26,6 +26,5 @@
     "README.md"
   ],
   "dependencies": {
-    "lodash": "~2.4.1"
   }
 }

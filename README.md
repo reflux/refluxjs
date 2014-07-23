@@ -37,8 +37,6 @@ The following command installs reflux as a bower component that can be used in t
 
     bower install reflux
 
-It will also download lodash as a dependency.
-
 ## Usage
 
 For a full example check the [`test/index.js`](test/index.js) file.

@@ -342,9 +342,8 @@ module.exports = function() {
 };
 
 },{"events":1}],3:[function(_dereq_,module,exports){
-(function (global){
 var EventEmitter = _dereq_('events').EventEmitter,
-    _ = (typeof window !== "undefined" ? window._ : typeof global !== "undefined" ? global._ : null);
+    _ = _dereq_('./utils');
 
 /**
  * Creates an event emitting Data Store
@@ -360,7 +359,7 @@ module.exports = function(definition) {
             this.init();
         }
     }
-    _.assign(Store.prototype, definition);
+    _.extend(Store.prototype, definition);
     Store.prototype.listenTo = function(listenable, callback) {
         if (!_.isFunction(listenable.listen)) {
             throw new TypeError(listenable + " is missing a listen method");
@@ -385,11 +384,36 @@ module.exports = function(definition) {
     return new Store();
 };
 
-}).call(this,typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"events":1}],4:[function(_dereq_,module,exports){
+},{"./utils":5,"events":1}],4:[function(_dereq_,module,exports){
 exports.createAction = _dereq_('./createAction');
 
 exports.createStore = _dereq_('./createStore');
-},{"./createAction":2,"./createStore":3}]},{},[4])
+},{"./createAction":2,"./createStore":3}],5:[function(_dereq_,module,exports){
+/*
+ * isObject, extend and isFunction are taken from undescore/lodash in 
+ * order to remove the dependency
+ */
+
+var isObject = module.exports.isObject = function(obj) {
+    var type = typeof obj;
+    return type === 'function' || type === 'object' && !!obj;
+};
+
+module.exports.extend = function(obj) {
+    if (!isObject(obj)) return obj;
+    var source, prop;
+    for (var i = 1, length = arguments.length; i < length; i++) {
+        source = arguments[i];
+        for (prop in source) {
+            obj[prop] = source[prop];
+        }
+    }
+    return obj;
+};
+
+module.exports.isFunction = function(value) {
+    return typeof value === 'function';
+};
+},{}]},{},[4])
 (4)
 });

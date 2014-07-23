@@ -18,10 +18,8 @@
     ]
   },
   "browserify-shim": {
-    "lodash": "global:_"
   },
   "dependencies": {
-    "lodash": "~2.4.1"
   },
   "devDependencies": {
     "browserify": "^4.2.0",

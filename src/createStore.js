@@ -1,5 +1,5 @@
 var EventEmitter = require('events').EventEmitter,
-    _ = require('lodash');
+    _ = require('./utils');
 
 /**
  * Creates an event emitting Data Store
@@ -15,7 +15,7 @@ module.exports = function(definition) {
             this.init();
         }
     }
-    _.assign(Store.prototype, definition);
+    _.extend(Store.prototype, definition);
     Store.prototype.listenTo = function(listenable, callback) {
         if (!_.isFunction(listenable.listen)) {
             throw new TypeError(listenable + " is missing a listen method");
