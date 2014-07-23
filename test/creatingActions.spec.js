@@ -1,6 +1,9 @@
-var assert = require('chai').assert,
+var chai = require('chai'),
+    assert = chai.assert,
     Reflux = require('../src'),
     Q = require('q');
+
+chai.use(require('chai-as-promised'));
 
 describe('Creating action', function() {
 
@@ -34,12 +37,8 @@ describe('Creating action', function() {
                 action(testArgs[0], testArgs[1]);
             });
 
-            it('should receive the correct arguments', function(done) {
-                promise.then(function(args) {
-                    assert.equal(args[0], testArgs[0]);
-                    assert.equal(args[1], testArgs[1]);
-                    done();
-                }).catch(done);
+            it('should receive the correct arguments', function() {
+                return assert.eventually.deepEqual(promise, testArgs);
             });
 
         });

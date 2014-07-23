@@ -1,6 +1,9 @@
-var assert = require('chai').assert,
+var chai = require('chai'),
+    assert = chai.assert,
     Reflux = require('../src'),
     Q = require('q');
+
+chai.use(require('chai-as-promised'));
 
 var slice = Array.prototype.slice;
 
@@ -32,22 +35,16 @@ describe('Creating aggregate stores', function() {
             });
         });
 
-        it('should get argument given by action', function(done) {
+        it('should get argument given by action', function() {
             action('my argument');
 
-            promise.then(function(args) {
-                assert.deepEqual(args, ['my argument']);
-                done();
-            }).catch(done);
+            return assert.eventually.deepEqual(promise, ['my argument']);
         });
 
-        it('should get any arbitrary arguments given on action', function(done) {
+        it('should get any arbitrary arguments given on action', function() {
             action(1337, 'ninja');
 
-            promise.then(function(args){
-                assert.deepEqual(args, [1337, 'ninja']);
-                done();
-            }).catch(done);
+            return assert.eventually.deepEqual(promise, [1337, 'ninja']);
         });
     });
 
