@@ -38,6 +38,24 @@ describe('Creating stores', function() {
 
             return assert.eventually.deepEqual(promise, [1337, 'ninja']);
         });
+
+        describe('and with listener unsubscribed', function() {
+
+            beforeEach(function() {
+                unsubCallback();
+            });
+
+            it('shouldn\'t have been called when action is called', function(done) {
+                action(1337, 'ninja');
+
+                promise.then(function() {
+                    assert.fail();
+                });
+
+                setTimeout(done, 200);
+            });
+
+        });
     });
 
 });
