@@ -2,6 +2,8 @@
 
 A simple library for uni-directional dataflow architecture inspired by ReactJS [Flux](http://facebook.github.io/react/blog/2014/05/06/flux.html).
 
+[![Build Status](https://travis-ci.org/spoike/reflux.svg?branch=master)](https://travis-ci.org/spoike/reflux)
+
 You can read an overview of Flux [here](http://facebook.github.io/react/docs/flux-overview.html), however the gist of it is to introduce a more functional programming style architecture by eschewing MVC like pattern and adopting a single data flow pattern. 
 
 ```
