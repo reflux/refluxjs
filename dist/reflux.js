@@ -385,9 +385,17 @@ module.exports = function(definition) {
 };
 
 },{"./utils":5,"events":1}],4:[function(_dereq_,module,exports){
-exports.createAction = _dereq_('./createAction');
+var createAction = exports.createAction = _dereq_('./createAction');
 
 exports.createStore = _dereq_('./createStore');
+
+exports.createActions = function(actionNames) {
+    var i = 0, actions = {};
+    for (; i < actionNames.length; i++) {
+        actions[actionNames[i]] = createAction();
+    }
+    return actions;
+};
 },{"./createAction":2,"./createStore":3}],5:[function(_dereq_,module,exports){
 /*
  * isObject, extend and isFunction are taken from undescore/lodash in 
@@ -414,6 +422,7 @@ module.exports.extend = function(obj) {
 module.exports.isFunction = function(value) {
     return typeof value === 'function';
 };
+
 },{}]},{},[4])
 (4)
 });
