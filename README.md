@@ -19,9 +19,10 @@ The pattern is composed of actions and data stores, where actions initiate new d
 
 The goal of the project is to get this architecture easily up and running in your web application, both client-side or server-side. There are some differences between how this project works and how Facebook's proposed Flux architecture works:
 
-* Instead of a singleton dispatcher, every action is a dispatcher by themselves
-* No more type checking with strings, just let the stores listen to actions and don't worry!
-* Data stores are also dispatchers and stores may listen for changes on other stores
+* Instead of a singleton dispatcher, every action handles the dispatching by themselves
+* Javascript is a dynamic language so no more static type checking with strings! Just let the stores listen to actions and don't worry!
+
+You can read more in this [blog post about React Flux vs Reflux](http://spoike.ghost.io/deconstructing-reactjss-flux/).
 
 ## Installation
 
@@ -51,7 +52,27 @@ Create an action by calling `Reflux.createAction`.
 var statusUpdate = Reflux.createAction();
 ```
 
-It is as simple as that.
+An action is a functor that can be invoked like any function.
+
+```javascript
+statusUpdate(); // Invokes the action statusUpdate
+```
+
+It is as simple as that. There is also a convenience function for creating multiple actions.
+
+```javascript
+var Actions = Reflux.createActions([
+    "statusUpdate", 
+    "statusEdited",
+    "statusAdded"
+  ]);
+
+// Actions object now contains the actions 
+// with the names given in the array above
+// that may be invoked as usual
+
+Actions.statusUpdate();
+```
 
 ### Creating data stores
 
