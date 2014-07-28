@@ -18,7 +18,9 @@
     ]
   },
   "browserify-shim": {},
-  "dependencies": {},
+  "dependencies": {
+    "eventemitter3": "^0.1.2"
+  },
   "devDependencies": {
     "browserify": "^4.2.0",
     "browserify-shim": "^3.6.0",

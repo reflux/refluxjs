@@ -23,3 +23,5 @@ module.exports.extend = function(obj) {
 module.exports.isFunction = function(value) {
     return typeof value === 'function';
 };
+
+module.exports.EventEmitter = require('eventemitter3');

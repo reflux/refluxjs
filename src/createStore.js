@@ -1,5 +1,4 @@
-var EventEmitter = require('events').EventEmitter,
-    _ = require('./utils');
+var _ = require('./utils');
 
 /**
  * Creates an event emitting Data Store
@@ -7,7 +6,7 @@ var EventEmitter = require('events').EventEmitter,
  * @param {Object} definition The data store object definition
  */
 module.exports = function(definition) {
-    var store = new EventEmitter(),
+    var store = new _.EventEmitter(),
         eventLabel = "change";
 
     function Store() {

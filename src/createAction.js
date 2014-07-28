@@ -1,11 +1,11 @@
-var EventEmitter = require('events').EventEmitter;
+var _ = require('./utils');
 
 /**
  * Creates an action functor object
  */
 module.exports = function() {
 
-    var action = new EventEmitter(),
+    var action = new _.EventEmitter(),
         eventLabel = "action",
         functor;
 
