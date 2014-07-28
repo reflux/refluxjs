@@ -182,6 +182,39 @@ try { module.exports = EventEmitter; }
 catch (e) {}
 
 },{}],2:[function(_dereq_,module,exports){
+module.exports = {
+
+    /**
+     * Set up the mixin before the initial rendering occurs. Event listeners
+     * and callbacks should be registered once the component successfully
+     * mounted (as described in the React docs).
+     */
+    componentWillMount: function() {
+        this.subscriptions = [];
+    },
+
+
+    /**
+     * Subscribes the given callback for action triggered
+     *
+     * @param {Action|Store} listenable An Action or Store that should be
+     *  listened to.
+     * @param {Function} callback The callback to register as event handler
+     */
+    listenTo: function(listenable, callback) {
+        var unsubscribe = listenable.listen(callback, this);
+        this.subscriptions.push(unsubscribe);
+    },
+
+    componentWillUnmount: function() {
+        this.subscriptions.forEach(function(unsubscribe) {
+            unsubscribe();
+        });
+        this.subscriptions = [];
+    }
+};
+
+},{}],3:[function(_dereq_,module,exports){
 var _ = _dereq_('./utils');
 
 /**
@@ -219,7 +252,7 @@ module.exports = function() {
 
 };
 
-},{"./utils":5}],3:[function(_dereq_,module,exports){
+},{"./utils":6}],4:[function(_dereq_,module,exports){
 var _ = _dereq_('./utils');
 
 /**
@@ -261,10 +294,12 @@ module.exports = function(definition) {
     return new Store();
 };
 
-},{"./utils":5}],4:[function(_dereq_,module,exports){
+},{"./utils":6}],5:[function(_dereq_,module,exports){
 exports.createAction = _dereq_('./createAction');
 
 exports.createStore = _dereq_('./createStore');
+
+exports.ListenerMixin = _dereq_('./ListenerMixin');
 
 exports.createActions = function(actionNames) {
     var i = 0, actions = {};
@@ -278,7 +313,8 @@ exports.setEventEmitter = function(ctx) {
     var _ = _dereq_('./utils');
     _.EventEmitter = ctx;
 };
-},{"./createAction":2,"./createStore":3,"./utils":5}],5:[function(_dereq_,module,exports){
+
+},{"./ListenerMixin":2,"./createAction":3,"./createStore":4,"./utils":6}],6:[function(_dereq_,module,exports){
 /*
  * isObject, extend and isFunction are taken from undescore/lodash in 
  * order to remove the dependency
@@ -306,6 +342,6 @@ module.exports.isFunction = function(value) {
 };
 
 module.exports.EventEmitter = _dereq_('eventemitter3');
-},{"eventemitter3":1}]},{},[4])
-(4)
+},{"eventemitter3":1}]},{},[5])
+(5)
 });
