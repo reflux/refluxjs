@@ -4,7 +4,7 @@ A simple library for uni-directional dataflow architecture inspired by ReactJS [
 
 [![Build Status](https://travis-ci.org/spoike/reflux.svg?branch=master)](https://travis-ci.org/spoike/reflux)
 
-You can read an overview of Flux [here](http://facebook.github.io/react/docs/flux-overview.html), however the gist of it is to introduce a more functional programming style architecture by eschewing MVC like pattern and adopting a single data flow pattern. 
+You can read an overview of Flux [here](http://facebook.github.io/react/docs/flux-overview.html), however the gist of it is to introduce a more functional programming style architecture by eschewing MVC like pattern and adopting a single data flow pattern.
 
 ```
 ╔═════════╗       ╔════════╗       ╔═════════════════╗
@@ -129,6 +129,26 @@ var Status = React.createClass({
     },
     componentWillUnmount: function() {
         this.unsubscribe();
+    },
+    render: function() {
+        // render specifics
+    }
+});
+```
+
+You always need to unsubscribe components from observed actions and stores upon
+unmounting. To simplify this process you can use `Reflux.ListenerMixin`.
+
+```javascript
+var Status = React.createClass({
+    mixins: [Reflux.ListenerMixin],
+    onStatusChange: function(status) {
+        this.setState({
+            currentStatus: status
+        });
+    },
+    componentDidMount: function() {
+        this.listenTo(statusStore, this.onStatusChange);
     },
     render: function() {
         // render specifics
