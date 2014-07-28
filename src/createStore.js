@@ -29,7 +29,7 @@ module.exports = function(definition) {
         store.addListener(eventLabel, eventHandler);
 
         return function() {
-            action.removeListener(eventLabel, eventHandler);
+            store.removeListener(eventLabel, eventHandler);
         };
     };
     Store.prototype.trigger = function() {

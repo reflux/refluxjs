@@ -21,7 +21,9 @@ describe('Creating stores', function() {
                         unsubCallback = this.listenTo(action, this.actionCalled);
                     },
                     actionCalled: function() {
-                        resolve(Array.prototype.slice.call(arguments, 0));
+                        var args = Array.prototype.slice.call(arguments, 0);
+                        this.trigger(args);
+                        resolve(args);
                     }
                 });
             });
@@ -52,9 +54,43 @@ describe('Creating stores', function() {
                     assert.fail();
                 });
 
-                setTimeout(done, 200);
+                setTimeout(done, 20);
             });
 
+        });
+
+        describe('listening to the store', function() {
+            var unsubStoreCallback, storeListenPromise;
+
+            beforeEach(function() {
+                storeListenPromise = Q.promise(function(resolve) {
+                    unsubStoreCallback = store.listen(function() {
+                        resolve(Array.prototype.slice.call(arguments, 0));
+                    });
+                });
+            });
+
+            it('should pass when triggered', function() {
+                action(1337, 'ninja');
+
+                assert.eventually.deepEqual(storeListenPromise, [1337, 'ninja']);
+            });
+
+            describe('and unsubscribed', function() {
+                beforeEach(function () {
+                    unsubStoreCallback();
+                });
+
+                it('shouldn\'t have been called when action is called', function(done) {
+                    action(1337, 'ninja');
+
+                    promise.then(function() {
+                        assert.fail();
+                    });
+
+                    setTimeout(done, 20);
+                });
+            });
         });
     });
 
