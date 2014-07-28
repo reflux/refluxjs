@@ -133,7 +133,7 @@ status:  ONLINE
 status:  OFFLINE
 ```
 
-#### ReactJS example
+#### React component example
 
 Register your component to listen for changes in your data stores, preferably in the `componentDidMount` [lifecycle method](http://facebook.github.io/react/docs/component-specs.html) and unregister in the `componentWillUnmount`, like this:
 
@@ -157,8 +157,10 @@ var Status = React.createClass({
 });
 ```
 
+#### Convenience mixin for React
+
 You always need to unsubscribe components from observed actions and stores upon
-unmounting. To simplify this process you can use `Reflux.ListenerMixin`.
+unmounting. To simplify this process you can use [mixins in React](http://facebook.github.io/react/docs/reusable-components.html#mixins). There is a convenience mixin available at `Reflux.ListenerMixin`.
 
 ```javascript
 var Status = React.createClass({
@@ -176,6 +178,8 @@ var Status = React.createClass({
     }
 });
 ```
+
+The mixin provides the `listenTo` method for the React component, that works much like the one found in the Reflux's stores, and handles the listeners during mount and unmount for you.
 
 ### Listening to changes in other data stores (aggregate data stores)
 
