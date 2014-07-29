@@ -10,7 +10,7 @@ module.exports = function() {
         functor;
 
     functor = function() {
-        action.emit(eventLabel, Array.prototype.slice.call(arguments, 0));
+        action.emit(eventLabel, arguments);
     };
 
     /**
