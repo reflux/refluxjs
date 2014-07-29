@@ -1,4 +1,5 @@
-var _ = require('./utils');
+var _ = require('./utils'),
+    Namespace = require('./Namespace');
 
 exports.createAction = require('./createAction');
 
@@ -9,11 +10,11 @@ exports.ListenerMixin = require('./ListenerMixin');
 exports.createActions = function(actionNames) {
     var i = 0,
         actions = {},
-        sharedContext = new _.EventEmitter();
+        sharedContext = new Namespace();
 
     for (; i < actionNames.length; i++) {
         if(!_.isFunction(actions[actionNames[i]]))
-            actions[actionNames[i]] = exports.createAction(actionNames[i], sharedContext);
+            actions[actionNames[i]] = exports.createAction(sharedContext);
     }
     return actions;
 };

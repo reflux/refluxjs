@@ -1,24 +1,40 @@
 var _ = require('./utils');
+var Namespace = require('./Namespace');
 
 /**
  * Creates an action functor object
  *
- * @param  {String} name Name of the action.
- * @param  {_.EventEmitter} [optional] context The context that this action is a part of.
+ * @param  {Namespace} [optional] context The context that this action shall join to.
  * @return {Function} Callable action function.
  */
-module.exports = function(name, context) {
+module.exports = function(context) {
 
-    if(typeof name !== 'string')
-        name = 'action';
+    var id = 'action';
 
     // An independent single action is a context of itself.
-    if(!(context instanceof _.EventEmitter))
-        context = new _.EventEmitter();
+    if(!(context instanceof Namespace)) {
+        context = new Namespace();
+    }
+
+    if(context.contains(id)) {
+        id = _.generateID();
+    }
+
+    context.add(id);
 
     functor = function() {
-        context.emit(name, arguments);
+        context.emit(id, arguments);
     };
+
+    functor.context = function(newContext) {
+        if(newContext instanceof Namespace) {
+            context = newContext;
+        }
+
+        return context;
+    };
+
+    functor._id = id;
 
     /**
      * Subscribes the given callback for action triggered
@@ -31,10 +47,10 @@ module.exports = function(name, context) {
         var eventHandler = function(args) {
             callback.apply(bindContext, args);
         };
-        context.addListener(name, eventHandler);
+        context.addListener(id, eventHandler);
 
         return function() {
-            context.removeListener(name, eventHandler);
+            context.removeListener(id, eventHandler);
         };
     };
 

@@ -1,5 +1,5 @@
 /*
- * isObject, extend and isFunction are taken from undescore/lodash in 
+ * isObject, extend and isFunction are taken from undescore/lodash in
  * order to remove the dependency
  */
 
@@ -23,5 +23,7 @@ module.exports.extend = function(obj) {
 module.exports.isFunction = function(value) {
     return typeof value === 'function';
 };
+
+module.exports.generateID = require('hat').rack();
 
 module.exports.EventEmitter = require('eventemitter3');

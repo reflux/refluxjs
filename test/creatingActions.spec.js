@@ -1,7 +1,7 @@
 var chai = require('chai'),
     assert = chai.assert,
     Reflux = require('../src'),
-    _ = require('../src/utils'),
+    Namespace = require('../src/Namespace'),
     Q = require('q');
 
 chai.use(require('chai-as-promised'));
@@ -45,18 +45,18 @@ describe('Creating action', function() {
         var promise,
             context,
             actionContext,
-            actionName;
+            actionID;
 
         beforeEach(function () {
 
-            context = new _.EventEmitter();
-            actionName = 'actionName';
-            actionContext = Reflux.createAction(actionName, context);
+            context = new Namespace();
+            actionContext = Reflux.createAction(context);
+            actionID = actionContext._id;
 
         });
 
         afterEach(function() {
-            context.removeAllListeners(actionName);
+            context.removeAllListeners(actionID);
         });
 
         it('should bind listener to context via action', function() {
@@ -65,11 +65,11 @@ describe('Creating action', function() {
                 // some handler
             };
 
-            assert.equal(context.listeners(actionName).length, 0);
+            assert.equal(context.listeners(actionID).length, 0);
 
             actionContext.listen(handler);
 
-            assert.equal(context.listeners(actionName).length, 1);
+            assert.equal(context.listeners(actionID).length, 1);
 
         });
 
@@ -83,15 +83,15 @@ describe('Creating action', function() {
                 });
             });
 
-            assert.equal(context.listeners(actionName).length, 1);
+            assert.equal(context.listeners(actionID).length, 1);
 
             promise2 = Q.promise(function(resolve) {
-                context.on(actionName, function() {
+                context.on(actionID, function() {
                     resolve(Array.prototype.slice.call(arguments[0], 0));
                 });
             });
 
-            assert.equal(context.listeners(actionName).length, 2);
+            assert.equal(context.listeners(actionID).length, 2);
 
             var testArgs = [1337, 'test'];
             actionContext(testArgs[0], testArgs[1]);
