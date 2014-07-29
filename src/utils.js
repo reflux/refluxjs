@@ -1,5 +1,5 @@
 /*
- * isObject, extend and isFunction are taken from undescore/lodash in 
+ * isObject, extend and isFunction are taken from undescore/lodash in
  * order to remove the dependency
  */
 

@@ -1,3 +1,6 @@
+var _ = require('./utils'),
+    Namespace = require('./Namespace');
+
 exports.createAction = require('./createAction');
 
 exports.createStore = require('./createStore');
@@ -5,9 +8,13 @@ exports.createStore = require('./createStore');
 exports.ListenerMixin = require('./ListenerMixin');
 
 exports.createActions = function(actionNames) {
-    var i = 0, actions = {};
+    var i = 0,
+        actions = {},
+        sharedContext = new Namespace();
+
     for (; i < actionNames.length; i++) {
-        actions[actionNames[i]] = exports.createAction();
+        if(!_.isFunction(actions[actionNames[i]]))
+            actions[actionNames[i]] = exports.createAction(sharedContext, actionNames[i]);
     }
     return actions;
 };
