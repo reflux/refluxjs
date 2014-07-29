@@ -1,0 +1,6 @@
+status:  ONLINE
+text:  testing
+text:  1337
+text:  { test: 1337 }
+story:  Once upon a time the user did the following: testing, 1337, [object Object]
+status:  OFFLINE
