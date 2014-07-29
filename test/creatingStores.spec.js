@@ -8,7 +8,7 @@ chai.use(require('chai-as-promised'));
 describe('Creating stores', function() {
 
     describe('with one store listening to a simple action', function() {
-        var action, 
+        var action,
             store,
             promise,
             unsubCallback;
@@ -48,13 +48,17 @@ describe('Creating stores', function() {
             });
 
             it('shouldn\'t have been called when action is called', function(done) {
-                action(1337, 'ninja');
-
+                var resolved = false;
                 promise.then(function() {
-                    assert.fail();
+                    resolved = true;
                 });
 
-                setTimeout(done, 20);
+                action(1337, 'ninja');
+
+                setTimeout(function() {
+                  assert.isFalse(resolved);
+                  done();
+                }, 200);
             });
 
         });
