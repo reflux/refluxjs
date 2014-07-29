@@ -4,7 +4,7 @@
   "description": "A simple library for uni-directional dataflow application architecture inspired by ReactJS Flux",
   "main": "src/index.js",
   "scripts": {
-    "test": "node test/index.js"
+    "test": "grunt test"
   },
   "author": "Mikael Brassman",
   "license": "BSD-3-Clause",
