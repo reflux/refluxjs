@@ -82,6 +82,19 @@ There are a couple of hooks avaiable for each action.
 
 * `shouldEmit` - Is called after `preEmit` and before the action emits an event. By default it returns `true` which will let the action emit the event. You may override this if you need to check the arguments that the action receives and see if it needs to emit the event.
 
+Example usage:
+
+```javascript
+Actions.statusUpdate.preEmit = function() { console.log(arguments); };
+Actions.statusUpdate.shouldEmit = function(value) {
+    return value > 0;
+};
+
+Actions.statusUpdate(0);
+Actions.statusUpdate(1);
+// Should output: 1
+```
+
 ### Creating data stores
 
 Create a data store much like ReactJS's own `React.createClass` by passing a definition object to `Reflux.createStore`. You may set up all action listeners in the `init` function and register them by calling the store's own `listenTo` function.
