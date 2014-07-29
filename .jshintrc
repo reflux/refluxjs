@@ -1,0 +1,13 @@
+{
+    "maxerr": 50,
+
+    "curly": true,
+    "unused": true,
+
+    "browser": true,
+    "devel": true,
+    "node": true,
+
+    "globals": {
+    }
+}

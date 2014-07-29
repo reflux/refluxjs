@@ -9,7 +9,9 @@ var isObject = module.exports.isObject = function(obj) {
 };
 
 module.exports.extend = function(obj) {
-    if (!isObject(obj)) return obj;
+    if (!isObject(obj)) {
+        return obj;
+    }
     var source, prop;
     for (var i = 1, length = arguments.length; i < length; i++) {
         source = arguments[i];

@@ -63,7 +63,7 @@ function ConsoleComponent() {
     });
 }
 
-var consoleComponent = new ConsoleComponent();
+new ConsoleComponent();
 
 // Invoking the action with arbitrary parameters
 statusUpdate(true);
