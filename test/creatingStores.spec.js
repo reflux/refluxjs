@@ -86,13 +86,17 @@ describe('Creating stores', function() {
                 });
 
                 it('shouldn\'t have been called when action is called', function(done) {
-                    action(1337, 'ninja');
-
-                    promise.then(function() {
-                        assert.fail();
+                    var resolved = false;
+                    storeListenPromise.then(function() {
+                        resolved = true;
                     });
 
-                    setTimeout(done, 20);
+                    action(1337, 'ninja');
+
+                    setTimeout(function() {
+                      assert.isFalse(resolved);
+                      done();
+                    }, 20);
                 });
             });
         });
