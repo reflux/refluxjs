@@ -56,7 +56,7 @@ describe('Creating stores', function() {
                 action(1337, 'ninja');
 
                 setTimeout(function() {
-                  assert.equal(resolved, false);
+                  assert.isFalse(resolved);
                   done();
                 }, 200);
             });
