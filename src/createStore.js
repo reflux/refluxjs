@@ -32,8 +32,7 @@ module.exports = function(definition) {
         };
     };
     Store.prototype.trigger = function() {
-        var args = Array.prototype.slice.call(arguments, 0);
-        store.emit(eventLabel, args);
+        store.emit(eventLabel, arguments);
     };
 
     return new Store();
