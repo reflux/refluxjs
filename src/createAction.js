@@ -10,7 +10,10 @@ module.exports = function() {
         functor;
 
     functor = function() {
-        action.emit(eventLabel, arguments);
+        functor.preEmit.apply(functor, arguments);
+        if (functor.shouldEmit.apply(functor, arguments)) {
+            action.emit(eventLabel, arguments);
+        }
     };
 
     /**
@@ -30,6 +33,22 @@ module.exports = function() {
             action.removeListener(eventLabel, eventHandler);
         };
     };
+
+    /**
+     * Hook used by the action functor that is invoked before emitting 
+     * and before `shouldEmit`. The arguments are the ones that the action
+     * is invoked with.
+     */
+    functor.preEmit = function() {};
+
+    /**
+     * Hook used by the action functor after `preEmit` to determine if the
+     * event should be emitted with given arguments. This may be overridden
+     * in your application, default implementation always returns true.
+     *
+     * @returns {Boolean} true if event should be emitted
+     */
+    functor.shouldEmit = function() { return true; };
 
     return functor;
 

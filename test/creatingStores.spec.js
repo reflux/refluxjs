@@ -58,7 +58,7 @@ describe('Creating stores', function() {
                 setTimeout(function() {
                   assert.isFalse(resolved);
                   done();
-                }, 200);
+                }, 20);
             });
 
         });

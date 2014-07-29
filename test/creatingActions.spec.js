@@ -7,10 +7,12 @@ chai.use(require('chai-as-promised'));
 
 describe('Creating action', function() {
 
-    var action;
+    var action,
+        testArgs;
 
     beforeEach(function () {
         action = Reflux.createAction();
+        testArgs = [1337, 'test'];
     });
 
     it('should be a callable functor', function() {
@@ -31,10 +33,84 @@ describe('Creating action', function() {
 
 
         it('should receive the correct arguments', function() {
-            var testArgs = [1337, 'test'];
             action(testArgs[0], testArgs[1]);
 
             return assert.eventually.deepEqual(promise, testArgs);
+        });
+
+        describe('when adding preEmit hook', function() {
+
+            var savedPreEmit,
+                receivedArgs;
+
+            beforeEach(function() {
+                savedPreEmit = action.preEmit;
+                action.preEmit = function() {
+                    receivedArgs = Array.prototype.slice.call(arguments, 0);
+                };
+            });
+
+            afterEach(function () {
+                action.preEmit = savedPreEmit;
+            });
+
+            it('should receive arguments from action functor', function() {
+                action.apply(null, testArgs);
+
+                assert.deepEqual(receivedArgs, testArgs);
+            });
+
+        });
+
+        describe('when replacing shouldEmit', function() {
+
+            var savedShouldEmit,
+                emitReturnValue,
+                receivedArgs;
+
+            beforeEach(function () {
+                emitReturnValue = true;
+                savedShouldEmit = action.shouldEmit;
+                action.shouldEmit = function() {
+                    receivedArgs = Array.prototype.slice.call(arguments, 0);
+                    return emitReturnValue;
+                };
+                hasRun = false;
+            });
+
+            afterEach(function() {
+                action.shouldEmit = savedShouldEmit;
+            });
+
+            it('should receive arguments from action functor', function() {
+                action.apply(null, testArgs);
+
+                assert.deepEqual(receivedArgs, testArgs);
+            });
+
+            describe('when shouldEmit returns false', function() {
+
+                beforeEach(function() {
+                    emitReturnValue = false;
+                });
+
+
+                it('should not emit when shouldEmit returns false', function(done) {
+                    var resolved = false;
+                    promise.then(function() {
+                        resolved = true;
+                    });
+
+                    action.apply(null, testArgs);
+
+                    setTimeout(function() {
+                      assert.isFalse(resolved);
+                      done();
+                    }, 20);
+                });
+
+            });
+
         });
 
     });
