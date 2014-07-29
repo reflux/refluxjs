@@ -74,6 +74,14 @@ var Actions = Reflux.createActions([
 Actions.statusUpdate();
 ```
 
+#### Action hooks
+
+There are a couple of hooks avaiable for each action.
+
+* `preEmit` - Is called before the action emits an event. It receives the arguments from the action invocation.
+
+* `shouldEmit` - Is called after `preEmit` and before the action emits an event. By default it returns `true` which will let the action emit the event. You may override this if you need to check the arguments that the action receives and see if it needs to emit the event.
+
 ### Creating data stores
 
 Create a data store much like ReactJS's own `React.createClass` by passing a definition object to `Reflux.createStore`. You may set up all action listeners in the `init` function and register them by calling the store's own `listenTo` function.
