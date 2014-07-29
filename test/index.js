@@ -1,3 +1,11 @@
+// Intercept console.log()
+var actualOutput = '';
+var _write = process.stdout.write;
+process.stdout.write = function(string) {
+    actualOutput += string;
+};
+
+var fs = require('fs');
 var Reflux = require('../src');
 
 // Creating an Action
@@ -70,7 +78,21 @@ statusUpdate(true);
 textUpdate("testing", 1337, { "test": 1337 });
 statusUpdate(false);
 
-/** Will output the following:
+// Restore console.log()
+process.stdout.write = _write;
+
+fs.readFile(__dirname + '/expected_output', function(err, data) {
+
+    console.log('actual output:');
+    console.log(actualOutput);
+
+    var passed = data.toString() == actualOutput;
+    console.log('tests passed:', passed);
+
+    if(!passed)
+        throw new Error();
+});
+/** Should output the following:
  *
  * status:  ONLINE
  * text:  testing
