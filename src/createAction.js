@@ -5,36 +5,38 @@ var Namespace = require('./Namespace');
  * Creates an action functor object
  *
  * @param  {Namespace} [optional] context The context that this action shall join to.
+ * @param  {String} [optional] name Unique name of the object.
  * @return {Function} Callable action function.
  */
-module.exports = function(context) {
+module.exports = function(context, name) {
 
-    var id = 'action';
+    if(typeof name !== 'string')
+        name = 'action';
 
     // An independent single action is a context of itself.
     if(!(context instanceof Namespace)) {
         context = new Namespace();
     }
 
-    if(context.contains(id)) {
-        id = _.generateID();
+    if(context.contains(name)) {
+        throw new Error(name + ': Action name already exists within given namespace.');
     }
 
-    context.add(id);
+    context.add(name);
 
     functor = function() {
-        context.emit(id, arguments);
+        context.emit(name, arguments);
     };
 
-    functor.context = function(newContext) {
-        if(newContext instanceof Namespace) {
-            context = newContext;
-        }
+    // functor.context = function(newContext) {
+    //     if(newContext instanceof Namespace) {
+    //         context = newContext;
+    //     }
 
-        return context;
-    };
+    //     return context;
+    // };
 
-    functor._id = id;
+    functor.actionName = name;
 
     /**
      * Subscribes the given callback for action triggered
@@ -47,10 +49,10 @@ module.exports = function(context) {
         var eventHandler = function(args) {
             callback.apply(bindContext, args);
         };
-        context.addListener(id, eventHandler);
+        context.addListener(name, eventHandler);
 
         return function() {
-            context.removeListener(id, eventHandler);
+            context.removeListener(name, eventHandler);
         };
     };
 

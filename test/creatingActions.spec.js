@@ -51,7 +51,7 @@ describe('Creating action', function() {
 
             context = new Namespace();
             actionContext = Reflux.createAction(context);
-            actionID = actionContext._id;
+            actionID = actionContext.actionName;
 
         });
 
@@ -70,6 +70,7 @@ describe('Creating action', function() {
             actionContext.listen(handler);
 
             assert.equal(context.listeners(actionID).length, 1);
+
 
         });
 

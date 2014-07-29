@@ -14,7 +14,7 @@ exports.createActions = function(actionNames) {
 
     for (; i < actionNames.length; i++) {
         if(!_.isFunction(actions[actionNames[i]]))
-            actions[actionNames[i]] = exports.createAction(sharedContext);
+            actions[actionNames[i]] = exports.createAction(sharedContext, actionNames[i]);
     }
     return actions;
 };

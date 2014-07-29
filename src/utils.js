@@ -24,6 +24,4 @@ module.exports.isFunction = function(value) {
     return typeof value === 'function';
 };
 
-module.exports.generateID = require('hat').rack();
-
 module.exports.EventEmitter = require('eventemitter3');
