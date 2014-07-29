@@ -1,6 +1,7 @@
 var chai = require('chai'),
     assert = chai.assert,
     Reflux = require('../src'),
+    _ = require('../src/utils'),
     Q = require('q');
 
 chai.use(require('chai-as-promised'));
@@ -36,6 +37,72 @@ describe('Creating action', function() {
 
             return assert.eventually.deepEqual(promise, testArgs);
         });
+
+    });
+
+    describe('when manually assigning context to action', function() {
+
+        var promise,
+            context,
+            actionContext,
+            actionName;
+
+        beforeEach(function () {
+
+            context = new _.EventEmitter();
+            actionName = 'actionName';
+            actionContext = Reflux.createAction(actionName, context);
+
+        });
+
+        afterEach(function() {
+            context.removeAllListeners(actionName);
+        });
+
+        it('should bind listener to context via action', function() {
+
+            var handler = function handler() {
+                // some handler
+            };
+
+            assert.equal(context.listeners(actionName).length, 0);
+
+            actionContext.listen(handler);
+
+            assert.equal(context.listeners(actionName).length, 1);
+
+        });
+
+        it('should emit to the context', function() {
+
+            var promise, promise2;
+
+            promise = Q.promise(function(resolve) {
+                actionContext.listen(function() {
+                    resolve(Array.prototype.slice.call(arguments, 0));
+                });
+            });
+
+            assert.equal(context.listeners(actionName).length, 1);
+
+            promise2 = Q.promise(function(resolve) {
+                context.on(actionName, function() {
+                    resolve(Array.prototype.slice.call(arguments[0], 0));
+                });
+            });
+
+            assert.equal(context.listeners(actionName).length, 2);
+
+            var testArgs = [1337, 'test'];
+            actionContext(testArgs[0], testArgs[1]);
+
+            return Q.all([
+                assert.eventually.deepEqual(promise, testArgs),
+                assert.eventually.deepEqual(promise2, testArgs)
+                ]);
+
+        });
+
 
     });
 

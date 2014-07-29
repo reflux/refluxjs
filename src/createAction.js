@@ -2,15 +2,22 @@ var _ = require('./utils');
 
 /**
  * Creates an action functor object
+ *
+ * @param  {String} name Name of the action.
+ * @param  {_.EventEmitter} [optional] context The context that this action is a part of.
+ * @return {Function} Callable action function.
  */
-module.exports = function() {
+module.exports = function(name, context) {
 
-    var action = new _.EventEmitter(),
-        eventLabel = "action",
-        functor;
+    if(typeof name !== 'string')
+        name = 'action';
+
+    // An independent single action is a context of itself.
+    if(!(context instanceof _.EventEmitter))
+        context = new _.EventEmitter();
 
     functor = function() {
-        action.emit(eventLabel, arguments);
+        context.emit(name, arguments);
     };
 
     /**
@@ -24,10 +31,10 @@ module.exports = function() {
         var eventHandler = function(args) {
             callback.apply(bindContext, args);
         };
-        action.addListener(eventLabel, eventHandler);
+        context.addListener(name, eventHandler);
 
         return function() {
-            action.removeListener(eventLabel, eventHandler);
+            context.removeListener(name, eventHandler);
         };
     };
 
