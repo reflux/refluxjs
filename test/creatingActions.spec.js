@@ -41,13 +41,17 @@ describe('Creating action', function() {
         describe('when adding preEmit hook', function() {
 
             var savedPreEmit,
-                receivedArgs;
+                promisePreEmit;
 
             beforeEach(function() {
                 savedPreEmit = action.preEmit;
-                action.preEmit = function() {
-                    receivedArgs = Array.prototype.slice.call(arguments, 0);
-                };
+
+                promisePreEmit = Q.promise(function(resolve) {
+                    action.preEmit = function() {
+                        receivedArgs = Array.prototype.slice.call(arguments, 0);
+                        return resolve(receivedArgs);
+                    };
+                });
             });
 
             afterEach(function () {
@@ -57,7 +61,7 @@ describe('Creating action', function() {
             it('should receive arguments from action functor', function() {
                 action.apply(null, testArgs);
 
-                assert.deepEqual(receivedArgs, testArgs);
+                return assert.eventually.deepEqual(promisePreEmit, testArgs);
             });
 
         });
@@ -66,15 +70,20 @@ describe('Creating action', function() {
 
             var savedShouldEmit,
                 emitReturnValue,
-                receivedArgs;
+                promiseShouldEmit;
 
             beforeEach(function () {
                 emitReturnValue = true;
                 savedShouldEmit = action.shouldEmit;
-                action.shouldEmit = function() {
-                    receivedArgs = Array.prototype.slice.call(arguments, 0);
-                    return emitReturnValue;
-                };
+
+                promiseShouldEmit = Q.promise(function(resolve) {
+                    action.shouldEmit = function() {
+                        receivedArgs = Array.prototype.slice.call(arguments, 0);
+                        resolve(receivedArgs);
+                        return emitReturnValue;
+                    };
+                });
+
                 hasRun = false;
             });
 
@@ -85,7 +94,7 @@ describe('Creating action', function() {
             it('should receive arguments from action functor', function() {
                 action.apply(null, testArgs);
 
-                assert.deepEqual(receivedArgs, testArgs);
+                return assert.eventually.deepEqual(promiseShouldEmit, testArgs);
             });
 
             describe('when shouldEmit returns false', function() {

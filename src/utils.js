@@ -1,5 +1,5 @@
 /*
- * isObject, extend and isFunction are taken from undescore/lodash in 
+ * isObject, extend and isFunction are taken from undescore/lodash in
  * order to remove the dependency
  */
 
@@ -27,3 +27,4 @@ module.exports.isFunction = function(value) {
 };
 
 module.exports.EventEmitter = require('eventemitter3');
+module.exports.nextTick = setTimeout;

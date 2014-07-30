@@ -10,10 +10,13 @@ module.exports = function() {
         functor;
 
     functor = function() {
-        functor.preEmit.apply(functor, arguments);
-        if (functor.shouldEmit.apply(functor, arguments)) {
-            action.emit(eventLabel, arguments);
-        }
+        var args = arguments;
+        _.nextTick(function() {
+            functor.preEmit.apply(functor, args);
+            if (functor.shouldEmit.apply(functor, args)) {
+                action.emit(eventLabel, args);
+            }
+        });
     };
 
     /**
@@ -35,7 +38,7 @@ module.exports = function() {
     };
 
     /**
-     * Hook used by the action functor that is invoked before emitting 
+     * Hook used by the action functor that is invoked before emitting
      * and before `shouldEmit`. The arguments are the ones that the action
      * is invoked with.
      */
