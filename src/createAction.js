@@ -10,12 +10,13 @@ module.exports = function() {
         functor;
 
     functor = function() {
-        setTimeout.call(functor, function(args) {
+        var args = arguments;
+        _.nextTick(function() {
             functor.preEmit.apply(functor, args);
             if (functor.shouldEmit.apply(functor, args)) {
                 action.emit(eventLabel, args);
             }
-        }, 0, arguments);
+        });
     };
 
     /**

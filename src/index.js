@@ -16,3 +16,8 @@ exports.setEventEmitter = function(ctx) {
     var _ = require('./utils');
     _.EventEmitter = ctx;
 };
+
+exports.setNextTick = function(nextTick) {
+    var _ = require('./utils');
+    _.nextTick = nextTick;
+};

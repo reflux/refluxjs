@@ -62,12 +62,12 @@ It is as simple as that. There is also a convenience function for creating multi
 
 ```javascript
 var Actions = Reflux.createActions([
-    "statusUpdate", 
+    "statusUpdate",
     "statusEdited",
     "statusAdded"
   ]);
 
-// Actions object now contains the actions 
+// Actions object now contains the actions
 // with the names given in the array above
 // that may be invoked as usual
 
@@ -237,6 +237,18 @@ Don't like to use the EventEmitter provided? You can switch to another one, such
 // Do this before creating actions or stores
 
 Reflux.setEventEmitter(require('events').EventEmitter);
+```
+
+## Switching nextTick
+
+Whenever action functors are called, they return immediately through the use of `setTimeout` internally.
+
+You may switch out for your favorite `setTimeout`, `nextTick`, `setImmediate`, et al implementation:
+
+```js
+
+// node.js env
+Reflux.setNextTick(process.nextTick);
 ```
 
 ## Colophon
