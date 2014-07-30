@@ -27,12 +27,29 @@
     "chai": "^1.9.1",
     "chai-as-promised": "^4.1.1",
     "grunt": "^0.4.5",
-    "grunt-browserify": "^2.1.2",
+    "grunt-browserify": "^2.1.4",
     "grunt-contrib-jshint": "^0.10.0",
     "grunt-contrib-uglify": "^0.5.0",
     "grunt-contrib-watch": "^0.6.1",
     "grunt-mocha-test": "^0.11.0",
     "matchdep": "^0.3.0",
-    "q": "^1.0.1"
+    "q": "^1.0.1",
+    "testling": "^1.7.0",
+    "mocha": "^1.21.3",
+    "grunt-testling": "^1.0.0"
+  },
+  "testling": {
+    "browsers": [
+      "ie/9..latest",
+      "chrome/27..latest",
+      "firefox/21..latest",
+      "safari/latest",
+      "opera/latest",
+      "iphone/latest",
+      "ipad/latest",
+      "android-browser/latest"
+    ],
+    "harness": "mocha",
+    "files": "test/*.js"
   }
 }
