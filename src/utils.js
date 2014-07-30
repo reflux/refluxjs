@@ -27,4 +27,6 @@ module.exports.isFunction = function(value) {
 };
 
 module.exports.EventEmitter = require('eventemitter3');
-module.exports.nextTick = setTimeout;
+module.exports.nextTick = function(callback) {
+    setTimeout(callback, 0);
+};
