@@ -33,12 +33,15 @@ module.exports = function(grunt) {
     watch: {
       files: ['<%= jshint.files %>'],
       tasks: ['build']
+    },
+    testling: {
+      files: "test/*.js"
     }
   });
 
   require('matchdep').filterDev('grunt-*').forEach(grunt.loadNpmTasks);
 
-  grunt.registerTask('test', ['jshint', 'mochaTest']);
+  grunt.registerTask('test', ['jshint', 'mochaTest', 'testling']);
 
   grunt.registerTask('build', ['test', 'browserify', 'uglify']);
 
