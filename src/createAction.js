@@ -11,7 +11,7 @@ module.exports = function() {
 
     functor = function() {
         var args = arguments;
-        _.asap(function() {
+        _.nextTick(function() {
             functor.preEmit.apply(functor, args);
             if (functor.shouldEmit.apply(functor, args)) {
                 action.emit(eventLabel, args);

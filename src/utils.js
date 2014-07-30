@@ -27,4 +27,4 @@ module.exports.isFunction = function(value) {
 };
 
 module.exports.EventEmitter = require('eventemitter3');
-module.exports.asap = setTimeout;
+module.exports.nextTick = setTimeout;

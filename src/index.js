@@ -17,7 +17,7 @@ exports.setEventEmitter = function(ctx) {
     _.EventEmitter = ctx;
 };
 
-exports.asap = function(asap) {
+exports.nextTick = function(nextTick) {
     var _ = require('./utils');
-    _.asap = asap;
+    _.nextTick = nextTick;
 };

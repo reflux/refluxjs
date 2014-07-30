@@ -239,17 +239,20 @@ Don't like to use the EventEmitter provided? You can switch to another one, such
 Reflux.setEventEmitter(require('events').EventEmitter);
 ```
 
-## Switching asap
+## Switching nextTick
 
-Whenever action functors are called, they return immediately through the use of `setTimeout` (`asap` function) internally.
+Whenever action functors are called, they return immediately through the use of `setTimeout` (`nextTick` function) internally.
 
 You may switch out for your favorite `setTimeout`, `nextTick`, `setImmediate`, et al implementation:
 
 ```js
 
 // node.js env
-Reflux.asap(process.nextTick);
+Reflux.nextTick(process.nextTick);
 ```
+
+For better alternative to `setTimeout`, you may opt to use a `setImmediate` polyfill: https://github.com/YuzuJS/setImmediate
+
 
 ## Colophon
 
