@@ -10,10 +10,12 @@ module.exports = function() {
         functor;
 
     functor = function() {
-        functor.preEmit.apply(functor, arguments);
-        if (functor.shouldEmit.apply(functor, arguments)) {
-            action.emit(eventLabel, arguments);
-        }
+        setTimeout.call(functor, function(args) {
+            functor.preEmit.apply(functor, args);
+            if (functor.shouldEmit.apply(functor, args)) {
+                action.emit(eventLabel, args);
+            }
+        }, 0, arguments);
     };
 
     /**
@@ -35,7 +37,7 @@ module.exports = function() {
     };
 
     /**
-     * Hook used by the action functor that is invoked before emitting 
+     * Hook used by the action functor that is invoked before emitting
      * and before `shouldEmit`. The arguments are the ones that the action
      * is invoked with.
      */
