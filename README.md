@@ -206,7 +206,7 @@ The mixin provides the `listenTo` method for the React component, that works muc
 
 ### Listening to changes in other data stores (aggregate data stores)
 
-A store may listen to another store's change, making it possible to safetly chain stores for aggregated data without affecting other parts of the application. A store may listen to other stores using the same `listenTo` function as with actions:
+A store may listen to another store's change, making it possible to safely chain stores for aggregated data without affecting other parts of the application. A store may listen to other stores using the same `listenTo` function as with actions:
 
 ```javascript
 // Creates a DataStore that listens to statusStore
@@ -257,6 +257,37 @@ Reflux.nextTick(process.nextTick);
 
 For better alternative to `setTimeout`, you may opt to use the [`setImmediate` polyfill](https://github.com/YuzuJS/setImmediate).
 
+
+### Joining parallel listeners
+
+Reflux makes it easy to listen to actions and stores that emit events in parallel. You can use this feature to compose and share listenable objects (hereafter composed listenables) among several stores.
+
+```javascript
+var theTide = Reflux.all(timeStore, waveStore);
+
+var clockStore = Reflux.createStore({
+    init: function() {
+        this.listenTo(theTide, this.theTideCallback);
+    },
+    theTideCallback: function(timeStoreArgs, waveStoreArgs) {
+      // ...
+    }
+});
+
+if (process.env.DEVELOPMENT) {
+    theTide.listenTo(function(timeStoreArgs, waveStoreArgs) {
+        console.log(arguments);
+    }, window);
+}
+```
+
+`Reflux.all` always passes the last arguments which a listenable emitted to your callback. Arguments are passed in order. This means that the first argument which the callback receives is the set of arguments which was emitted by the first listenable that was passed to `Reflux.all`.
+
+This functionality is similar to Flux's `waitFor()`, but differs in a few aspects:
+
+ - actions and stores may emit multiple times before the composed listenable (`theTide` in the example) emits
+ - action and store callbacks are not executed in a single *synchronous* iteration
+ - composed listenables always emit asynchronously
 
 ## Colophon
 
