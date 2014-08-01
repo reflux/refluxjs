@@ -4,6 +4,8 @@ exports.createStore = require('./createStore');
 
 exports.ListenerMixin = require('./ListenerMixin');
 
+exports.all = require('./all');
+
 exports.createActions = function(actionNames) {
     var i = 0, actions = {};
     for (; i < actionNames.length; i++) {
