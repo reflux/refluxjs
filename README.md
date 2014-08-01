@@ -274,18 +274,19 @@ var clockStore = Reflux.createStore({
     }
 });
 
+// node.js environment
 if (process.env.DEVELOPMENT) {
-    theTide.listenTo(function(timeStoreArgs, waveStoreArgs) {
-        console.log(arguments);
-    }, window);
+    theTide.listenTo(console.log.bind(console), window);
 }
 ```
 
-`Reflux.all` always passes the last arguments which a listenable emitted to your callback. Arguments are passed in order. This means that the first argument which the callback receives is the set of arguments which was emitted by the first listenable that was passed to `Reflux.all`.
+`Reflux.all` always passes the last arguments which a listenable emitted to your callback. Arguments are passed in order. This means that the first argument which the callback receives, is the set of arguments which was emitted by the first listenable that was passed to `Reflux.all`.
 
-This functionality is similar to Flux's `waitFor()`, but differs in a few aspects:
+#### Comparison with Flux's `waitFor()`
 
- - actions and stores may emit multiple times before the composed listenable (`theTide` in the example) emits
+The `Reflux.all` functionality is similar to Flux's `waitFor()`, but differs in a few aspects:
+
+ - actions and stores may emit multiple times before the composed listenable (`theTide` in the example above) emits
  - action and store callbacks are not executed in a single *synchronous* iteration
  - composed listenables always emit asynchronously
 
