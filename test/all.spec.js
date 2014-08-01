@@ -91,4 +91,24 @@ describe('Combined listenables', function() {
             done();
         }, 200);
     });
+
+
+    it('should emit with the last arguments it received', function() {
+        var promise = Q.Promise(function(resolve) {
+          all.listen(function() {
+              resolve(Array.prototype.slice.call(arguments, 0));
+          });
+        });
+
+        action1('a');
+        action2('b');
+        action1('x');
+        action3('c');
+
+        return assert.eventually.deepEqual(promise, [
+          ['x'],
+          ['b'],
+          ['c']
+        ]);
+    });
 });
