@@ -41,6 +41,12 @@ describe('Creating stores', function() {
             return assert.eventually.deepEqual(promise, [1337, 'ninja']);
         });
 
+        it('should throw an error when it listens on itself', function() {
+            assert.throws(function() {
+                store.listenTo(store, function() {});
+            }, Error);
+        });
+
         describe('and with listener unsubscribed', function() {
 
             beforeEach(function() {

@@ -10,7 +10,7 @@ var slice = Array.prototype.slice;
 describe('Creating aggregate stores', function() {
 
     describe('with one aggregate store listening to a store listening to a simple action', function() {
-        var action, 
+        var action,
             store,
             aggregateStore,
             promise;
@@ -20,7 +20,7 @@ describe('Creating aggregate stores', function() {
                 action = Reflux.createAction();
                 store = Reflux.createStore({
                     init: function() {
-                        this.listenTo(action, this.trigger); 
+                        this.listenTo(action, this.trigger);
                         // pass to the trigger function immediately
                     }
                 });
@@ -45,6 +45,29 @@ describe('Creating aggregate stores', function() {
             action(1337, 'ninja');
 
             return assert.eventually.deepEqual(promise, [1337, 'ninja']);
+        });
+
+        it('should throw error when circular dependency happens', function() {
+            assert.throws(function() {
+                aggregateStore.listenTo(store);
+            }, Error);
+        });
+
+        describe('with a third store', function() {
+            var thirdStore;
+
+            beforeEach(function() {
+                thirdStore = Reflux.createStore({});
+                thirdStore.listenTo(aggregateStore, function() {});
+            });
+
+            it('should throw error when a longer circular dependency happens', function() {
+                assert.throws(function() {
+                    thirdStore.listenTo(store, function() {});
+                });
+            });
+
+
         });
     });
 

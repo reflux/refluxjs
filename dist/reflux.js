@@ -215,6 +215,77 @@ module.exports = {
 };
 
 },{}],3:[function(_dereq_,module,exports){
+var createAction = _dereq_('./createAction');
+
+var slice = Array.prototype.slice;
+
+/**
+ * Track a set of Actions and Stores. Use Reflux.all if you need to handle
+ * data coming in parallel.
+ *
+ * @param {...Action|Store} listenables Actions and Stores that should be
+ *  tracked.
+ * @returns {Action} An action which tracks the provided Actions and Stores.
+ *  The action will emit once all of the provided listenables have emitted at
+ *  least once.
+ */
+module.exports = function(/* listenables... */) {
+    var numberOfListenables = arguments.length,
+        // create a new array of the expected size. The initial
+        // values will be falsy, which is fine for us.
+        // Once each item in the array is truthy, the callback can be called
+        listenablesEmitted,
+        // these arguments will be used to *apply* the action.
+        args,
+        // this action combines all the listenables
+        action = createAction();
+
+    reset();
+
+    for (var i = 0; i < numberOfListenables; i++) {
+        arguments[i].listen(newListener(i), null);
+    }
+
+    return action;
+
+    function reset() {
+        listenablesEmitted = new Array(numberOfListenables);
+        args = new Array(numberOfListenables);
+    }
+
+    function newListener(i) {
+        return function() {
+            listenablesEmitted[i] = true;
+            // Reflux users should not need to care about Array and arguments
+            // differences. This makes sure that they get the expected Array
+            // interface
+            args[i] = slice.call(arguments);
+            emitWhenAllListenablesEmitted();
+        };
+    }
+
+    function emitWhenAllListenablesEmitted() {
+        if (didAllListenablesEmit()) {
+            action.apply(action, args);
+            reset();
+        }
+    }
+
+    function didAllListenablesEmit() {
+        // reduce cannot be used because it only iterates over *present*
+        // elements in the array. Initially the Array doesn't contain
+        // elements. Fore this reason the usage of reduce would always indicate
+        // that all listenables emitted.
+        for (var i = 0; i < numberOfListenables; i++) {
+            if (!listenablesEmitted[i]) {
+                return false;
+            }
+        }
+        return true;
+    }
+};
+
+},{"./createAction":4}],4:[function(_dereq_,module,exports){
 var _ = _dereq_('./utils');
 
 /**
@@ -227,10 +298,13 @@ module.exports = function() {
         functor;
 
     functor = function() {
-        functor.preEmit.apply(functor, arguments);
-        if (functor.shouldEmit.apply(functor, arguments)) {
-            action.emit(eventLabel, arguments);
-        }
+        var args = arguments;
+        _.nextTick(function() {
+            functor.preEmit.apply(functor, args);
+            if (functor.shouldEmit.apply(functor, args)) {
+                action.emit(eventLabel, args);
+            }
+        });
     };
 
     /**
@@ -252,7 +326,7 @@ module.exports = function() {
     };
 
     /**
-     * Hook used by the action functor that is invoked before emitting 
+     * Hook used by the action functor that is invoked before emitting
      * and before `shouldEmit`. The arguments are the ones that the action
      * is invoked with.
      */
@@ -271,8 +345,9 @@ module.exports = function() {
 
 };
 
-},{"./utils":6}],4:[function(_dereq_,module,exports){
-var _ = _dereq_('./utils');
+},{"./utils":7}],5:[function(_dereq_,module,exports){
+var _ = _dereq_('./utils'),
+    idCounter = 0;
 
 /**
  * Creates an event emitting Data Store
@@ -284,21 +359,31 @@ module.exports = function(definition) {
         eventLabel = "change";
 
     function Store() {
+        this._lid = ++idCounter;
+        this.registered = [];
         if (this.init && _.isFunction(this.init)) {
             this.init();
         }
     }
     _.extend(Store.prototype, definition);
     Store.prototype.listenTo = function(listenable, callback) {
+        if (listenable === this) {
+            throw Error("Store is not able to listen to itself");
+        }
         if (!_.isFunction(listenable.listen)) {
             throw new TypeError(listenable + " is missing a listen method");
         }
+        if (this.hasListener(listenable)) {
+            throw Error("Store cannot listen to this listenable because of circular loop");
+        }
+        this.registered.push(listenable);
         return listenable.listen(callback, this);
     };
     Store.prototype.listen = function(callback, bindContext) {
         var eventHandler = function(args) {
             callback.apply(bindContext, args);
         };
+        eventHandler.l = callback;
         store.addListener(eventLabel, eventHandler);
 
         return function() {
@@ -308,16 +393,34 @@ module.exports = function(definition) {
     Store.prototype.trigger = function() {
         store.emit(eventLabel, arguments);
     };
+    Store.prototype.hasListener = function(listenable) {
+        var i = 0,
+            listener;
+
+        for (;i < this.registered.length; ++i) {
+            listener = this.registered[i];
+            if (listener._lid === listenable._lid) {
+                return true;
+            }
+            if (listener.hasListener && listener.hasListener(listenable)) {
+                return true;
+            }
+        }
+
+        return false;
+    };
 
     return new Store();
 };
 
-},{"./utils":6}],5:[function(_dereq_,module,exports){
+},{"./utils":7}],6:[function(_dereq_,module,exports){
 exports.createAction = _dereq_('./createAction');
 
 exports.createStore = _dereq_('./createStore');
 
 exports.ListenerMixin = _dereq_('./ListenerMixin');
+
+exports.all = _dereq_('./all');
 
 exports.createActions = function(actionNames) {
     var i = 0, actions = {};
@@ -332,9 +435,14 @@ exports.setEventEmitter = function(ctx) {
     _.EventEmitter = ctx;
 };
 
-},{"./ListenerMixin":2,"./createAction":3,"./createStore":4,"./utils":6}],6:[function(_dereq_,module,exports){
+exports.nextTick = function(nextTick) {
+    var _ = _dereq_('./utils');
+    _.nextTick = nextTick;
+};
+
+},{"./ListenerMixin":2,"./all":3,"./createAction":4,"./createStore":5,"./utils":7}],7:[function(_dereq_,module,exports){
 /*
- * isObject, extend and isFunction are taken from undescore/lodash in 
+ * isObject, extend and isFunction are taken from undescore/lodash in
  * order to remove the dependency
  */
 
@@ -362,6 +470,10 @@ module.exports.isFunction = function(value) {
 };
 
 module.exports.EventEmitter = _dereq_('eventemitter3');
-},{"eventemitter3":1}]},{},[5])
-(5)
+module.exports.nextTick = function(callback) {
+    setTimeout(callback, 0);
+};
+
+},{"eventemitter3":1}]},{},[6])
+(6)
 });
