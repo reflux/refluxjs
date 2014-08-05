@@ -258,18 +258,18 @@ Reflux.nextTick(process.nextTick);
 For better alternative to `setTimeout`, you may opt to use the [`setImmediate` polyfill](https://github.com/YuzuJS/setImmediate).
 
 
-### Joining parallel listeners
+### Joining parallel listeners with composed listenables
 
-Reflux makes it easy to listen to actions and stores that emit events in parallel. You can use this feature to compose and share listenable objects (hereafter composed listenables) among several stores.
+Reflux makes it easy to listen to actions and stores that emit events in parallel. You can use this feature to compose and share listenable objects (composed listenables) among several stores.
 
 ```javascript
-var theTide = Reflux.all(timeStore, waveStore);
+var theTide = Reflux.all(waveAction, timeStore);
 
 var clockStore = Reflux.createStore({
     init: function() {
         this.listenTo(theTide, this.theTideCallback);
     },
-    theTideCallback: function(timeStoreArgs, waveStoreArgs) {
+    theTideCallback: function(waveActionArgs, timeStoreArgs) {
       // ...
     }
 });
@@ -280,15 +280,16 @@ if (process.env.DEVELOPMENT) {
 }
 ```
 
-`Reflux.all` always passes the last arguments which a listenable emitted to your callback. Arguments are passed in order. This means that the first argument which the callback receives, is the set of arguments which was emitted by the first listenable that was passed to `Reflux.all`.
+`Reflux.all` always passes the last arguments that a listenable emitted to your callback, discarding subsequent emits. Arguments are passed in order. This means that the first argument which the callback receives, is the set of arguments which was emitted by the first listenable that was passed to `Reflux.all` and so on for the other arguments.
 
 #### Comparison with Flux's `waitFor()`
 
 The `Reflux.all` functionality is similar to Flux's `waitFor()`, but differs in a few aspects:
 
- - actions and stores may emit multiple times before the composed listenable (`theTide` in the example above) emits
- - action and store callbacks are not executed in a single *synchronous* iteration
- - composed listenables always emit asynchronously
+* Composed listenables may be reused by other stores
+* Composed listenables always emit asynchronously
+* Actions and stores may emit multiple times before the composed listenable (`theTide` in the example above) emits
+* Action and store callbacks are not executed in a single *synchronous* iteration
 
 ## Colophon
 
