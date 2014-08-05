@@ -240,6 +240,22 @@ module.exports = function(/* listenables... */) {
         // this action combines all the listenables
         action = createAction();
 
+    action.hasListener = function(listenable) {
+        var i = 0, listener;
+
+        for (; i < args.length; ++i) {
+            listener = args[i];
+            if (listener._lid === listener._lid) {
+                return true;
+            }
+            if (listener.hasListener && listener.hasListener(listenable)) {
+                return true;
+            }
+        }
+
+        return false;
+    };
+
     reset();
 
     for (var i = 0; i < numberOfListenables; i++) {
