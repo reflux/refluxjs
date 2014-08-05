@@ -245,10 +245,7 @@ module.exports = function(/* listenables... */) {
 
         for (; i < args.length; ++i) {
             listener = args[i];
-            if (listener === listener) {
-                return true;
-            }
-            if (listener.hasListener && listener.hasListener(listenable)) {
+            if (listener === listenable || listener.hasListener && listener.hasListener(listenable)) {
                 return true;
             }
         }
@@ -290,7 +287,7 @@ module.exports = function(/* listenables... */) {
     function didAllListenablesEmit() {
         // reduce cannot be used because it only iterates over *present*
         // elements in the array. Initially the Array doesn't contain
-        // elements. Fore this reason the usage of reduce would always indicate
+        // elements. For this reason the usage of reduce would always indicate
         // that all listenables emitted.
         for (var i = 0; i < numberOfListenables; i++) {
             if (!listenablesEmitted[i]) {
@@ -413,10 +410,7 @@ module.exports = function(definition) {
 
         for (;i < this.registered.length; ++i) {
             listener = this.registered[i];
-            if (listener === listenable) {
-                return true;
-            }
-            if (listener.hasListener && listener.hasListener(listenable)) {
+            if (listener === listenable || listener.hasListener && listener.hasListener(listenable)) {
                 return true;
             }
         }

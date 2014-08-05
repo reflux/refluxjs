@@ -49,10 +49,7 @@ module.exports = function(definition) {
 
         for (;i < this.registered.length; ++i) {
             listener = this.registered[i];
-            if (listener === listenable) {
-                return true;
-            }
-            if (listener.hasListener && listener.hasListener(listenable)) {
+            if (listener === listenable || listener.hasListener && listener.hasListener(listenable)) {
                 return true;
             }
         }
