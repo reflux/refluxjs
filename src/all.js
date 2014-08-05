@@ -73,7 +73,7 @@ module.exports = function(/* listenables... */) {
     function didAllListenablesEmit() {
         // reduce cannot be used because it only iterates over *present*
         // elements in the array. Initially the Array doesn't contain
-        // elements. Fore this reason the usage of reduce would always indicate
+        // elements. For this reason the usage of reduce would always indicate
         // that all listenables emitted.
         for (var i = 0; i < numberOfListenables; i++) {
             if (!listenablesEmitted[i]) {
