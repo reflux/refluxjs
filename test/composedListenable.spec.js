@@ -5,7 +5,7 @@ var chai = require('chai'),
 
 chai.use(require('chai-as-promised'));
 
-describe('Combined listenables', function() {
+describe('Composed listenables', function() {
     var action1,
         action2,
         action3,
@@ -113,7 +113,7 @@ describe('Combined listenables', function() {
     });
 });
 
-describe('Combined listenable with stores', function() {
+describe('Composed listenable with stores', function() {
     var action,
         store1,
         store2,
