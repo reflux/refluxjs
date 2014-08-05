@@ -112,3 +112,64 @@ describe('Combined listenables', function() {
         ]);
     });
 });
+
+describe('Combined listenable with stores', function() {
+    var action,
+        store1,
+        store2,
+        all;
+
+    beforeEach(function () {
+        action = Reflux.createAction();
+        store1 = Reflux.createStore({
+            init: function() {
+                this.listenTo(action, this.trigger);
+            }
+        });
+        store2 = Reflux.createStore({
+            init: function() {
+                this.listenTo(action, this.trigger);
+            }
+        });
+        all = Reflux.all(store1, store2);
+    });
+
+    it('should emit when action is invoked', function() {
+        var promise = Q.promise(function(resolve) {
+            all.listen(function() {
+                resolve(Array.prototype.slice.call(arguments, 0));
+            });
+        });
+
+        action('a');
+
+        return assert.eventually.deepEqual(promise, [['a'], ['a']]);
+    });
+
+    describe('with a store listening to the combined listenable', function() {
+
+        var storeAll;
+
+        beforeEach(function () {
+            storeAll = Reflux.createStore({
+                init: function() {
+                    this.listenTo(all, this.trigger);
+                }
+            });
+        });
+
+        it('should emit when action is invoked', function() {
+            var promise = Q.promise(function(resolve) {
+                storeAll.listen(function() {
+                    resolve(Array.prototype.slice.call(arguments, 0));
+                });
+            });
+
+            action('a');
+
+            return assert.eventually.deepEqual(promise, [['a'], ['a']]);
+        });
+
+    });
+
+});
