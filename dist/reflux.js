@@ -245,7 +245,7 @@ module.exports = function(/* listenables... */) {
 
         for (; i < args.length; ++i) {
             listener = args[i];
-            if (listener._lid === listener._lid) {
+            if (listener === listener) {
                 return true;
             }
             if (listener.hasListener && listener.hasListener(listenable)) {
@@ -362,8 +362,7 @@ module.exports = function() {
 };
 
 },{"./utils":7}],5:[function(_dereq_,module,exports){
-var _ = _dereq_('./utils'),
-    idCounter = 0;
+var _ = _dereq_('./utils');
 
 /**
  * Creates an event emitting Data Store
@@ -375,7 +374,6 @@ module.exports = function(definition) {
         eventLabel = "change";
 
     function Store() {
-        this._lid = ++idCounter;
         this.registered = [];
         if (this.init && _.isFunction(this.init)) {
             this.init();
@@ -415,7 +413,7 @@ module.exports = function(definition) {
 
         for (;i < this.registered.length; ++i) {
             listener = this.registered[i];
-            if (listener._lid === listenable._lid) {
+            if (listener === listenable) {
                 return true;
             }
             if (listener.hasListener && listener.hasListener(listenable)) {

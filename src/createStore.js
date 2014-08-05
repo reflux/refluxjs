@@ -1,5 +1,4 @@
-var _ = require('./utils'),
-    idCounter = 0;
+var _ = require('./utils');
 
 /**
  * Creates an event emitting Data Store
@@ -11,7 +10,6 @@ module.exports = function(definition) {
         eventLabel = "change";
 
     function Store() {
-        this._lid = ++idCounter;
         this.registered = [];
         if (this.init && _.isFunction(this.init)) {
             this.init();
@@ -51,7 +49,7 @@ module.exports = function(definition) {
 
         for (;i < this.registered.length; ++i) {
             listener = this.registered[i];
-            if (listener._lid === listenable._lid) {
+            if (listener === listenable) {
                 return true;
             }
             if (listener.hasListener && listener.hasListener(listenable)) {

@@ -28,7 +28,7 @@ module.exports = function(/* listenables... */) {
 
         for (; i < args.length; ++i) {
             listener = args[i];
-            if (listener._lid === listener._lid) {
+            if (listener === listener) {
                 return true;
             }
             if (listener.hasListener && listener.hasListener(listenable)) {
