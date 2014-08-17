@@ -16,7 +16,7 @@ module.exports = function(definition) {
         }
     }
     _.extend(Store.prototype, definition);
-    Store.prototype.listenTo = function(listenable, callback) {
+    Store.prototype.listenTo = function(listenable, callback, initialCallback) {
         if (listenable === this) {
             throw Error("Store is not able to listen to itself");
         }
@@ -25,6 +25,16 @@ module.exports = function(definition) {
         }
         if (this.hasListener(listenable)) {
             throw Error("Store cannot listen to this listenable because of circular loop");
+        }
+        if (initialCallback && _.isFunction(initialCallback)) {
+            if (listenable.getInitialData && _.isFunction(listenable.getInitialData)) {
+                data = listenable.getInitialData();
+                if (data && data.then && _.isFunction(data.then)) {
+                    data.then(initialCallback);
+                } else {
+                    initialCallback(data);
+                }
+            }
         }
         this.registered.push(listenable);
         return listenable.listen(callback, this);
