@@ -27,7 +27,12 @@ module.exports = function(definition) {
             throw Error("Store cannot listen to this listenable because of circular loop");
         }
         this.registered.push(listenable);
-        return listenable.listen(callback, this);
+        var unsubscribe = listenable.listen(callback, this);
+        var self = this;
+        return function () {
+          unsubscribe();
+          self.registered.splice(self.registered.indexOf(listenable), 1);
+        };
     };
     Store.prototype.listen = function(callback, bindContext) {
         var eventHandler = function(args) {
