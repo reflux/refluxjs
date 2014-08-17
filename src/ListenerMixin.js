@@ -16,10 +16,22 @@ module.exports = {
      * @param {Action|Store} listenable An Action or Store that should be
      *  listened to.
      * @param {Function} callback The callback to register as event handler
+     * @param {Function} initialCallback The callback to register as initial handler
      */
-    listenTo: function(listenable, callback) {
+    listenTo: function(listenable, callback, initialCallback) {
         var unsubscribe = listenable.listen(callback, this);
         this.subscriptions.push(unsubscribe);
+
+        if (initialCallback && _.isFunction(initialCallback)) {
+            if (listenable.getInitialData && _.isFunction(listenable.getInitialData)) {
+                data = listenable.getInitialData();
+                if (data && data.then && _.isFunction(data.then)) {
+                    data.then(initialCallback);
+                } else {
+                    initialCallback(data);
+                }
+            } 
+        }
     },
 
     componentWillUnmount: function() {
