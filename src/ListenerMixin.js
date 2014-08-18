@@ -27,9 +27,9 @@ module.exports = {
             if (listenable.getDefaultData && _.isFunction(listenable.getDefaultData)) {
                 data = listenable.getDefaultData();
                 if (data && data.then && _.isFunction(data.then)) {
-                    data.then(defaultCallback);
+                    data.then(defaultCallback.bind(this));
                 } else {
-                    defaultCallback(data);
+                    defaultCallback.bind(this)(data);
                 }
             }
         }

@@ -121,24 +121,25 @@ describe('Creating stores', function() {
                 },
                 actionCalled: function() {
                     var args = Array.prototype.slice.call(arguments, 0);
-                    this.trigger(args);
+                    this.trigger.apply(this, args);
                 }
             };
         });
 
         function createPromiseForTest(store) {
             return Q.Promise(function(resolve) {
+                var storeTriggered = function () {
+                    var args = Array.prototype.slice.call(arguments, 0).map(function (arg) {
+                      return '[...] ' + arg;
+                    });
+                    this.trigger.apply(this, args);
+                    resolve(args);
+                };
                 Reflux.createStore({
                     init: function() {
-                        this.listenTo(store, this.storeTriggered);
+                        this.listenTo(store, this.storeTriggered, storeTriggered.bind(this));
                     },
-                    storeTriggered: function() {
-                        var args = Array.prototype.slice.call(arguments, 0).map(function (arg) {
-                          return '[...] ' + arg;
-                        });
-                        this.trigger(args);
-                        resolve(args);
-                    }
+                    storeTriggered: storeTriggered
                 });
             });
         }
@@ -146,13 +147,13 @@ describe('Creating stores', function() {
         it('should be triggered with argument from upstream store', function() {
             var store = Reflux.createStore(baseDefinition);
             action('my argument');
-            assert.eventually.equal(createPromiseForTest(store), 'my argument');
+            return assert.eventually.equal(createPromiseForTest(store), '[...] my argument');
         });
 
         it('should be triggered with arbitrary arguments from upstream store', function() {
             var store = Reflux.createStore(baseDefinition);
             action(1337, 'ninja');
-            assert.eventually.deepEqual(createPromiseForTest(store), ['[...] 1337', '[...] ninja']);
+            return assert.eventually.deepEqual(createPromiseForTest(store), ['[...] 1337', '[...] ninja']);
         });
 
         it('should get default data from getDefaultData()', function() {
@@ -161,7 +162,7 @@ describe('Creating stores', function() {
                     return 'dafault data';
                 }
             }));
-            assert.eventually.equal(createPromiseForTest(store), '[...] default data');
+            return assert.eventually.equal(createPromiseForTest(store), '[...] default data');
         });
 
         it('should get default data from getDefaultData() returned promise', function() {
@@ -174,7 +175,7 @@ describe('Creating stores', function() {
                     });
                 }
             }));
-            assert.eventually.equal(createPromiseForTest(store), '[...] default data');
+            return assert.eventually.equal(createPromiseForTest(store), '[...] default data');
         });
 
     });

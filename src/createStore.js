@@ -32,7 +32,7 @@ module.exports = function(definition) {
                 if (data && data.then && _.isFunction(data.then)) {
                     data.then(defaultCallback.bind(this));
                 } else {
-                    defaultCallback(data.bind(this));
+                    defaultCallback.bind(this)(data);
                 }
             }
         }
