@@ -26,16 +26,7 @@ module.exports = function(definition) {
         if (this.hasListener(listenable)) {
             throw Error("Store cannot listen to this listenable because of circular loop");
         }
-        if (defaultCallback && _.isFunction(defaultCallback)) {
-            if (listenable.getDefaultData && _.isFunction(listenable.getDefaultData)) {
-                data = listenable.getDefaultData();
-                if (data && data.then && _.isFunction(data.then)) {
-                    data.then(defaultCallback.bind(this));
-                } else {
-                    defaultCallback.bind(this)(data);
-                }
-            }
-        }
+        _.handleDefaultCallback(this, listenable, defaultCallback);
         this.registered.push(listenable);
         return listenable.listen(callback, this);
     };

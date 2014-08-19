@@ -3,12 +3,12 @@
  * order to remove the dependency
  */
 
-var isObject = module.exports.isObject = function(obj) {
+var isObject = exports.isObject = function(obj) {
     var type = typeof obj;
     return type === 'function' || type === 'object' && !!obj;
 };
 
-module.exports.extend = function(obj) {
+exports.extend = function(obj) {
     if (!isObject(obj)) {
         return obj;
     }
@@ -22,11 +22,24 @@ module.exports.extend = function(obj) {
     return obj;
 };
 
-module.exports.isFunction = function(value) {
+var isFunction = exports.isFunction = function(value) {
     return typeof value === 'function';
 };
 
-module.exports.EventEmitter = require('eventemitter3');
-module.exports.nextTick = function(callback) {
+exports.EventEmitter = require('eventemitter3');
+exports.nextTick = function(callback) {
     setTimeout(callback, 0);
+};
+
+exports.handleDefaultCallback = function (listener, listenable, defaultCallback) {
+    if (defaultCallback && isFunction(defaultCallback)) {
+        if (listenable.getDefaultData && isFunction(listenable.getDefaultData)) {
+            data = listenable.getDefaultData();
+            if (data && data.then && isFunction(data.then)) {
+                data.then(defaultCallback.bind(listener));
+            } else {
+                defaultCallback.bind(listener)(data);
+            }
+        }
+    }
 };

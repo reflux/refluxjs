@@ -23,16 +23,7 @@ module.exports = {
         var unsubscribe = listenable.listen(callback, this);
         this.subscriptions.push(unsubscribe);
 
-        if (defaultCallback && _.isFunction(defaultCallback)) {
-            if (listenable.getDefaultData && _.isFunction(listenable.getDefaultData)) {
-                data = listenable.getDefaultData();
-                if (data && data.then && _.isFunction(data.then)) {
-                    data.then(defaultCallback.bind(this));
-                } else {
-                    defaultCallback.bind(this)(data);
-                }
-            }
-        }
+        _.handleDefaultCallback(this, listenable, defaultCallback);
     },
 
     componentWillUnmount: function() {
