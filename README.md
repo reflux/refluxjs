@@ -291,6 +291,24 @@ The `Reflux.all` functionality is similar to Flux's `waitFor()`, but differs in 
 * Actions and stores may emit multiple times before the composed listenable (`theTide` in the example above) emits
 * Action and store callbacks are not executed in a single *synchronous* iteration
 
+### Sending default data with the listenTo function
+
+The `listenTo` function provided by the `Store` and the `ListenerMixin` has a third parameter that accepts a callback. This callback will be invoked when the listener is registered with whatever the `getInitialData` is returning.
+
+```javascript
+var exampleStore = Reflux.createStore({
+    init: function() {},
+    getInitialData: function() {
+        return "the initial data";
+    }
+});
+
+// Anything that will listen to the example store
+this.listenTo(exampleStore, onChangeCallback, initialCallback)
+
+// initialCallback will be invoked immediately
+```
+
 ## Colophon
 
 [List of contributors](https://github.com/spoike/reflux/graphs/contributors) is available on Github.
