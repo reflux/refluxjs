@@ -30,8 +30,8 @@ module.exports = function(definition) {
         var unsubscribe = listenable.listen(callback, this);
         var self = this;
         return function () {
-          unsubscribe();
-          self.registered.splice(self.registered.indexOf(listenable), 1);
+            unsubscribe();
+            self.registered.splice(self.registered.indexOf(listenable), 1);
         };
     };
     Store.prototype.listen = function(callback, bindContext) {
