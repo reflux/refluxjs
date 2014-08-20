@@ -2,9 +2,9 @@
 
 A simple library for uni-directional dataflow architecture inspired by ReactJS [Flux](http://facebook.github.io/react/blog/2014/05/06/flux.html).
 
-[![Build Status](https://travis-ci.org/spoike/reflux.svg?branch=master)](https://travis-ci.org/spoike/reflux)
+[![Build Status](https://travis-ci.org/spoike/refluxjs.svg?branch=master)](https://travis-ci.org/spoike/refluxjs)
 
-[![Browser support](https://ci.testling.com/spoike/reflux.png)](https://ci.testling.com/spoike/reflux)
+[![Browser support](https://ci.testling.com/spoike/refluxjs.png)](https://ci.testling.com/spoike/refluxjs)
 
 You can read an overview of Flux [here](http://facebook.github.io/react/docs/flux-overview.html), however the gist of it is to introduce a more functional programming style architecture by eschewing MVC like pattern and adopting a single data flow pattern.
 
@@ -290,6 +290,24 @@ The `Reflux.all` functionality is similar to Flux's `waitFor()`, but differs in 
 * Composed listenables always emit asynchronously
 * Actions and stores may emit multiple times before the composed listenable (`theTide` in the example above) emits
 * Action and store callbacks are not executed in a single *synchronous* iteration
+
+### Sending default data with the listenTo function
+
+The `listenTo` function provided by the `Store` and the `ListenerMixin` has a third parameter that accepts a callback. This callback will be invoked when the listener is registered with whatever the `getInitialData` is returning.
+
+```javascript
+var exampleStore = Reflux.createStore({
+    init: function() {},
+    getInitialData: function() {
+        return "the initial data";
+    }
+});
+
+// Anything that will listen to the example store
+this.listenTo(exampleStore, onChangeCallback, initialCallback)
+
+// initialCallback will be invoked immediately
+```
 
 ## Colophon
 

@@ -182,6 +182,7 @@ try { module.exports = EventEmitter; }
 catch (e) {}
 
 },{}],2:[function(_dereq_,module,exports){
+var _ = _dereq_('./utils');
 module.exports = {
 
     /**
@@ -200,10 +201,13 @@ module.exports = {
      * @param {Action|Store} listenable An Action or Store that should be
      *  listened to.
      * @param {Function} callback The callback to register as event handler
+     * @param {Function} defaultCallback The callback to register as default handler
      */
-    listenTo: function(listenable, callback) {
+    listenTo: function(listenable, callback, defaultCallback) {
         var unsubscribe = listenable.listen(callback, this);
         this.subscriptions.push(unsubscribe);
+
+        _.handleDefaultCallback(this, listenable, defaultCallback);
     },
 
     componentWillUnmount: function() {
@@ -214,7 +218,7 @@ module.exports = {
     }
 };
 
-},{}],3:[function(_dereq_,module,exports){
+},{"./utils":7}],3:[function(_dereq_,module,exports){
 var createAction = _dereq_('./createAction');
 
 var slice = Array.prototype.slice;
@@ -377,7 +381,7 @@ module.exports = function(definition) {
         }
     }
     _.extend(Store.prototype, definition);
-    Store.prototype.listenTo = function(listenable, callback) {
+    Store.prototype.listenTo = function(listenable, callback, defaultCallback) {
         if (listenable === this) {
             throw Error("Store is not able to listen to itself");
         }
@@ -387,8 +391,14 @@ module.exports = function(definition) {
         if (this.hasListener(listenable)) {
             throw Error("Store cannot listen to this listenable because of circular loop");
         }
+        _.handleDefaultCallback(this, listenable, defaultCallback);
         this.registered.push(listenable);
-        return listenable.listen(callback, this);
+        var unsubscribe = listenable.listen(callback, this);
+        var self = this;
+        return function () {
+            unsubscribe();
+            self.registered.splice(self.registered.indexOf(listenable), 1);
+        };
     };
     Store.prototype.listen = function(callback, bindContext) {
         var eventHandler = function(args) {
@@ -450,16 +460,16 @@ exports.nextTick = function(nextTick) {
 
 },{"./ListenerMixin":2,"./all":3,"./createAction":4,"./createStore":5,"./utils":7}],7:[function(_dereq_,module,exports){
 /*
- * isObject, extend and isFunction are taken from undescore/lodash in
+ * isObject, extend, isFunction, and bind are taken from undescore/lodash in
  * order to remove the dependency
  */
 
-var isObject = module.exports.isObject = function(obj) {
+var isObject = exports.isObject = function(obj) {
     var type = typeof obj;
     return type === 'function' || type === 'object' && !!obj;
 };
 
-module.exports.extend = function(obj) {
+exports.extend = function(obj) {
     if (!isObject(obj)) {
         return obj;
     }
@@ -473,13 +483,28 @@ module.exports.extend = function(obj) {
     return obj;
 };
 
-module.exports.isFunction = function(value) {
+var isFunction = exports.isFunction = function(value) {
     return typeof value === 'function';
 };
 
-module.exports.EventEmitter = _dereq_('eventemitter3');
-module.exports.nextTick = function(callback) {
+exports.EventEmitter = _dereq_('eventemitter3');
+exports.nextTick = function(callback) {
     setTimeout(callback, 0);
+};
+
+exports.handleDefaultCallback = function (listener, listenable, defaultCallback) {
+    if (defaultCallback && isFunction(defaultCallback)) {
+        if (listenable.getDefaultData && isFunction(listenable.getDefaultData)) {
+            data = listenable.getDefaultData();
+            if (data && data.then && isFunction(data.then)) {
+                data.then(function() {
+                    defaultCallback.apply(listener, arguments);
+                });
+            } else {
+                defaultCallback.call(listener, data);
+            }
+        }
+    }
 };
 
 },{"eventemitter3":1}]},{},[6])

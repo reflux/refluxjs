@@ -69,11 +69,16 @@ describe('Composed listenables', function() {
     });
 
 
-    it('should emit multiple times', function(done) {
-        var callArgs = [];
-        all.listen(function() {
-            callArgs.push([].slice.call(arguments));
-        }, null);
+    it('should emit multiple times', function() {
+        var promise = Q.promise(function(resolve) {
+            var callArgs = [];
+            all.listen(function() {
+                callArgs.push([].slice.call(arguments));
+                if (callArgs.length === 2) {
+                    resolve(callArgs);
+                }
+            });
+        });
 
         action1('a');
         action2('b');
@@ -83,13 +88,10 @@ describe('Composed listenables', function() {
         action2('y');
         action3('z');
 
-        setTimeout(function() {
-            assert.deepEqual(callArgs, [
-                [['a'], ['b'], ['c']],
-                [['x'], ['y'], ['z']]
-            ]);
-            done();
-        }, 200);
+        return assert.eventually.deepEqual(promise, [
+          [['a'], ['b'], ['c']],
+          [['x'], ['y'], ['z']]
+        ]);
     });
 
 

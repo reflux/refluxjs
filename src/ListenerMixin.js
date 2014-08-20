@@ -1,3 +1,4 @@
+var _ = require('./utils');
 module.exports = {
 
     /**
@@ -16,10 +17,13 @@ module.exports = {
      * @param {Action|Store} listenable An Action or Store that should be
      *  listened to.
      * @param {Function} callback The callback to register as event handler
+     * @param {Function} defaultCallback The callback to register as default handler
      */
-    listenTo: function(listenable, callback) {
+    listenTo: function(listenable, callback, defaultCallback) {
         var unsubscribe = listenable.listen(callback, this);
         this.subscriptions.push(unsubscribe);
+
+        _.handleDefaultCallback(this, listenable, defaultCallback);
     },
 
     componentWillUnmount: function() {
