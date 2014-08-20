@@ -67,6 +67,13 @@ describe('Creating stores', function() {
                 }, 20);
             });
 
+            it('can listenTo the same action again', function() {
+                store.listenTo(action, store.actionCalled);
+                action(1337, 'ninja');
+
+                return assert.eventually.deepEqual(promise, [1337, 'ninja']);
+            });
+
         });
 
         describe('listening to the store', function() {
