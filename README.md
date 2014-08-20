@@ -298,7 +298,7 @@ The `listenTo` function provided by the `Store` and the `ListenerMixin` has a th
 ```javascript
 var exampleStore = Reflux.createStore({
     init: function() {},
-    getInitialData: function() {
+    getDefaultData: function() {
         return "the initial data";
     }
 });
@@ -306,7 +306,7 @@ var exampleStore = Reflux.createStore({
 // Anything that will listen to the example store
 this.listenTo(exampleStore, onChangeCallback, initialCallback)
 
-// initialCallback will be invoked immediately
+// initialCallback will be invoked immediately with "the initial data" as first argument
 ```
 
 ## Colophon
