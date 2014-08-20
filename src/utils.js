@@ -1,5 +1,5 @@
 /*
- * isObject, extend and isFunction are taken from undescore/lodash in
+ * isObject, extend, isFunction, and bind are taken from undescore/lodash in
  * order to remove the dependency
  */
 
@@ -36,9 +36,11 @@ exports.handleDefaultCallback = function (listener, listenable, defaultCallback)
         if (listenable.getDefaultData && isFunction(listenable.getDefaultData)) {
             data = listenable.getDefaultData();
             if (data && data.then && isFunction(data.then)) {
-                data.then(defaultCallback.bind(listener));
+                data.then(function() {
+                    defaultCallback.apply(listener, arguments);
+                });
             } else {
-                defaultCallback.bind(listener)(data);
+                defaultCallback.call(listener, data);
             }
         }
     }
