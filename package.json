@@ -4,7 +4,8 @@
   "description": "A simple library for uni-directional dataflow application architecture inspired by ReactJS Flux",
   "main": "src/index.js",
   "scripts": {
-    "test": "grunt test"
+    "test": "grunt test",
+    "benchmark": "node test/benchmarks"
   },
   "author": "Mikael Brassman",
   "license": "BSD-3-Clause",
@@ -16,6 +17,7 @@
     "eventemitter3": "^0.1.2"
   },
   "devDependencies": {
+    "benchmark": "^1.0.0",
     "browserify": "^4.2.0",
     "chai": "^1.9.1",
     "chai-as-promised": "^4.1.1",
@@ -25,11 +27,11 @@
     "grunt-contrib-uglify": "^0.5.0",
     "grunt-contrib-watch": "^0.6.1",
     "grunt-mocha-test": "^0.11.0",
+    "grunt-testling": "^1.0.0",
     "matchdep": "^0.3.0",
-    "q": "^1.0.1",
-    "testling": "^1.7.0",
     "mocha": "^1.21.3",
-    "grunt-testling": "^1.0.0"
+    "q": "^1.0.1",
+    "testling": "^1.7.0"
   },
   "testling": {
     "browsers": [
