@@ -26,6 +26,12 @@ The goal of the project is to get this architecture easily up and running in you
 
 You can read more in this [blog post about React Flux vs Reflux](http://spoike.ghost.io/deconstructing-reactjss-flux/).
 
+## Examples
+
+You can find some example projects at these locations:
+
+* [Todo Example Project](https://github.com/spoike/refluxjs-todo) - [http://spoike.github.io/refluxjs-todo/](http://spoike.github.io/refluxjs-todo/)
+
 ## Installation
 
 You can currently install the package as a npm package or bower.
