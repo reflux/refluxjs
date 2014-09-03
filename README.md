@@ -1,6 +1,6 @@
-# Reflux
+# RefluxJS
 
-A simple library for uni-directional dataflow architecture inspired by ReactJS [Flux](http://facebook.github.io/react/blog/2014/05/06/flux.html).
+A simple library for unidirectional dataflow architecture inspired by ReactJS [Flux](http://facebook.github.io/react/blog/2014/05/06/flux.html).
 
 [![Build Status](https://travis-ci.org/spoike/refluxjs.svg?branch=master)](https://travis-ci.org/spoike/refluxjs)
 
@@ -19,12 +19,31 @@ You can read an overview of Flux [here](http://facebook.github.io/react/docs/flu
 
 The pattern is composed of actions and data stores, where actions initiate new data to pass through data stores before coming back to the view components again. If a view component has an event that needs to make a change in the application's data stores, they need to do so by signalling to the stores through the actions available.
 
-The goal of the project is to get this architecture easily up and running in your web application, both client-side or server-side. There are some differences between how this project works and how Facebook's proposed Flux architecture works:
+## Comparing RefluxJS with Facebook Flux
 
-* Instead of a singleton dispatcher, every action handles the dispatching by themselves
-* Javascript is a dynamic language so no more static type checking with strings! Just let the stores listen to actions and don't worry!
+The goal of the refluxjs project is to get this architecture easily up and running in your web application, both client-side or server-side. There are some differences between how this project works and how Facebook's proposed Flux architecture works:
 
 You can read more in this [blog post about React Flux vs Reflux](http://spoike.ghost.io/deconstructing-reactjss-flux/).
+
+### Similarities with Flux
+
+Some concepts are still in Reflux in comparison with Flux:
+
+* There are actions
+* There are data stores
+* The data flow is unidirectional
+
+### Differences with Flux
+
+Reflux has refactored Flux to be a bit more dynamic and be more FRP friendly:
+
+* The singleton dispatcher is removed in favor for letting every action act as dispatcher instead.
+* Because actions are listenable, the stores may listen to them. Stores don't need to have a big switch statements that does static type checking (of action types) with strings
+* Stores may listen to other stores, i.e. it is possible to create stores that can *aggregate data further*, similar to a map/reduce.
+* `waitFor` is replaced in favor to handle *serial* and *parallel* data flows:
+ * **Aggregate data stores** (mentioned above) may listen to other stores in *serial*
+ * **Joins** for joining listeners in *parallel*
+* *Action creators* are not needed because RefluxJS actions are functions that will pass on the payload they receive to anyone listening to them
 
 ## Examples
 
