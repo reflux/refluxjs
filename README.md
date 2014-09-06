@@ -318,7 +318,7 @@ The `Reflux.all` functionality is similar to Flux's `waitFor()`, but differs in 
 
 ### Sending default data with the listenTo function
 
-The `listenTo` function provided by the `Store` and the `ListenerMixin` has a third parameter that accepts a callback. This callback will be invoked when the listener is registered with whatever the `getInitialData` is returning.
+The `listenTo` function provided by the `Store` and the `ListenerMixin` has a third parameter that accepts a callback. This callback will be invoked when the listener is registered with whatever the `getDefaultData` is returning.
 
 ```javascript
 var exampleStore = Reflux.createStore({
