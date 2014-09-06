@@ -1,6 +1,5 @@
 var assert = require('chai').assert,
-    Reflux = require('../src'),
-    _ = require('../src/utils');
+    Reflux = require('../src');
 
 describe('Using the ListenerMixinFactory shorthand',function(){
     var store = "I AM A STORE",
