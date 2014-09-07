@@ -34,9 +34,6 @@ module.exports = function(grunt) {
       files: ['<%= jshint.files %>'],
       tasks: ['build']
     },
-    testling: {
-      files: "test/*.js"
-    },
     karma: {
       integration: {
         configFile: 'karma.conf.js',
