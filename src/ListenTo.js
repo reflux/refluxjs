@@ -1,7 +1,7 @@
-module.exports = function(store,callback){
+module.exports = function(store,callback,initial){
     return {
         componentDidMount: function(){
-            this.listenTo(store,this[callback]||callback);
+            this.listenTo(store,this[callback]||callback,initial);
         }
     };
 };
