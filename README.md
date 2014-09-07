@@ -230,13 +230,13 @@ var Status = React.createClass({
 The mixin provides the `listenTo` method for the React component, that works much like the one found in the Reflux's stores, and handles the listeners during mount and unmount for you.
 
 
-### Using the mixin with Reflux.ListenTo
+### Using Reflux.listenTo
 
-To make things more convenient still, you can combine `Reflux.ListenerMixin` with calls to `Reflux.ListenTo`. That will automatically set up the `componentDidMount` for you. Using this our example above can be reduced even further:
+To make things more convenient still, if you're not reliant on any special logic for the `this.listenTo` calls inside `componentDidMount`, you can a call to `Reflux.listenTo` as a mixin. That will automatically set up the `componentDidMount` and the rest for you. With this our example above can be reduced even further:
 
 ```javascript
 var Status = React.createClass({
-    mixins: [Reflux.ListenerMixin,Reflux.ListenTo(statusStore,"onStatusChange")],
+    mixins: [Reflux.listenTo(statusStore,"onStatusChange")],
     onStatusChange: function(status) {
         this.setState({
             currentStatus: status
@@ -248,9 +248,9 @@ var Status = React.createClass({
 });
 ```
 
-Note how we can't use `this.onStatusChange` as the second argument to `ListenTo`, as `this` doesn't point to the instance at this point in time. You can however send in a callback by reference.
+Note how we can't use `this.onStatusChange` as the second argument to `Reflux.listenTo`, as `this` doesn't point to the instance at this point in time. You can however send in a callback by reference.
 
-You can have multiple calls to `Reflux.ListenTo` in the `mixins` array. The only requirement is that you include the ListenerMixin exactly once.
+You can have multiple calls to `Reflux.ListenTo` in the `mixins` array, and/or combine with using the `ListenerMixin`.
 
 ### Listening to changes in other data stores (aggregate data stores)
 
@@ -341,7 +341,7 @@ The `Reflux.all` functionality is similar to Flux's `waitFor()`, but differs in 
 
 ### Sending default data with the listenTo function
 
-The `listenTo` function provided by the `Store` and the `ListenerMixin`, as well as `Reflux.ListenTo`, has a third parameter that accepts a callback. This callback will be invoked when the listener is registered with whatever the `getInitialData` is returning.
+The `listenTo` function provided by the `Store` and the `ListenerMixin`, as well as `Reflux.listenTo`, has a third parameter that accepts a callback. This callback will be invoked when the listener is registered with whatever the `getInitialData` is returning.
 
 ```javascript
 var exampleStore = Reflux.createStore({

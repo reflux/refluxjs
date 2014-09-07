@@ -1,31 +1,38 @@
 var assert = require('chai').assert,
+    sinon = require('sinon'),
     Reflux = require('../src');
 
-describe('the ListenTo shorthand',function(){
-    var listenable = "I AM A LISTENABLE",
-        callback = "I AM A CALLBACK",
-        initial = "I AM A CALLBACK TOO";
+describe('the listenTo shorthand',function(){
     describe("when calling the factory",function(){
-        var result = Reflux.ListenTo(listenable,callback,initial);
-        it("should return object with componentDidMount method",function(){
-            assert.equal(Object.keys(result).length,1);
+        var unsubscriber = sinon.spy(),
+            defaultdata = {foo:"bar"},
+            listenable = {listen:sinon.stub().returns(unsubscriber),getDefaultData:sinon.stub().returns(defaultdata)},
+            initial = sinon.spy(),
+            callback = sinon.spy,
+            result = Reflux.listenTo(listenable,"method",initial);
+        result["method"] = callback;
+        it("should return object with componentDidMount and componentWillUnmount methods",function(){
+            assert.equal(Object.keys(result).length,3);
             assert.isFunction(result.componentDidMount);
+            assert.isFunction(result.componentWillUnmount);
         });
-    });
-    describe("when calling the added componentDidMount",function(){
-        it("should call listenTo correctly",function(){
-            var component = Object.create(Reflux.ListenTo(listenable,callback,initial)), args;
-            component.listenTo = function(){args=arguments;};
-            component.componentDidMount();
-            assert.equal(args.length,3);
-            assert.deepEqual([args[0],args[1],args[2]],[listenable,callback,initial]);
+        describe("when calling the added componentDidMount",function(){
+            result.componentDidMount();
+            it("should call listen on the listenable correctly",function(){
+                assert.equal(listenable.listen.callCount,1);
+                assert.deepEqual(listenable.listen.firstCall.args,[callback,result]);
+            });
+            it("should send listenable default data to initial",function(){
+                assert.equal(listenable.getDefaultData.callCount,1);
+                assert.equal(initial.callCount,1);
+                assert.equal(initial.firstCall.args[0],defaultdata);
+            });
         });
-        it("should fetch method from 'this' if callback was a string",function(){
-            var component = Object.create(Reflux.ListenTo(listenable,"method")), args;
-            component.method = callback;
-            component.listenTo = function(){args=arguments;};
-            component.componentDidMount();
-            assert.equal(args[1],callback);
+        describe("when calling the added componentWillUnmount",function(){
+            result.componentWillUnmount();
+            it("should called the returned unsubscriber",function(){
+                assert.equal(unsubscriber.callCount,1);
+            });
         });
     });
 });

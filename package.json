@@ -31,7 +31,8 @@
     "matchdep": "^0.3.0",
     "mocha": "^1.21.3",
     "q": "^1.0.1",
-    "testling": "^1.7.0"
+    "testling": "^1.7.0",
+    "sinon": "^1.10.3"
   },
   "testling": {
     "browsers": [
