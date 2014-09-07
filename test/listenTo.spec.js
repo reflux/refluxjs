@@ -1,6 +1,6 @@
 var assert = require('chai').assert,
     sinon = require('sinon'),
-    listenTo = require('../src/listenToModule'),
+    listenTo = require('../src/listenTo'),
     _ = require('../src/utils');
 
 describe('the listenTo shorthand',function(){

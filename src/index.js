@@ -4,7 +4,7 @@ exports.createStore = require('./createStore');
 
 exports.ListenerMixin = require('./ListenerMixin');
 
-exports.listenTo = require('./listenToModule');
+exports.listenTo = require('./listenTo');
 
 exports.all = require('./all');
 
