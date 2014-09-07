@@ -5,10 +5,10 @@ describe('the ListenTo shorthand',function(){
     var listenable = "I AM A LISTENABLE",
         callback = "I AM A CALLBACK";
     describe("when calling the factory",function(){
-        var component = Object.create(Reflux.ListenTo(listenable,callback));
+        var result = Reflux.ListenTo(listenable,callback);
         it("should return object with componentDidMount method",function(){
-            assert.equal(Object.keys(component).length,1);
-            assert.isFunction(component.componentDidMount);
+            assert.equal(Object.keys(result).length,1);
+            assert.isFunction(result.componentDidMount);
         });
     });
     describe("when calling the added componentDidMount",function(){
