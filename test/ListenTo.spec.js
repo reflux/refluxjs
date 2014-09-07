@@ -10,7 +10,7 @@ describe('the listenTo shorthand',function(){
             initial = sinon.spy(),
             callback = sinon.spy,
             result = Reflux.listenTo(listenable,"method",initial);
-        result["method"] = callback;
+        result.method = callback;
         it("should return object with componentDidMount and componentWillUnmount methods",function(){
             assert.equal(Object.keys(result).length,3);
             assert.isFunction(result.componentDidMount);
