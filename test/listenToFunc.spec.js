@@ -8,8 +8,8 @@ describe('the listenTo shorthand',function(){
         var unsubscriber = sinon.spy(),
             defaultdata = {foo:"bar"},
             listenable = {
-                listen:sinon.stub().returns(unsubscriber),
-                getDefaultData:sinon.stub().returns(defaultdata)
+                listen: sinon.stub().returns(unsubscriber),
+                getDefaultData: sinon.stub().returns(defaultdata)
             },
             initial = sinon.spy(),
             callback = sinon.spy,
