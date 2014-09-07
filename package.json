@@ -18,7 +18,7 @@
   },
   "devDependencies": {
     "benchmark": "^1.0.0",
-    "browserify": "^4.2.0",
+    "browserify": "^5.11.1",
     "chai": "^1.9.1",
     "chai-as-promised": "^4.1.1",
     "grunt": "^0.4.5",
@@ -27,24 +27,16 @@
     "grunt-contrib-uglify": "^0.5.0",
     "grunt-contrib-watch": "^0.6.1",
     "grunt-mocha-test": "^0.11.0",
-    "grunt-testling": "^1.0.0",
     "matchdep": "^0.3.0",
     "mocha": "^1.21.3",
     "q": "^1.0.1",
-    "testling": "^1.7.0"
-  },
-  "testling": {
-    "browsers": [
-      "ie/8..latest",
-      "chrome/27..latest",
-      "firefox/21..latest",
-      "safari/latest",
-      "opera/latest",
-      "iphone/latest",
-      "ipad/latest",
-      "android-browser/latest"
-    ],
-    "harness": "mocha",
-    "files": "test/*.js"
+    "karma-commonjs": "0.0.11",
+    "karma": "^0.12.23",
+    "karma-mocha": "^0.1.9",
+    "karma-phantomjs-launcher": "^0.1.4",
+    "karma-bro": "^0.7.0",
+    "karma-spec-reporter": "0.0.13",
+    "grunt-karma": "^0.9.0",
+    "karma-sauce-launcher": "^0.2.10"
   }
 }
