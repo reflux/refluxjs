@@ -232,7 +232,7 @@ The mixin provides the `listenTo` method for the React component, that works muc
 
 ### Using Reflux.listenTo
 
-To make things more convenient still, if you're not reliant on any special logic for the `this.listenTo` calls inside `componentDidMount`, you can a call to `Reflux.listenTo` as a mixin. That will automatically set up the `componentDidMount` and the rest for you. With this our example above can be reduced even further:
+To make things more convenient still, if you're not reliant on any special logic for the `this.listenTo` calls inside `componentDidMount`, you can use a call to `Reflux.listenTo` as a mixin. That will automatically set up the `componentDidMount` and the rest for you. With this our example above can be reduced even further:
 
 ```javascript
 var Status = React.createClass({
