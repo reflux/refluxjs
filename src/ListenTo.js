@@ -1,10 +1,9 @@
-var _ = require('./utils'),
-    ListenerMixin = require('./ListenerMixin');
+var Reflux = require('../src');
 
 module.exports = function(store,callback){
-    return _.extend({
+    return {
         componentDidMount: function(){
             this.listenTo(store,this[callback]||callback);
         }
-    },ListenerMixin);
+    };
 };
