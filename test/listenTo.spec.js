@@ -6,13 +6,13 @@ var assert = require('chai').assert,
 describe('the listenTo shorthand',function(){
     describe("when calling the factory",function(){
         var unsubscriber = sinon.spy(),
-            defaultdata = {foo:"bar"},
+            defaultdata = "DATA",
             listenable = {
                 listen: sinon.stub().returns(unsubscriber),
                 getDefaultData: sinon.stub().returns(defaultdata)
             },
             initial = sinon.spy(),
-            callback = sinon.spy,
+            callback = "CALLBACK",
             result = _.extend({method:callback},listenTo(listenable,"method",initial));
         it("should return object with componentDidMount and componentWillUnmount methods",function(){
             assert.equal(Object.keys(result).length,3);
