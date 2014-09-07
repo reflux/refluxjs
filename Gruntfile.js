@@ -34,14 +34,19 @@ module.exports = function(grunt) {
       files: ['<%= jshint.files %>'],
       tasks: ['build']
     },
-    testling: {
-      files: "test/*.js"
+    karma: {
+      integration: {
+        configFile: 'karma.conf.js',
+        options: {
+            browsers: ['PhantomJS']
+        }
+      }
     }
   });
 
   require('matchdep').filterDev('grunt-*').forEach(grunt.loadNpmTasks);
 
-  grunt.registerTask('test', ['jshint', 'mochaTest', 'testling']);
+  grunt.registerTask('test', ['jshint', 'mochaTest', 'karma']);
 
   grunt.registerTask('build', ['test', 'browserify', 'uglify']);
 
