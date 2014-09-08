@@ -20,10 +20,10 @@ module.exports = {
      * @param {Function} defaultCallback The callback to register as default handler
      */
     listenTo: function(listenable, callback, defaultCallback) {
-        var unsubscribe = listenable.listen(callback, this);
+        var unsubscribe = listenable.listen(this[callback]||callback, this);
         this.subscriptions.push(unsubscribe);
 
-        _.handleDefaultCallback(this, listenable, defaultCallback);
+        _.handleDefaultCallback(this, listenable, this[defaultCallback]||defaultCallback);
     },
 
     componentWillUnmount: function() {

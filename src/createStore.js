@@ -26,9 +26,9 @@ module.exports = function(definition) {
         if (this.hasListener(listenable)) {
             throw Error("Store cannot listen to this listenable because of circular loop");
         }
-        _.handleDefaultCallback(this, listenable, defaultCallback);
+        _.handleDefaultCallback(this, listenable, this[defaultCallback]||defaultCallback);
         this.registered.push(listenable);
-        var unsubscribe = listenable.listen(callback, this);
+        var unsubscribe = listenable.listen(this[callback]||callback, this);
         var self = this;
         return function () {
             unsubscribe();
