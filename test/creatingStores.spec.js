@@ -2,7 +2,8 @@ var chai = require('chai'),
     assert = chai.assert,
     Reflux = require('../src'),
     _ = require('../src/utils'),
-    Q = require('q');
+    Q = require('q'),
+    sinon = require('sinon');
 
 chai.use(require('chai-as-promised'));
 
@@ -187,6 +188,19 @@ describe('Creating stores', function() {
             return assert.eventually.equal(promise, '[...] default data');
         });
 
+    });
+
+    describe("when passing callbacks as strings to listenTooo",function(){
+        var defaultdata = "DEFAULTDATA",
+            listenable = {listen:sinon.spy(),getDefaultData:sinon.stub().returns(defaultdata)},
+            store = Reflux.createStore({cb:"FOO",defcb:sinon.spy()},true);
+        store.listenTo(listenable,"cb","defcb");
+        it("should pass the corresponding method to listenable.listen",function(){
+            assert.equal(listenable.listen.firstCall.args[0],store.cb);
+        });
+        it("should pass the listenable.getDefaultData result to the corresponding defaultdata callback",function(){
+            assert.equal(store.defcb.firstCall.args[0],defaultdata);
+        });
     });
 
 });

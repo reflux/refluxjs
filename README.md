@@ -227,6 +227,29 @@ var Status = React.createClass({
 
 The mixin provides the `listenTo` method for the React component, that works much like the one found in the Reflux's stores, and handles the listeners during mount and unmount for you.
 
+
+### Using Reflux.listenTo
+
+If you're not reliant on any special logic for the `this.listenTo` calls inside `componentDidMount`, you can use a call to `Reflux.listenTo` as a mixin. That will automatically set up the `componentDidMount` and the rest for you. With this our example above can be reduced even further:
+
+```javascript
+var Status = React.createClass({
+    mixins: [Reflux.listenTo(statusStore,"onStatusChange")],
+    onStatusChange: function(status) {
+        this.setState({
+            currentStatus: status
+        });
+    },
+    render: function() {
+        // render specifics
+    }
+});
+```
+
+Note how we can't use `this.onStatusChange` as the second argument to `Reflux.listenTo`, as `this` doesn't point to the instance at this point in time. You can however send in a callback by reference.
+
+You can have multiple calls to `Reflux.ListenTo` in the `mixins` array, and/or combine with using the `ListenerMixin`.
+
 ### Listening to changes in other data stores (aggregate data stores)
 
 A store may listen to another store's change, making it possible to safely chain stores for aggregated data without affecting other parts of the application. A store may listen to other stores using the same `listenTo` function as with actions:
@@ -316,7 +339,7 @@ The `Reflux.all` functionality is similar to Flux's `waitFor()`, but differs in 
 
 ### Sending default data with the listenTo function
 
-The `listenTo` function provided by the `Store` and the `ListenerMixin` has a third parameter that accepts a callback. This callback will be invoked when the listener is registered with whatever the `getDefaultData` is returning.
+The `listenTo` function provided by the `Store` and the `ListenerMixin`, as well as `Reflux.listenTo`, has a third parameter that accepts a callback. This callback will be invoked when the listener is registered with whatever the `getDefaultData` is returning.
 
 ```javascript
 var exampleStore = Reflux.createStore({

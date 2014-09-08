@@ -1,7 +1,8 @@
 var chai = require('chai'),
     assert = chai.assert,
     Reflux = require('../src'),
-    Q = require('q');
+    Q = require('q'),
+    sinon = require('sinon');
 
 chai.use(require('chai-as-promised'));
 
@@ -94,5 +95,17 @@ describe('Managing subscriptions via ListenerMixin', function() {
             return assert.eventually.equal(promise, 'default data');
         });
     });
-
+    
+    describe("when passing callbacks as strings to listenTo",function(){
+        var defaultdata = "DEFAULTDATA",
+            listenable = {listen:sinon.spy(),getDefaultData:sinon.stub().returns(defaultdata)},
+            context = {cb:"FOO",defcb:sinon.spy(),subscriptions:[]};
+        Reflux.ListenerMixin.listenTo.call(context,listenable,"cb","defcb");
+        it("should pass the corresponding method to listenable.listen",function(){
+            assert.equal(listenable.listen.firstCall.args[0],context.cb);
+        });
+        it("should pass the listenable.getDefaultData result to the corresponding defaultdata callback",function(){
+            assert.equal(context.defcb.firstCall.args[0],defaultdata);
+        });
+    });
 });
