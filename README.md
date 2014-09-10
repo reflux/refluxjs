@@ -148,6 +148,43 @@ var statusStore = Reflux.createStore({
 
 In the above example, whenever the action is called, the store's `output` callback will be called with whatever parameters was sent in the action. E.g. if the action is called as `statusUpdate(true)` then the flag argument in `output` function is `true`.
 
+### Registering an object of actions at once on a store
+
+Since it is a very common pattern to listen to all actions from a `createActions` call in a store `init` call, there is a convenient `listenables` property that sets this up for you. Instead of doing this:
+
+```javascript
+var actions = Reflux.createActions(["fireBall","magicMissile"]);
+
+var Store = Reflux.createStore({
+    init: function() {
+        this.listenTo(actions.fireBall,this.fireBall);
+        this.listenTo(actions.magicMissile,this.magicMissile);
+    },
+    fireBall: function(){
+        // whoooosh!
+    },
+    magicMissile: function(){
+        // bzzzzapp!
+    }
+});
+```
+
+...you can simply do this:
+
+```javascript
+var actions = Reflux.createActions(["fireBall","magicMissile"]);
+
+var Store = Reflux.createStore({
+    listenables: actions,
+    fireBall: function(){
+        // whoooosh!
+    },
+    magicMissile: function(){
+        // bzzzzapp!
+    }
+});
+```
+
 ### Listening to changes in data store
 
 In your component, register to listen to changes in your data store like this:
@@ -331,6 +368,8 @@ this.listenTo(exampleStore, onChangeCallback, initialCallback)
 
 // initialCallback will be invoked immediately with "the initial data" as first argument
 ```
+
+Remember the `listenables` shortcut property in `createStore`? In case you use that with other stores, it supports `getDefaultData`. That data is sent to the normal listening callback, or a `this.<listenablename>Default` method if that exists.
 
 ## Colophon
 

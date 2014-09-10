@@ -2,7 +2,8 @@ var chai = require('chai'),
     assert = chai.assert,
     Reflux = require('../src'),
     _ = require('../src/utils'),
-    Q = require('q');
+    Q = require('q'),
+    sinon = require('sinon');
 
 chai.use(require('chai-as-promised'));
 
@@ -187,6 +188,53 @@ describe('Creating stores', function() {
             return assert.eventually.equal(promise, '[...] default data');
         });
 
+    });
+
+    describe("with the listenables property set",function(){
+        var defaultbardata = "DEFAULTBARDATA",
+            defaultbazdata = "DEFAULTBAZDATA",
+            listenables = {
+                foo: {listen:sinon.spy()},
+                bar: {
+                    listen:sinon.spy(),
+                    getDefaultData:sinon.stub().returns(defaultbardata)
+                },
+                baz: {
+                    listen:sinon.spy(),
+                    getDefaultData:sinon.stub().returns(defaultbazdata)
+                }
+            },
+            def = {
+                foo:"methodFOO",
+                bar:sinon.spy(),
+                baz:sinon.spy(),
+                bazDefault:sinon.spy(),
+                listenables:listenables
+            },
+            store = Reflux.createStore(def);
+        it("should listenTo all listenables with the corresponding callbacks",function(){
+            assert.deepEqual(listenables.foo.listen.firstCall.args,[def.foo,store]);
+            assert.deepEqual(listenables.bar.listen.firstCall.args,[def.bar,store]);
+            assert.deepEqual(listenables.baz.listen.firstCall.args,[def.baz,store]);
+        });
+        it("should call main callback if listenable has getDefaultData but listener has no default-specific cb",function(){
+            assert.equal(listenables.bar.getDefaultData.callCount,1);
+            assert.equal(def.bar.firstCall.args[0],defaultbardata);
+        });
+        it("should call default callback if exist and listenable has getDefaultData",function(){
+            assert.equal(listenables.baz.getDefaultData.callCount,1);
+            assert.equal(def.baz.callCount,0);
+            assert.equal(def.bazDefault.firstCall.args[0],defaultbazdata);
+        });
+    });
+
+    it("should not be possible to override API functions with props in the definition",function(){
+        var def = {listenTo:"FOO",listen:"BAR",trigger:"BAZ",hasListener:"BIN"},
+            store = Reflux.createStore(def);
+        assert.isFunction(store.listenTo);
+        assert.isFunction(store.listenTo);
+        assert.isFunction(store.trigger);
+        assert.isFunction(store.hasListener);
     });
 
 });
