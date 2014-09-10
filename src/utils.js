@@ -27,6 +27,7 @@ var isFunction = exports.isFunction = function(value) {
 };
 
 exports.EventEmitter = require('eventemitter3');
+
 exports.nextTick = function(callback) {
     setTimeout(callback, 0);
 };
@@ -46,6 +47,6 @@ exports.handleDefaultCallback = function (listener, listenable, defaultCallback)
     }
 };
 
-var callbackName = exports.callbackName = function(string){
+exports.callbackName = function(string){
     return "on"+string.charAt(0).toUpperCase()+string.slice(1);
 };
