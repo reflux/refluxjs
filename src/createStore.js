@@ -6,8 +6,8 @@ var _ = require('./utils'),
  * Creates an event emitting Data Store
  *
  * @param {Object} definition The data store object definition
+ * @returns {Store} A data store instance
  */
-
 module.exports = function(definition) {
 
     var emitter = new _.EventEmitter();
