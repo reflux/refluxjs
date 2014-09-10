@@ -58,4 +58,4 @@ exports.listenToMany = function(obj){
             this.listenTo(obj[key],localname,this[cbname+"Default"]||this[localname+"Default"]||localname);
         }
     }
-}
+};
