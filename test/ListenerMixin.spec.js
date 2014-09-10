@@ -38,27 +38,6 @@ describe('Managing subscriptions via ListenerMixin', function() {
         return assert.eventually.deepEqual(promise, [1337, 'ninja']);
     });
 
-    describe('when unmounting', function() {
-
-        beforeEach(function() {
-            component.componentWillUnmount();
-        });
-
-        it('the component should unsubscribe', function(done) {
-            var resolved = false;
-            promise.then(function() {
-                resolved = true;
-            });
-
-            action(1337, 'ninja');
-
-            setTimeout(function() {
-                assert.equal(resolved, false);
-                done();
-            }, 200);
-        });
-    });
-
     describe('get default data', function () {
         beforeEach(function() {
             component.componentWillUnmount();
@@ -96,21 +75,22 @@ describe('Managing subscriptions via ListenerMixin', function() {
         });
     });
 
-    describe("the listenToMany function",function(){
-        var listenables = { foo: "FOO", bar: "BAR", baz: "BAZ", missing: "MISSING"},
-            context = {
-                onFoo:"onFoo",
-                bar:"bar",
-                onBaz:"onBaz",
-                onBazDefault:"onBazDefault",
-                listenTo:sinon.spy()
-            };
-        Reflux.ListenerMixin.listenToMany.call(context,listenables);
-        it("should listenTo all listenables with corresponding callbacks",function(){
-            assert.equal(context.listenTo.callCount,3);
-            assert.deepEqual(context.listenTo.firstCall.args,[listenables.foo,"onFoo","onFoo"]);
-            assert.deepEqual(context.listenTo.secondCall.args,[listenables.bar,"bar","bar"]);
-            assert.deepEqual(context.listenTo.thirdCall.args,[listenables.baz,"onBaz","onBazDefault"]);
+    it("should include listenerMethods",function(){
+        for(var m in Reflux.listenerMethods){
+            assert.equal(Reflux.createStore({})[m],Reflux.listenerMethods[m]);
+        }
+    });
+
+    describe('when unmounting', function() {
+        var unsub1 = sinon.spy(),
+            unsub2 = sinon.spy()
+            ctx = {subscriptions:[unsub1,unsub2]};
+        Reflux.ListenerMixin.componentWillUnmount.call(ctx);
+        it('the component should unsubscribe all functors in the subscriptions array', function() {
+            assert.equal(unsub1.callCount,1);
+            assert.equal(unsub1.firstCall.args[0],true);
+            assert.equal(unsub2.callCount,1);
+            assert.equal(unsub2.firstCall.args[0],true);
         });
     });
 

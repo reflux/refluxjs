@@ -1,5 +1,7 @@
-var _ = require('./utils');
-module.exports = {
+var _ = require('./utils'),
+    Reflux = require('../src');
+
+module.exports = _.extend(Reflux.listenerMethods,{
 
     /**
      * Set up the mixin before the initial rendering occurs. Event listeners
@@ -10,37 +12,10 @@ module.exports = {
         this.subscriptions = [];
     },
 
-
-    /**
-     * Subscribes the given callback for action triggered
-     *
-     * @param {Action|Store} listenable An Action or Store that should be
-     *  listened to.
-     * @param {Function} callback The callback to register as event handler
-     * @param {Function} defaultCallback The callback to register as default handler
-     */
-    listenTo: function(listenable, callback, defaultCallback) {
-        var unsubscribe = listenable.listen(callback, this);
-        this.subscriptions.push(unsubscribe);
-
-        _.handleDefaultCallback(this, listenable, defaultCallback);
-    },
-
     componentWillUnmount: function() {
         this.subscriptions.forEach(function(unsubscribe) {
-            unsubscribe();
+            unsubscribe(true);
         });
         this.subscriptions = [];
-    },
-
-    listenToMany: function(obj){
-        for(var key in obj){
-            var cbname = _.callbackName(key),
-                localname = this[cbname] ? cbname : this[key] ? key : undefined;
-            if (localname){
-                this.listenTo(obj[key],localname,this[cbname+"Default"]||this[localname+"Default"]||localname);
-            }
-        }
     }
-
-};
+});

@@ -297,6 +297,27 @@ The mixin provides the `listenTo` method for the React component, that works muc
 
 You also get the same `listenToMany` method as the store has.
 
+
+### Using Reflux.listenTo
+
+If you're not reliant on any special logic for the `this.listenTo` calls inside `componentDidMount`, you can use a call to `Reflux.listenTo` as a mixin. That will automatically set up the `componentDidMount` and the rest for you, as well as add the `ListenerMixin` functionality. With this our example above can be reduced even further:
+
+```javascript
+var Status = React.createClass({
+    mixins: [Reflux.listenTo(statusStore,"onStatusChange")],
+    onStatusChange: function(status) {
+        this.setState({
+            currentStatus: status
+        });
+    },
+    render: function() {
+        // render specifics
+    }
+});
+```
+
+You can have multiple calls to `Reflux.listenTo` in the same `mixins` array.
+
 ### Listening to changes in other data stores (aggregate data stores)
 
 A store may listen to another store's change, making it possible to safely chain stores for aggregated data without affecting other parts of the application. A store may listen to other stores using the same `listenTo` function as with actions:

@@ -252,14 +252,15 @@ describe('Creating stores', function() {
         var def = {listenTo:"FOO",listen:"BAR",trigger:"BAZ",hasListener:"BIN",listenToMany:"BAH"},
             store = Reflux.createStore(def);
         assert.isFunction(store.listenTo);
-        assert.isFunction(store.listenTo);
         assert.isFunction(store.trigger);
         assert.isFunction(store.hasListener);
         assert.isFunction(store.listenToMany);
     });
 
-    it("should expose the listenToMany function from ListenerMixin",function(){
-        assert.equal(Reflux.createStore({}).listenToMany,Reflux.ListenerMixin.listenToMany);
+    it("should include listenerMethods",function(){
+        for(var m in Reflux.listenerMethods){
+            assert.equal(Reflux.createStore({})[m],Reflux.listenerMethods[m]);
+        }
     });
 
 });
