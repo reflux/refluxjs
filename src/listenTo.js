@@ -14,7 +14,7 @@ module.exports = function(listenable,callback,initial){
                     this[m] = Reflux.listenerMethods[m];
                 }
             }
-            this.listenTo(listenable,this[callback]||callback,initial);
+            this.listenTo(listenable,callback,initial);
         },
         componentWillUnmount: Reflux.ListenerMixin.componentWillUnmount
     };
