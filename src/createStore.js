@@ -1,4 +1,5 @@
 var _ = require('./utils'),
+    Reflux = require('../src'),
     eventLabel = "change";
 
 /**
@@ -26,7 +27,7 @@ module.exports = function(definition) {
     }
 
     _.extend(Store.prototype, definition, {
-        listenToMany: _.listenToMany,
+        listenToMany: Reflux.ListenerMixin.listenToMany,
         listenTo: function(listenable, callback, defaultCallback) {
             if (listenable === this) {
                 throw Error("Store is not able to listen to itself");

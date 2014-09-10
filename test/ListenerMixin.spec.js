@@ -2,7 +2,8 @@ var chai = require('chai'),
     assert = chai.assert,
     Reflux = require('../src'),
     Q = require('q'),
-    _ = require('../src/utils');
+    _ = require('../src/utils'),
+    sinon = require('sinon');
 
 chai.use(require('chai-as-promised'));
 
@@ -96,8 +97,22 @@ describe('Managing subscriptions via ListenerMixin', function() {
         });
     });
 
-    it("should expose the listenToMany function from utils",function(){
-        assert.equal(Reflux.ListenerMixin.listenToMany,_.listenToMany);
+    describe("the listenToMany function",function(){
+        var listenables = { foo: "FOO", bar: "BAR", baz: "BAZ", missing: "MISSING"},
+            context = {
+                onFoo:"onFoo",
+                bar:"bar",
+                onBaz:"onBaz",
+                onBazDefault:"onBazDefault",
+                listenTo:sinon.spy()
+            };
+        Reflux.ListenerMixin.listenToMany.call(context,listenables);
+        it("should listenTo all listenables with corresponding callbacks",function(){
+            assert.equal(context.listenTo.callCount,3);
+            assert.deepEqual(context.listenTo.firstCall.args,[listenables.foo,"onFoo","onFoo"]);
+            assert.deepEqual(context.listenTo.secondCall.args,[listenables.bar,"bar","bar"]);
+            assert.deepEqual(context.listenTo.thirdCall.args,[listenables.baz,"onBaz","onBazDefault"]);
+        });
     });
 
 });

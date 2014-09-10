@@ -33,5 +33,14 @@ module.exports = {
         this.subscriptions = [];
     },
 
-    listenToMany: _.listenToMany
+    listenToMany: function(obj){
+        for(var key in obj){
+            var cbname = _.callbackName(key),
+                localname = this[cbname] ? cbname : this[key] ? key : undefined;
+            if (localname){
+                this.listenTo(obj[key],localname,this[cbname+"Default"]||this[localname+"Default"]||localname);
+            }
+        }
+    }
+
 };

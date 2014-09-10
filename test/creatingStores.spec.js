@@ -248,8 +248,6 @@ describe('Creating stores', function() {
         });
     });
 
-
-
     it("should not be possible to override API functions with props in the definition",function(){
         var def = {listenTo:"FOO",listen:"BAR",trigger:"BAZ",hasListener:"BIN",listenToMany:"BAH"},
             store = Reflux.createStore(def);
@@ -260,8 +258,8 @@ describe('Creating stores', function() {
         assert.isFunction(store.listenToMany);
     });
 
-    it("should expose the listenToMany function from utils",function(){
-        assert.equal(Reflux.createStore({}).listenToMany,_.listenToMany);
+    it("should expose the listenToMany function from ListenerMixin",function(){
+        assert.equal(Reflux.createStore({}).listenToMany,Reflux.ListenerMixin.listenToMany);
     });
 
 });
