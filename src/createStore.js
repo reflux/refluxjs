@@ -12,21 +12,21 @@ module.exports = function(definition) {
     var emitter = new _.EventEmitter();
 
     function Store() {
+        var i=0, arr;
         this.registered = [];
         if (this.init && _.isFunction(this.init)) {
             this.init();
         }
-        if (this.listenables && _.isObject(this.listenables)){
-            for(var key in this.listenables){
-                var cbname = _.callbackName(key);
-                if (this[cbname]){
-                    this.listenTo(this.listenables[key],cbname,this[cbname+"Default"]||cbname);
-                }
+        if (this.listenables){
+            arr = [].concat(this.listenables);
+            for(;i < arr.length;i++){
+                this.listenToMany(arr[i]);
             }
         }
     }
 
     _.extend(Store.prototype, definition, {
+        listenToMany: _.listenToMany,
         listenTo: function(listenable, callback, defaultCallback) {
             if (listenable === this) {
                 throw Error("Store is not able to listen to itself");

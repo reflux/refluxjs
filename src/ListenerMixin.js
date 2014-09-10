@@ -31,5 +31,7 @@ module.exports = {
             unsubscribe();
         });
         this.subscriptions = [];
-    }
+    },
+
+    listenToMany: _.listenToMany
 };

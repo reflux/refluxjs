@@ -46,6 +46,16 @@ exports.handleDefaultCallback = function (listener, listenable, defaultCallback)
     }
 };
 
-exports.callbackName = function(string){
+var callbackName = exports.callbackName = function(string){
     return "on"+string.charAt(0).toUpperCase()+string.slice(1);
 };
+
+exports.listenToMany = function(obj){
+    for(var key in obj){
+        var cbname = callbackName(key),
+            localname = this[cbname] ? cbname : this[key] ? key : undefined;
+        if (localname){
+            this.listenTo(obj[key],localname,this[cbname+"Default"]||this[localname+"Default"]||localname);
+        }
+    }
+}

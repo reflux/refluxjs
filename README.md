@@ -148,9 +148,9 @@ var statusStore = Reflux.createStore({
 
 In the above example, whenever the action is called, the store's `output` callback will be called with whatever parameters was sent in the action. E.g. if the action is called as `statusUpdate(true)` then the flag argument in `output` function is `true`.
 
-### Registering an object of actions at once on a store
+#### Listening to many actions at once 
 
-Since it is a very common pattern to listen to all actions from a `createActions` call in a store `init` call, there is a convenient `listenables` property that sets this up for you. Instead of doing this:
+Since it is a very common pattern to listen to all actions from a `createActions` call in a store `init` call, the store has a `listenToMany` function that takes an object of listenables. Instead of doing this:
 
 ```javascript
 var actions = Reflux.createActions(["fireBall","magicMissile"]);
@@ -169,7 +169,29 @@ var Store = Reflux.createStore({
 });
 ```
 
-...you can simply do this:
+...you can do this:
+
+```javascript
+var actions = Reflux.createActions(["fireBall","magicMissile"]);
+
+var Store = Reflux.createStore({
+    init: function() {
+        this.listenToAll(actions);
+    },
+    onFireBall: function(){
+        // whoooosh!
+    },
+    onMagicMissile: function(){
+        // bzzzzapp!
+    }
+});
+```
+
+This will add listeners to all actions `actionName` who have a corresponding `onActionName` (or `actionName` if you prefer) method in the store. Thus if the `actions` object should also have included an `iceShard` spell, that would simply be ignored.
+
+#### The listenables shorthand
+
+To make things more convenient still, if you give an object of actions to the `listenables` property of the store definition, that will be automaticall passed to `listenToMany`. So the above example can be simplified even further:
 
 ```javascript
 var actions = Reflux.createActions(["fireBall","magicMissile"]);
@@ -185,7 +207,14 @@ var Store = Reflux.createStore({
 });
 ```
 
-The `listenables` property will add listeners to all actions `actionName` who have a corresponding `onActionName` method in the store. Thus if the `actions` object should also have included an `iceShard` spell, that would simply be ignored.
+The `listenables` property can also be an array of such objects, in which case all of them will be sent to `listenToMany`. This allows you to do convenient things like this:
+
+```javascript
+var Store = Reflux.createStore({
+    listenables: [require('./darkspells'),require('./lightspells'),{healthChange:require('./healthstore')}],
+    // rest redacted
+});
+```
 
 ### Listening to changes in data store
 
@@ -265,6 +294,8 @@ var Status = React.createClass({
 ```
 
 The mixin provides the `listenTo` method for the React component, that works much like the one found in the Reflux's stores, and handles the listeners during mount and unmount for you.
+
+You also get the same `listenToMany` method as the store has.
 
 ### Listening to changes in other data stores (aggregate data stores)
 

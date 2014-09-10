@@ -1,7 +1,8 @@
 var chai = require('chai'),
     assert = chai.assert,
     Reflux = require('../src'),
-    Q = require('q');
+    Q = require('q'),
+    _ = require('../src/utils');
 
 chai.use(require('chai-as-promised'));
 
@@ -93,6 +94,10 @@ describe('Managing subscriptions via ListenerMixin', function() {
             mountComponent();
             return assert.eventually.equal(promise, 'default data');
         });
+    });
+
+    it("should expose the listenToMany function from utils",function(){
+        assert.equal(Reflux.ListenerMixin.listenToMany,_.listenToMany);
     });
 
 });
