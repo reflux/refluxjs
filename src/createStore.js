@@ -1,12 +1,11 @@
-var _ = require('./utils');
+var _ = require('./utils'),
+    eventLabel = "change";
 
 /**
  * Creates an event emitting Data Store
  *
  * @param {Object} definition The data store object definition
  */
-
-var eventLabel = "change";
 
 module.exports = function(definition) {
 
