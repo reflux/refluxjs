@@ -9,8 +9,6 @@ chai.use(require('chai-as-promised'));
 
 describe('Creating stores', function() {
 
-    var actions = Reflux.createActions(["fireBall","magicMissile"]);
-
     describe('with one store listening to a simple action', function() {
         var action,
             store,
