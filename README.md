@@ -191,7 +191,7 @@ This will add listeners to all actions `actionName` who have a corresponding `on
 
 #### The listenables shorthand
 
-To make things more convenient still, if you give an object of actions to the `listenables` property of the store definition, that will be automaticall passed to `listenToMany`. So the above example can be simplified even further:
+To make things more convenient still, if you give an object of actions to the `listenables` property of the store definition, that will be automatically passed to `listenToMany`. So the above example can be simplified even further:
 
 ```javascript
 var actions = Reflux.createActions(["fireBall","magicMissile"]);
