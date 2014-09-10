@@ -40,8 +40,8 @@ describe('the listenTo shorthand',function(){
             });
         });
         describe("the componentWillUnmount method",function(){
-            it("should be the same as ListenerMixin",function(){
-                assert.equal(assert.equal(result.componentWillUnmount,Reflux.ListenerMixin.componentWillUnmount));
+            it("should be the same as listenerMixin",function(){
+                assert.equal(assert.equal(result.componentWillUnmount,Reflux.listenerMixin.componentWillUnmount));
             });
         });
     });

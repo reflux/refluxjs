@@ -14,7 +14,7 @@ describe("the listenerMethods",function(){
                 onBazDefault:"onBazDefault",
                 listenTo:sinon.spy()
             };
-        Reflux.ListenerMixin.listenToMany.call(context,listenables);
+        Reflux.listenerMixin.listenToMany.call(context,listenables);
         it("should call listenTo for all listenables with corresponding callbacks",function(){
             assert.equal(context.listenTo.callCount,3);
             assert.deepEqual(context.listenTo.firstCall.args,[listenables.foo,"onFoo","onFoo"]);

@@ -274,11 +274,11 @@ var Status = React.createClass({
 #### Convenience mixin for React
 
 You always need to unsubscribe components from observed actions and stores upon
-unmounting. To simplify this process you can use [mixins in React](http://facebook.github.io/react/docs/reusable-components.html#mixins). There is a convenience mixin available at `Reflux.ListenerMixin`.
+unmounting. To simplify this process you can use [mixins in React](http://facebook.github.io/react/docs/reusable-components.html#mixins). There is a convenience mixin available at `Reflux.listenerMixin`.
 
 ```javascript
 var Status = React.createClass({
-    mixins: [Reflux.ListenerMixin],
+    mixins: [Reflux.listenerMixin],
     onStatusChange: function(status) {
         this.setState({
             currentStatus: status
@@ -300,7 +300,7 @@ You also get the same `listenToMany` method as the store has.
 
 ### Using Reflux.listenTo
 
-If you're not reliant on any special logic for the `this.listenTo` calls inside `componentDidMount`, you can use a call to `Reflux.listenTo` as a mixin. That will automatically set up the `componentDidMount` and the rest for you, as well as add the `ListenerMixin` functionality. With this our example above can be reduced even further:
+If you're not reliant on any special logic for the `this.listenTo` calls inside `componentDidMount`, you can use a call to `Reflux.listenTo` as a mixin. That will automatically set up the `componentDidMount` and the rest for you, as well as add the `listenerMixin` functionality. With this our example above can be reduced even further:
 
 ```javascript
 var Status = React.createClass({
@@ -407,7 +407,7 @@ The `Reflux.all` functionality is similar to Flux's `waitFor()`, but differs in 
 
 ### Sending default data with the listenTo function
 
-The `listenTo` function provided by the `Store` and the `ListenerMixin` has a third parameter that accepts a callback. This callback will be invoked when the listener is registered with whatever the `getDefaultData` is returning.
+The `listenTo` function provided by the `Store` and the `listenerMixin` has a third parameter that accepts a callback. This callback will be invoked when the listener is registered with whatever the `getDefaultData` is returning.
 
 ```javascript
 var exampleStore = Reflux.createStore({

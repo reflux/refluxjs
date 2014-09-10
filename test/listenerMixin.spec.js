@@ -6,7 +6,7 @@ var chai = require('chai'),
 
 chai.use(require('chai-as-promised'));
 
-describe('Managing subscriptions via ListenerMixin', function() {
+describe('Managing subscriptions via listenerMixin', function() {
     var component,
         action,
         promise,
@@ -14,7 +14,7 @@ describe('Managing subscriptions via ListenerMixin', function() {
 
     beforeEach(function() {
       // simulate ReactJS component instantiation and mounting
-      component = Object.create(Reflux.ListenerMixin);
+      component = Object.create(Reflux.listenerMixin);
       component.componentWillMount();
 
       action = Reflux.createAction();
@@ -85,7 +85,7 @@ describe('Managing subscriptions via ListenerMixin', function() {
         var unsub1 = sinon.spy(),
             unsub2 = sinon.spy(),
             ctx = {subscriptions:[unsub1,unsub2]};
-        Reflux.ListenerMixin.componentWillUnmount.call(ctx);
+        Reflux.listenerMixin.componentWillUnmount.call(ctx);
         it('the component should unsubscribe all functors in the subscriptions array', function() {
             assert.equal(unsub1.callCount,1);
             assert.equal(unsub1.firstCall.args[0],true);

@@ -16,6 +16,6 @@ module.exports = function(listenable,callback,initial){
             }
             this.listenTo(listenable,callback,initial);
         },
-        componentWillUnmount: Reflux.ListenerMixin.componentWillUnmount
+        componentWillUnmount: Reflux.listenerMixin.componentWillUnmount
     };
 };
