@@ -15,7 +15,7 @@ module.exports = {
     hasListener: function(listenable) {
         var i = 0,
             listener;
-        for (;i < this.subscriptions.length; ++i) {
+        for (;i < (this.subscriptions||[]).length; ++i) {
             listener = this.subscriptions[i];
             if (listener === listenable || listener.hasListener && listener.hasListener(listenable)) {
                 return true;

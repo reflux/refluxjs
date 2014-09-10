@@ -18,9 +18,6 @@ module.exports = function(listenable,callback,initial){
          * and then make the call to `listenTo` with the arguments provided to the factory function
          */
         componentDidMount: function() {
-            if (!this.subscriptions){
-                this.subscriptions = [];
-            }
             for(var m in Reflux.listenerMethods){
                 if (this[m] !== Reflux.listenerMethods[m]){
                     if (this[m]){

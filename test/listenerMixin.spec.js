@@ -15,7 +15,7 @@ describe('Managing subscriptions via listenerMixin', function() {
     beforeEach(function() {
       // simulate ReactJS component instantiation and mounting
       component = Object.create(Reflux.listenerMixin);
-      component.componentWillMount();
+      delete component.subscriptions;
 
       action = Reflux.createAction();
 
@@ -43,7 +43,7 @@ describe('Managing subscriptions via listenerMixin', function() {
             component.componentWillUnmount();
         });
         function mountComponent() {
-            component.componentWillMount();
+            delete component.subscriptions;
             promise = Q.Promise(function(resolve) {
                 var setData = function () {
                     resolve(Array.prototype.slice.call(arguments, 0));
