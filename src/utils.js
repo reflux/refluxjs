@@ -45,3 +45,7 @@ exports.handleDefaultCallback = function (listener, listenable, defaultCallback)
         }
     }
 };
+
+exports.callbackName = function(string){
+    return "on"+string.charAt(0).toUpperCase()+string.slice(1);
+};

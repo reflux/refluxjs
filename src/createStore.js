@@ -18,8 +18,9 @@ module.exports = function(definition) {
         }
         if (this.listenables && _.isObject(this.listenables)){
             for(var key in this.listenables){
-                if (this[key]){
-                    this.listenTo(this.listenables[key],key,this[key+"Default"]||key);
+                var cbname = _.callbackName(key);
+                if (this[cbname]){
+                    this.listenTo(this.listenables[key],cbname,this[cbname+"Default"]||cbname);
                 }
             }
         }

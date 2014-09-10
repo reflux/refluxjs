@@ -208,29 +208,29 @@ describe('Creating stores', function() {
                 }
             },
             def = {
-                foo:"methodFOO",
-                bar:sinon.spy(),
-                baz:sinon.spy(),
-                bazDefault:sinon.spy(),
+                onFoo:"methodFOO",
+                onBar:sinon.spy(),
+                onBaz:sinon.spy(),
+                onBazDefault:sinon.spy(),
                 listenables:listenables
             },
             store = Reflux.createStore(def);
         it("should listenTo all listenables with the corresponding callbacks",function(){
-            assert.deepEqual(listenables.foo.listen.firstCall.args,[def.foo,store]);
-            assert.deepEqual(listenables.bar.listen.firstCall.args,[def.bar,store]);
-            assert.deepEqual(listenables.baz.listen.firstCall.args,[def.baz,store]);
+            assert.deepEqual(listenables.foo.listen.firstCall.args,[def.onFoo,store]);
+            assert.deepEqual(listenables.bar.listen.firstCall.args,[def.onBar,store]);
+            assert.deepEqual(listenables.baz.listen.firstCall.args,[def.onBaz,store]);
         });
         it("should not try to listen to actions without corresponding props in the store",function(){
             assert.equal(listenables.missing.listen.callCount,0);
         });
         it("should call main callback if listenable has getDefaultData but listener has no default-specific cb",function(){
             assert.equal(listenables.bar.getDefaultData.callCount,1);
-            assert.equal(def.bar.firstCall.args[0],defaultbardata);
+            assert.equal(def.onBar.firstCall.args[0],defaultbardata);
         });
         it("should call default callback if exist and listenable has getDefaultData",function(){
             assert.equal(listenables.baz.getDefaultData.callCount,1);
-            assert.equal(def.baz.callCount,0);
-            assert.equal(def.bazDefault.firstCall.args[0],defaultbazdata);
+            assert.equal(def.onBaz.callCount,0);
+            assert.equal(def.onBazDefault.firstCall.args[0],defaultbazdata);
         });
     });
 

@@ -160,10 +160,10 @@ var Store = Reflux.createStore({
         this.listenTo(actions.fireBall,this.fireBall);
         this.listenTo(actions.magicMissile,this.magicMissile);
     },
-    fireBall: function(){
+    onFireBall: function(){
         // whoooosh!
     },
-    magicMissile: function(){
+    onMagicMissile: function(){
         // bzzzzapp!
     }
 });
@@ -176,14 +176,16 @@ var actions = Reflux.createActions(["fireBall","magicMissile"]);
 
 var Store = Reflux.createStore({
     listenables: actions,
-    fireBall: function(){
+    onFireBall: function(){
         // whoooosh!
     },
-    magicMissile: function(){
+    onMagicMissile: function(){
         // bzzzzapp!
     }
 });
 ```
+
+The `listenables` property will add listeners to all actions `actionName` who have a corresponding `onActionName` method in the store. Thus if the `actions` object should also have included an `iceShard` spell, that would simply be ignored.
 
 ### Listening to changes in data store
 
@@ -369,7 +371,7 @@ this.listenTo(exampleStore, onChangeCallback, initialCallback)
 // initialCallback will be invoked immediately with "the initial data" as first argument
 ```
 
-Remember the `listenables` shortcut property in `createStore`? In case you use that with other stores, it supports `getDefaultData`. That data is sent to the normal listening callback, or a `this.<listenablename>Default` method if that exists.
+Remember the `listenables` shortcut property in `createStore`? In case you use that with other stores, it supports `getDefaultData`. That data is sent to the normal listening callback, or a `this.on<Listenablename>Default` method if that exists.
 
 ## Colophon
 
