@@ -10,7 +10,7 @@ var eventLabel = "change";
 
 module.exports = function(definition) {
 
-    var emitter = new _.EventEmitter;
+    var emitter = new _.EventEmitter();
 
     function Store() {
         this.registered = [];
