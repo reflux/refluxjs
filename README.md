@@ -402,7 +402,7 @@ this.listenTo(exampleStore, onChangeCallback, initialCallback)
 // initialCallback will be invoked immediately with "the initial data" as first argument
 ```
 
-Remember the `listenables` shortcut property in `createStore`? In case you use that with other stores, it supports `getDefaultData`. That data is sent to the normal listening callback, or a `this.on<Listenablename>Default` method if that exists.
+Remember the `listenToMany` method? In case you use that with other stores, it supports `getDefaultData`. That data is sent to the normal listening callback, or a `this.on<Listenablename>Default` method if that exists.
 
 ## Colophon
 
