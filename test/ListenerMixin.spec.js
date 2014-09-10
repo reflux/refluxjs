@@ -83,7 +83,7 @@ describe('Managing subscriptions via ListenerMixin', function() {
 
     describe('when unmounting', function() {
         var unsub1 = sinon.spy(),
-            unsub2 = sinon.spy()
+            unsub2 = sinon.spy(),
             ctx = {subscriptions:[unsub1,unsub2]};
         Reflux.ListenerMixin.componentWillUnmount.call(ctx);
         it('the component should unsubscribe all functors in the subscriptions array', function() {

@@ -57,7 +57,9 @@ module.exports = {
         var self = this;
         return function (dontupdatearr) {
             unsubscribe();
-            if (!dontupdatearr) self.subscriptions.splice(self.subscriptions.indexOf(listenable), 1);
+            if (!dontupdatearr) {
+            	self.subscriptions.splice(self.subscriptions.indexOf(listenable), 1);
+            }
         };
     }
 };

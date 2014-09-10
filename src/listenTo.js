@@ -1,5 +1,4 @@
-var _ = require('./utils'),
-    Reflux = require('../src');
+var Reflux = require('../src');
 
 module.exports = function(listenable,callback,initial){
     return {
