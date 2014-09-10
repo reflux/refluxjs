@@ -202,6 +202,9 @@ describe('Creating stores', function() {
                 baz: {
                     listen:sinon.spy(),
                     getDefaultData:sinon.stub().returns(defaultbazdata)
+                },
+                missing: {
+                    listen:sinon.spy()
                 }
             },
             def = {
@@ -216,6 +219,9 @@ describe('Creating stores', function() {
             assert.deepEqual(listenables.foo.listen.firstCall.args,[def.foo,store]);
             assert.deepEqual(listenables.bar.listen.firstCall.args,[def.bar,store]);
             assert.deepEqual(listenables.baz.listen.firstCall.args,[def.baz,store]);
+        });
+        it("should not try to listen to actions without corresponding props in the store",function(){
+            assert.equal(listenables.missing.listen.callCount,0);
         });
         it("should call main callback if listenable has getDefaultData but listener has no default-specific cb",function(){
             assert.equal(listenables.bar.getDefaultData.callCount,1);
