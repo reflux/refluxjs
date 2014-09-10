@@ -48,13 +48,13 @@ module.exports = {
      */
     validateListening: function(listenable){
     	if (listenable === this) {
-            return "Store is not able to listen to itself";
+            return "Listener is not able to listen to itself";
         }
         if (!_.isFunction(listenable.listen)) {
             return listenable + " is missing a listen method";
         }
         if (this.hasListener(listenable)) {
-            return "Store cannot listen to this listenable because of circular loop";
+            return "Listener cannot listen to this listenable because of circular loop";
         }
     },
 
