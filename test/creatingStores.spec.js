@@ -263,4 +263,9 @@ describe('Creating stores', function() {
         }
     });
 
+    it("should not mix in its own methods into listenerMethods",function(){
+        assert.isUndefined(Reflux.listenerMethods.listen);
+        assert.isUndefined(Reflux.listenerMethods.trigger);
+    });
+
 });

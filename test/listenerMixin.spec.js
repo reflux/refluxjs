@@ -75,13 +75,18 @@ describe('Managing subscriptions via listenerMixin', function() {
     });
 
     it("should include listenerMethods",function(){
+        var s = Reflux.createStore({});
         for(var m in Reflux.listenerMethods){
-            assert.equal(Reflux.createStore({})[m],Reflux.listenerMethods[m]);
+            assert.equal(s[m],Reflux.listenerMethods[m]);
         }
     });
 
     it("should use listenerMethods.stopListeningToAll as componentWillUnmount",function(){
-        assert.equal(Reflux.listenerMixin.componentWillUnmount,Reflux.listenerMethods.componentWillUnmount);
+        assert.equal(Reflux.listenerMixin.componentWillUnmount,Reflux.listenerMethods.stopListeningToAll);
+    });
+
+    it("should not mix in its own methods into listenerMethods",function(){
+        assert.isUndefined(Reflux.listenerMethods.componentWillUnmount);
     });
 
 });
