@@ -33,7 +33,7 @@ describe("the publisher methods",function(){
 				result();
 				assert.deepEqual(emitter.removeListener.firstCall.args,[context.eventLabel,emitter.addListener.firstCall.args[1]]);
 			});
-		})
+		});
 	});
 	describe("the trigger method",function(){
 		describe("when shouldEmit returns true",function(){
