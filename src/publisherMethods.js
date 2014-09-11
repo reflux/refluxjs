@@ -7,14 +7,14 @@ var _ = require('./utils');
 module.exports = {	
 
 	/**
-     * Hook used by the action functor that is invoked before emitting
+     * Hook used by the publisher that is invoked before emitting
      * and before `shouldEmit`. The arguments are the ones that the action
      * is invoked with.
      */
     preEmit: function() {},
 
     /**
-     * Hook used by the action functor after `preEmit` to determine if the
+     * Hook used by the publisher after `preEmit` to determine if the
      * event should be emitted with given arguments. This may be overridden
      * in your application, default implementation always returns true.
      *
