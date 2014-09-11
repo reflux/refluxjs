@@ -1,8 +1,16 @@
+exports.listenerMethods = require('./listenerMethods');
+
+exports.publisherMethods = require('./publisherMethods');
+
 exports.createAction = require('./createAction');
 
 exports.createStore = require('./createStore');
 
-exports.ListenerMixin = require('./ListenerMixin');
+exports.listenerMixin = require('./listenerMixin');
+
+exports.listenTo = require('./listenTo');
+
+exports.listenToMany = require('./listenToMany');
 
 exports.all = require('./all');
 
