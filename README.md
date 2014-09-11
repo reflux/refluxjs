@@ -120,6 +120,15 @@ Actions.statusUpdate(1);
 // Should output: 1
 ```
 
+You can also set the hooks by sending them in a definition object as you create the action:
+
+```javascript
+var action = Reflux.createAction({
+    preEmit: function(){...},
+    shouldEmit: function(){...}
+});
+```
+
 ### Creating data stores
 
 Create a data store much like ReactJS's own `React.createClass` by passing a definition object to `Reflux.createStore`. You may set up all action listeners in the `init` function and register them by calling the store's own `listenTo` function.
@@ -147,6 +156,76 @@ var statusStore = Reflux.createStore({
 ```
 
 In the above example, whenever the action is called, the store's `output` callback will be called with whatever parameters was sent in the action. E.g. if the action is called as `statusUpdate(true)` then the flag argument in `output` function is `true`.
+
+A data store is a publisher much like the actions, so they too have the `preEmit` and `shouldEmit` hooks.
+
+#### Listening to many actions at once 
+
+Since it is a very common pattern to listen to all actions from a `createActions` call in a store `init` call, the store has a `listenToMany` function that takes an object of listenables. Instead of doing this:
+
+```javascript
+var actions = Reflux.createActions(["fireBall","magicMissile"]);
+
+var Store = Reflux.createStore({
+    init: function() {
+        this.listenTo(actions.fireBall,this.fireBall);
+        this.listenTo(actions.magicMissile,this.magicMissile);
+    },
+    onFireBall: function(){
+        // whoooosh!
+    },
+    onMagicMissile: function(){
+        // bzzzzapp!
+    }
+});
+```
+
+...you can do this:
+
+```javascript
+var actions = Reflux.createActions(["fireBall","magicMissile"]);
+
+var Store = Reflux.createStore({
+    init: function() {
+        this.listenToAll(actions);
+    },
+    onFireBall: function(){
+        // whoooosh!
+    },
+    onMagicMissile: function(){
+        // bzzzzapp!
+    }
+});
+```
+
+This will add listeners to all actions `actionName` who have a corresponding `onActionName` (or `actionName` if you prefer) method in the store. Thus if the `actions` object should also have included an `iceShard` spell, that would simply be ignored.
+
+#### The listenables shorthand
+
+To make things more convenient still, if you give an object of actions to the `listenables` property of the store definition, that will be automatically passed to `listenToMany`. So the above example can be simplified even further:
+
+```javascript
+var actions = Reflux.createActions(["fireBall","magicMissile"]);
+
+var Store = Reflux.createStore({
+    listenables: actions,
+    onFireBall: function(){
+        // whoooosh!
+    },
+    onMagicMissile: function(){
+        // bzzzzapp!
+    }
+});
+```
+
+The `listenables` property can also be an array of such objects, in which case all of them will be sent to `listenToMany`. This allows you to do convenient things like this:
+
+```javascript
+var Store = Reflux.createStore({
+    listenables: [require('./darkspells'),require('./lightspells'),{healthChange:require('./healthstore')}],
+    // rest redacted
+});
+```
 
 ### Listening to changes in data store
 
@@ -206,11 +285,11 @@ var Status = React.createClass({
 #### Convenience mixin for React
 
 You always need to unsubscribe components from observed actions and stores upon
-unmounting. To simplify this process you can use [mixins in React](http://facebook.github.io/react/docs/reusable-components.html#mixins). There is a convenience mixin available at `Reflux.ListenerMixin`.
+unmounting. To simplify this process you can use [mixins in React](http://facebook.github.io/react/docs/reusable-components.html#mixins). There is a convenience mixin available at `Reflux.listenerMixin`.
 
 ```javascript
 var Status = React.createClass({
-    mixins: [Reflux.ListenerMixin],
+    mixins: [Reflux.listenerMixin],
     onStatusChange: function(status) {
         this.setState({
             currentStatus: status
@@ -226,6 +305,29 @@ var Status = React.createClass({
 ```
 
 The mixin provides the `listenTo` method for the React component, that works much like the one found in the Reflux's stores, and handles the listeners during mount and unmount for you.
+
+You also get the same `listenToMany` method as the store has.
+
+
+### Using Reflux.listenTo
+
+If you're not reliant on any special logic for the `this.listenTo` calls inside `componentDidMount`, you can use a call to `Reflux.listenTo` as a mixin. That will automatically set up the `componentDidMount` and the rest for you, as well as add the `listenerMixin` functionality. With this our example above can be reduced even further:
+
+```javascript
+var Status = React.createClass({
+    mixins: [Reflux.listenTo(statusStore,"onStatusChange")],
+    onStatusChange: function(status) {
+        this.setState({
+            currentStatus: status
+        });
+    },
+    render: function() {
+        // render specifics
+    }
+});
+```
+
+You can have multiple calls to `Reflux.listenTo` in the same `mixins` array.
 
 ### Listening to changes in other data stores (aggregate data stores)
 
@@ -316,7 +418,7 @@ The `Reflux.all` functionality is similar to Flux's `waitFor()`, but differs in 
 
 ### Sending default data with the listenTo function
 
-The `listenTo` function provided by the `Store` and the `ListenerMixin` has a third parameter that accepts a callback. This callback will be invoked when the listener is registered with whatever the `getDefaultData` is returning.
+The `listenTo` function provided by the `Store` and the `listenerMixin` has a third parameter that accepts a callback. This callback will be invoked when the listener is registered with whatever the `getDefaultData` is returning.
 
 ```javascript
 var exampleStore = Reflux.createStore({
@@ -331,6 +433,8 @@ this.listenTo(exampleStore, onChangeCallback, initialCallback)
 
 // initialCallback will be invoked immediately with "the initial data" as first argument
 ```
+
+Remember the `listenToMany` method? In case you use that with other stores, it supports `getDefaultData`. That data is sent to the normal listening callback, or a `this.on<Listenablename>Default` method if that exists.
 
 ## Colophon
 
