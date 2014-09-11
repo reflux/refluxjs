@@ -6,7 +6,7 @@ exports.createAction = require('./createAction');
 
 exports.createStore = require('./createStore');
 
-exports.listenerMixin = require('./listenerMixin');
+exports.listenerMixin = exports.ListenerMixin = require('./listenerMixin');
 
 exports.listenTo = require('./listenTo');
 
