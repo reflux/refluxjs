@@ -16,7 +16,7 @@ module.exports = {
         var i = 0,
             listener;
         for (;i < (this.subscriptions||[]).length; ++i) {
-            listener = this.subscriptions[i];
+            listener = this.subscriptions[i].listenable;
             if (listener === listenable || listener.hasListener && listener.hasListener(listenable)) {
                 return true;
             }
@@ -65,23 +65,29 @@ module.exports = {
      *  listened to.
      * @param {Function|String} callback The callback to register as event handler
      * @param {Function|String} defaultCallback The callback to register as default handler
-     * @returns {Function} A function which desubscribes the callback
+     * @returns {Object} A subscription obj where `stop` is an unsub function and `listenable` is the object being listened to
      */
     listenTo: function(listenable, callback, defaultCallback) {
-    	var err = this.validateListening(listenable);
+    	var err = this.validateListening(listenable),
+            self = this;
     	if (err){
     		throw Error(err);
     	}
         _.handleDefaultCallback(this, listenable, (defaultCallback && this[defaultCallback]) || defaultCallback);
         if (!this.subscriptions) { this.subscriptions = [];}
-        this.subscriptions.push(listenable);
-        var unsubscribe = listenable.listen(this[callback]||callback, this);
-        var self = this;
-        return function (dontupdatearr) {
-            unsubscribe();
-            if (!dontupdatearr) {
-            	self.subscriptions.splice(self.subscriptions.indexOf(listenable), 1);
-            }
-        };
+        var desub = listenable.listen(this[callback]||callback, this),
+            unsubscriber = function (dontupdatearr) {
+                desub();
+                if (!dontupdatearr) {
+                    self.subscriptions.splice(self.subscriptions.indexOf(listenable), 1);
+                }
+            },
+            subscriptionobj = {
+                stop: unsubscriber,
+                listenable: listenable
+            };
+        this.subscriptions.push(subscriptionobj);
+        return subscriptionobj;
     }
 };
+

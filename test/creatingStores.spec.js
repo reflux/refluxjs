@@ -52,7 +52,7 @@ describe('Creating stores', function() {
         describe('and with listener unsubscribed', function() {
 
             beforeEach(function() {
-                unsubCallback();
+                unsubCallback.stop();
             });
 
             it('shouldn\'t have been called when action is called', function(done) {

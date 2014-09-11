@@ -82,15 +82,18 @@ describe('Managing subscriptions via listenerMixin', function() {
     });
 
     describe('when unmounting', function() {
-        var unsub1 = sinon.spy(),
-            unsub2 = sinon.spy(),
+        var unsub1 = {stop:sinon.spy()},
+            unsub2 = {stop:sinon.spy()},
             ctx = {subscriptions:[unsub1,unsub2]};
         Reflux.listenerMixin.componentWillUnmount.call(ctx);
-        it('the component should unsubscribe all functors in the subscriptions array', function() {
-            assert.equal(unsub1.callCount,1);
-            assert.equal(unsub1.firstCall.args[0],true);
-            assert.equal(unsub2.callCount,1);
-            assert.equal(unsub2.firstCall.args[0],true);
+        it('should call `stop` on all subscription objects in the subscriptions array', function() {
+            assert.equal(unsub1.stop.callCount,1);
+            assert.equal(unsub1.stop.firstCall.args[0],true);
+            assert.equal(unsub2.stop.callCount,1);
+            assert.equal(unsub2.stop.firstCall.args[0],true);
+        });
+        it("should end up with an empty subscriptions array",function(){
+            assert.deepEqual(ctx.subscriptions,[]);
         });
     });
 
