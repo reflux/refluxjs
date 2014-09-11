@@ -257,6 +257,13 @@ describe('Creating stores', function() {
         assert.isFunction(store.listenToMany);
     });
 
+    it("should be possible to overwrite preEmit and shouldEmit",function(){
+        var def = {preEmit:"FOO",shouldEmit:"BAR"},
+            store = Reflux.createStore(def);
+        assert.equal(store.preEmit,def.preEmit);
+        assert.equal(store.shouldEmit,def.shouldEmit);
+    });
+
     it("should include listenerMethods",function(){
         for(var m in Reflux.listenerMethods){
             assert.equal(Reflux.createStore({})[m],Reflux.listenerMethods[m]);

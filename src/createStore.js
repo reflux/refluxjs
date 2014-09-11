@@ -1,6 +1,5 @@
 var _ = require('./utils'),
-    Reflux = require('../src'),
-    eventLabel = "change";
+    Reflux = require('../src');
 
 /**
  * Creates an event emitting Data Store
@@ -10,11 +9,13 @@ var _ = require('./utils'),
  */
 module.exports = function(definition) {
 
-    var emitter = new _.EventEmitter();
+    definition = definition || {};
 
     function Store() {
         var i=0, arr;
         this.subscriptions = [];
+        this.emitter = new _.EventEmitter();
+        this.eventLabel = "change";
         if (this.init && _.isFunction(this.init)) {
             this.init();
         }
@@ -26,20 +27,9 @@ module.exports = function(definition) {
         }
     }
 
-    _.extend(Store.prototype, definition, Reflux.listenerMethods, {
-        listen: function(callback, bindContext) {
-            var eventHandler = function(args) {
-                callback.apply(bindContext, args);
-            };
-            eventHandler.l = callback;
-            emitter.addListener(eventLabel, eventHandler);
-            return function() {
-                emitter.removeListener(eventLabel, eventHandler);
-            };
-        },
-        trigger: function() {
-            emitter.emit(eventLabel, arguments);
-        },
+    _.extend(Store.prototype, definition, Reflux.listenerMethods, Reflux.publisherMethods, {
+        preEmit: definition.preEmit || Reflux.publisherMethods.preEmit,
+        shouldEmit: definition.shouldEmit || Reflux.publisherMethods.shouldEmit
     });
 
     return new Store();

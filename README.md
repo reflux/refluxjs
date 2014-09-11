@@ -120,6 +120,15 @@ Actions.statusUpdate(1);
 // Should output: 1
 ```
 
+You can also set the hooks by sending them in a definition object as you create the action:
+
+```javascript
+var action = Reflux.createAction({
+    preEmit: function(){...},
+    shouldEmit: function(){...}
+});
+```
+
 ### Creating data stores
 
 Create a data store much like ReactJS's own `React.createClass` by passing a definition object to `Reflux.createStore`. You may set up all action listeners in the `init` function and register them by calling the store's own `listenTo` function.
@@ -147,6 +156,8 @@ var statusStore = Reflux.createStore({
 ```
 
 In the above example, whenever the action is called, the store's `output` callback will be called with whatever parameters was sent in the action. E.g. if the action is called as `statusUpdate(true)` then the flag argument in `output` function is `true`.
+
+A data store is a publisher much like the actions, so they too have the `preEmit` and `shouldEmit` hooks.
 
 #### Listening to many actions at once 
 

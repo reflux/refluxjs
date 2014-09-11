@@ -1,5 +1,7 @@
 exports.listenerMethods = require('./listenerMethods');
 
+exports.publisherMethods = require('./publisherMethods');
+
 exports.createAction = require('./createAction');
 
 exports.createStore = require('./createStore');
