@@ -37,21 +37,22 @@ describe("the listenerMethods",function(){
         });
         describe("when setting a subscription",function(){
             var unsub = sinon.spy(),
-                defaultdata = "DEFAULTDATA",
-                listenable = {listen:sinon.stub().returns(unsub),getDefaultData:sinon.stub().returns(defaultdata)},
+                listenable = {listen:sinon.stub().returns(unsub)},
                 callback = "CALLBACK",
-                context = {validateListening: function(){},def:sinon.spy()},
-                subobj = listenTo.call(context,listenable,callback,"def");
+                defaultcallback = "DEFCALL",
+                context = {
+                    validateListening: function(){},
+                    fetchDefaultData: sinon.stub()
+                },
+                subobj = listenTo.call(context,listenable,callback,defaultcallback);
             it("adds the returned subscription object to a new array if none was there",function(){
                 assert.equal(subobj,context.subscriptions[0]);
             });
             it("calls the listen method on the listener",function(){
                 assert.deepEqual(listenable.listen.firstCall.args,[callback,context]);
             });
-            it("passes default data correctly",function(){
-                assert.equal(listenable.getDefaultData.callCount,1);
-                assert.equal(context.def.callCount,1);
-                assert.equal(context.def.firstCall.args[0],defaultdata);
+            it("tries to get default data correctly",function(){
+                assert.deepEqual(context.fetchDefaultData.firstCall.args,[listenable,defaultcallback]);
             });
             describe("the returned subscription object",function(){
                 it("contains the listenable and a stop function",function(){
@@ -73,7 +74,10 @@ describe("the listenerMethods",function(){
                 });
             });
             describe("when cancelling a subscription without passing true",function(){
-                var context = {validateListening:function(){}},
+                var context = {
+                        validateListening:function(){},
+                        fetchDefaultData:function(){}
+                    },
                     unsub = sinon.spy(),
                     listenable = {listen:sinon.stub().returns(unsub)};
                 listenTo.call(context,listenable).stop();
@@ -86,7 +90,24 @@ describe("the listenerMethods",function(){
             });
         });
     });
-
+    describe('the fetchDefaultData method',function(){
+        describe('when called with method name and publisher with getDefaultData method',function(){
+            var defaultdata = "DEFAULTDATA",
+                listenable = {
+                    getDefaultData: sinon.stub().returns(defaultdata)
+                },
+                context = {
+                    defcb: sinon.spy()
+                };
+            listenerMethods.fetchDefaultData.call(context,listenable,"defcb");
+            it("calls getDefaultData on the publisher",function(){
+                assert.equal(listenable.getDefaultData.callCount,1);
+            });
+            it("passes the returned data to the named method",function(){
+                assert.deepEqual(context.defcb.firstCall.args,[defaultdata]);
+            });
+        });
+    });
     describe('the stopListeningToAll method', function() {
         var unsub1 = {stop:sinon.spy()},
             unsub2 = {stop:sinon.spy()},

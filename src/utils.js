@@ -32,21 +32,6 @@ exports.nextTick = function(callback) {
     setTimeout(callback, 0);
 };
 
-exports.handleDefaultCallback = function (listener, listenable, defaultCallback) {
-    if (defaultCallback && isFunction(defaultCallback)) {
-        if (listenable.getDefaultData && isFunction(listenable.getDefaultData)) {
-            data = listenable.getDefaultData();
-            if (data && data.then && isFunction(data.then)) {
-                data.then(function() {
-                    defaultCallback.apply(listener, arguments);
-                });
-            } else {
-                defaultCallback.call(listener, data);
-            }
-        }
-    }
-};
-
 exports.callbackName = function(string){
     return "on"+string.charAt(0).toUpperCase()+string.slice(1);
 };

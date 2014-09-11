@@ -73,7 +73,7 @@ module.exports = {
     	if (err){
     		throw Error(err);
     	}
-        _.handleDefaultCallback(this, listenable, (defaultCallback && this[defaultCallback]) || defaultCallback);
+        this.fetchDefaultData(listenable, defaultCallback);
         if (!this.subscriptions) { this.subscriptions = [];}
         var desub = listenable.listen(this[callback]||callback, this),
             unsubscriber = function (dontupdatearr) {
@@ -116,6 +116,28 @@ module.exports = {
             subscription.stop(true);
         });
         this.subscriptions = [];
+    },
+
+    /**
+     * Used in `listenTo`. Fetches initial data from a publisher if it has a `getDefaultData` method.
+     * @param {Action|Store} listenable The publisher we want to get default data from
+     * @param {Function|String} defaultCallback The method to receive the data
+     */
+    fetchDefaultData: function (listenable, defaultCallback) {
+        defaultCallback = (defaultCallback && this[defaultCallback]) || defaultCallback;
+        var me = this;
+        if (defaultCallback && _.isFunction(defaultCallback)) {
+            if (listenable.getDefaultData && _.isFunction(listenable.getDefaultData)) {
+                data = listenable.getDefaultData();
+                if (data && data.then && _.isFunction(data.then)) {
+                    data.then(function() {
+                        defaultCallback.apply(me, arguments);
+                    });
+                } else {
+                    defaultCallback.call(this, data);
+                }
+            }
+        }
     }
-};
+}
 

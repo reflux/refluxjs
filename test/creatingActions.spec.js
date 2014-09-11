@@ -59,11 +59,15 @@ describe('Creating action', function() {
         });
 
         describe('when adding shouldEmit hook',function(){
+            var context = {
+                validateListening:function(){},
+                fetchDefaultData:function(){}
+            };
             describe("when hook returns true",function(){
                 var shouldEmit = sinon.stub().returns(true),
                     action = Reflux.createAction({shouldEmit:shouldEmit}),
                     callback = sinon.spy();
-                Reflux.listenerMethods.listenTo.call({validateListening:function(){}},action,callback);
+                Reflux.listenerMethods.listenTo.call(context,action,callback);
                 action(1337,'test');
                 it('should receive arguments from action functor', function() {
                     assert.deepEqual(shouldEmit.firstCall.args,[1337,'test']);
@@ -77,7 +81,7 @@ describe('Creating action', function() {
                 var shouldEmit = sinon.stub().returns(false),
                     action = Reflux.createAction({shouldEmit:shouldEmit}),
                     callback = sinon.spy();
-                Reflux.listenerMethods.listenTo.call({validateListening:function(){}},action,callback);
+                Reflux.listenerMethods.listenTo.call(context,action,callback);
                 action(1337,'test');
                 it('should receive arguments from action functor', function() {
                     assert.deepEqual(shouldEmit.firstCall.args,[1337,'test']);
