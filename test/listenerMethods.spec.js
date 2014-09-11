@@ -39,7 +39,6 @@ describe("the listenerMethods",function(){
             var unsub = sinon.spy(),
                 defaultdata = "DEFAULTDATA",
                 listenable = {listen:sinon.stub().returns(unsub),getDefaultData:sinon.stub().returns(defaultdata)},
-                subscription = {stop:unsub,listenable:listenable},
                 callback = "CALLBACK",
                 context = {validateListening: function(){},def:sinon.spy()},
                 subobj = listenTo.call(context,listenable,callback,"def");
