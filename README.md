@@ -159,7 +159,7 @@ In the above example, whenever the action is called, the store's `output` callba
 
 A data store is a publisher much like the actions, so they too have the `preEmit` and `shouldEmit` hooks.
 
-#### Listening to many actions at once 
+#### Listening to many actions at once
 
 Since it is a very common pattern to listen to all actions from a `createActions` call in a store `init` call, the store has a `listenToMany` function that takes an object of listenables. Instead of doing this:
 
@@ -435,6 +435,35 @@ this.listenTo(exampleStore, onChangeCallback, initialCallback)
 ```
 
 Remember the `listenToMany` method? In case you use that with other stores, it supports `getDefaultData`. That data is sent to the normal listening callback, or a `this.on<Listenablename>Default` method if that exists.
+
+## Using eventstreams
+
+### Support for Bacon.js
+
+Reflux currently supports listening to [Bacon.js](https://github.com/baconjs/bacon.js/). Just use an eventstream as argument to listenTo and your store and component will listen to it.
+
+```javascript
+var numberStream = Bacon.fromArray([0, 1, 2]);
+
+var numberStore = Reflux.createStore({
+    init: function() {
+        this.listenTo(numberStream, callback);
+    },
+    callback: function(number) {
+        console.log(number);
+        this.trigger(number);
+    }
+});
+
+// will output the numbers 0, 1, 2
+```
+
+If you want Bacon.js to listen to a action, store or join then use the `fromBinder` method on their `listen` method.
+
+```javascript
+var numbersFromStoreStream =
+    Bacon.fromBinder(numberStore.listen);
+```
 
 ## Colophon
 
