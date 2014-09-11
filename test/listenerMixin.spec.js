@@ -1,8 +1,7 @@
 var chai = require('chai'),
     assert = chai.assert,
     Reflux = require('../src'),
-    Q = require('q'),
-    sinon = require('sinon');
+    Q = require('q');
 
 chai.use(require('chai-as-promised'));
 
