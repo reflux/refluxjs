@@ -22,7 +22,7 @@ exports.extend = function(obj) {
     return obj;
 };
 
-var isFunction = exports.isFunction = function(value) {
+exports.isFunction = function(value) {
     return typeof value === 'function';
 };
 
