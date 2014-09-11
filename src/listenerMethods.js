@@ -126,18 +126,16 @@ module.exports = {
     fetchDefaultData: function (listenable, defaultCallback) {
         defaultCallback = (defaultCallback && this[defaultCallback]) || defaultCallback;
         var me = this;
-        if (defaultCallback && _.isFunction(defaultCallback)) {
-            if (listenable.getDefaultData && _.isFunction(listenable.getDefaultData)) {
-                data = listenable.getDefaultData();
-                if (data && data.then && _.isFunction(data.then)) {
-                    data.then(function() {
-                        defaultCallback.apply(me, arguments);
-                    });
-                } else {
-                    defaultCallback.call(this, data);
-                }
+        if (_.isFunction(defaultCallback) && _.isFunction(listenable.getDefaultData)) {
+            data = listenable.getDefaultData();
+            if (data && _.isFunction(data.then)) {
+                data.then(function() {
+                    defaultCallback.apply(me, arguments);
+                });
+            } else {
+                defaultCallback.call(this, data);
             }
         }
     }
-}
+};
 
