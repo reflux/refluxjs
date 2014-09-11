@@ -10,10 +10,5 @@ module.exports = _.extend(Reflux.listenerMethods,{
     /**
      * Cleans up all listener previously registered. 
      */
-    componentWillUnmount: function() {
-        (this.subscriptions||[]).forEach(function(subscription) {
-            subscription.stop(true);
-        });
-        this.subscriptions = [];
-    }
+    componentWillUnmount: Reflux.listenerMethods.stopListeningToAll
 });

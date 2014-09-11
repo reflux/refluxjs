@@ -86,4 +86,20 @@ describe("the listenerMethods",function(){
             });
         });
     });
+
+    describe('the stopListeningToAll method', function() {
+        var unsub1 = {stop:sinon.spy()},
+            unsub2 = {stop:sinon.spy()},
+            ctx = {subscriptions:[unsub1,unsub2]};
+        listenerMethods.stopListeningToAll.call(ctx);
+        it('should call `stop` on all subscription objects in the subscriptions array', function() {
+            assert.equal(unsub1.stop.callCount,1);
+            assert.equal(unsub1.stop.firstCall.args[0],true);
+            assert.equal(unsub2.stop.callCount,1);
+            assert.equal(unsub2.stop.firstCall.args[0],true);
+        });
+        it("should end up with an empty subscriptions array",function(){
+            assert.deepEqual(ctx.subscriptions,[]);
+        });
+    });
 });

@@ -29,9 +29,8 @@ module.exports = function(listenable,callback,initial){
             this.listenTo(listenable,callback,initial);
         },
         /**
-         * Borrow `componentWillUnmount` from `listenerMixin`, which takes care of
-         * removing the listener previously set up
+         * Cleans up all listener previously registered. 
          */
-        componentWillUnmount: Reflux.listenerMixin.componentWillUnmount
+        componentWillUnmount: Reflux.listenerMethods.stopListeningToAll
     };
 };

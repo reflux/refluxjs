@@ -88,6 +88,34 @@ module.exports = {
             };
         this.subscriptions.push(subscriptionobj);
         return subscriptionobj;
+    },
+
+    /**
+     * Stops listening to a single listenable
+     *
+     * @param {Action|Store} listenable The action or store we no longer want to listen to
+     * @param {Boolean} dontupdatearr If true, we don't remove the subscription object from this.subscriptions
+     * @returns {Boolean} True if a subscription was found and removed, otherwise false.
+     */
+    stopListeningTo: function(listenable,dontupdatearr){
+        for(var i=0; i<(this.subscriptions||[]).length;i++){
+            if (this.subscriptions[i].listenable === listenable){
+                this.subscriptions[i].stop(dontupdatearr);
+                return true;
+            }
+        }
+        return false;
+    },
+
+    /**
+     * Stops all subscriptions and empties subscriptions array
+     *
+     */
+    stopListeningToAll: function(){
+        (this.subscriptions||[]).forEach(function(subscription) {
+            subscription.stop(true);
+        });
+        this.subscriptions = [];
     }
 };
 
