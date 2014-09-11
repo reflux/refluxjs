@@ -7,7 +7,6 @@ var assert = require('chai').assert,
 describe('the listenToMany shorthand',function(){
     describe("when calling the factory",function(){
         var unsubscriber = sinon.spy(),
-            defaultdata = "DATA",
             listenable1 = {listen: sinon.stub().returns(unsubscriber)},
             listenable2 = {listen: sinon.stub().returns(unsubscriber)},
             listenables = {
@@ -17,7 +16,7 @@ describe('the listenToMany shorthand',function(){
             context = {
                 onFirstAction: sinon.spy(),
                 onSecondAction: sinon.spy()
-            }
+            },
             result = _.extend(context,listenToMany(listenables));
         it("should return object with componentDidMount and componentWillUnmount methods",function(){
             assert.isFunction(result.componentDidMount);
