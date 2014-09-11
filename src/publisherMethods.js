@@ -32,12 +32,11 @@ module.exports = {
     listen: function(callback, bindContext) {
         var eventHandler = function(args) {
             callback.apply(bindContext, args);
-        };
+        }, me = this;
         this.emitter.addListener(this.eventLabel, eventHandler);
-
-        return (function() {
-            this.emitter.removeListener(this.eventLabel, eventHandler);
-        }).bind(this);
+        return function() {
+            me.emitter.removeListener(me.eventLabel, eventHandler);
+        };
     },
 
     /**
