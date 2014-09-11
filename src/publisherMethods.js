@@ -55,9 +55,9 @@ module.exports = {
      * Tries to publish the event on the next tick
      */
     triggerAsync: function(){
-        var args = arguments;
+        var args = arguments,me = this;
         _.nextTick(function() {
-            this.trigger.apply(this, args);
-        },this);
+            me.trigger.apply(me, args);
+        });
     }
 };
