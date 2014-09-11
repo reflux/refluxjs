@@ -35,9 +35,9 @@ module.exports = {
         };
         this.emitter.addListener(this.eventLabel, eventHandler);
 
-        return function() {
+        return (function() {
             this.emitter.removeListener(this.eventLabel, eventHandler);
-        }.bind(this);
+        }).bind(this);
     },
 
     /**
@@ -56,8 +56,8 @@ module.exports = {
      */
     triggerAsync: function(){
         var args = arguments;
-        _.nextTick(function() {
+        _.nextTick((function() {
             this.trigger.apply(this, args);
-        }.bind(this));
+        }).bind(this));
     }
 };

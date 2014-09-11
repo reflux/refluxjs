@@ -16,9 +16,9 @@ module.exports = function(definition) {
         shouldEmit: definition.shouldEmit || Reflux.publisherMethods.shouldEmit
     });
 
-    var functor = (function() {
-        this.triggerAsync.apply(this,arguments);
-    }).bind(context);
+    var functor = function() {
+        context.triggerAsync.apply(context,arguments);
+    };
 
     _.extend(functor,context);
 
