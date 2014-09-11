@@ -1,5 +1,6 @@
 var _ = require('./utils'),
-    Reflux = require('../src');
+    Reflux = require('../src'),
+    keep = require('./keep');
 
 /**
  * Creates an event emitting Data Store
@@ -32,5 +33,8 @@ module.exports = function(definition) {
         shouldEmit: definition.shouldEmit || Reflux.publisherMethods.shouldEmit
     });
 
-    return new Store();
+    var store = new Store();
+    keep.createdStores.push(store);
+
+    return store;
 };

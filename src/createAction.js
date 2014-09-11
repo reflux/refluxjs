@@ -1,5 +1,6 @@
 var _ = require('./utils'),
-    Reflux = require('../src');
+    Reflux = require('../src'),
+    keep = require('./keep');
 
 /**
  * Creates an action functor object
@@ -21,6 +22,8 @@ module.exports = function(definition) {
     };
 
     _.extend(functor,context);
+
+    keep.createdActions.push(functor);
 
     return functor;
 
