@@ -56,8 +56,8 @@ module.exports = {
      */
     triggerAsync: function(){
         var args = arguments;
-        _.nextTick((function() {
+        _.nextTick(function() {
             this.trigger.apply(this, args);
-        }).bind(this));
+        },this);
     }
 };
