@@ -26,8 +26,9 @@ describe('the listenTo shorthand',function(){
                     assert.equal(result[m],Reflux.listenerMethods[m]);
                 }
             });
-            it("should add a subscriptions array",function(){
+            it("should add to a subscriptions array",function(){
                 assert.isArray(result.subscriptions);
+                assert.equal(result.subscriptions[0].listenable,listenable);
             });
             it("should call listen on the listenable correctly (via listenTo)",function(){
                 assert.equal(listenable.listen.callCount,1);
@@ -43,6 +44,24 @@ describe('the listenTo shorthand',function(){
             it("should be the same as listenerMethods stopListeningToAll",function(){
                 assert.equal(assert.equal(result.componentWillUnmount,Reflux.listenerMethods.stopListeningToAll));
             });
+        });
+    });
+    describe('when called multiple times for the same object',function(){
+        var listenable1 = {listen: sinon.spy()},
+            listenable2 = {listen: sinon.spy()},
+            context = {
+                method1:sinon.spy(),
+                method2:sinon.spy()
+            };
+        _.extend(context,listenTo(listenable1,"method1"));
+        context.componentDidMount();
+        _.extend(context,listenTo(listenable2,"method2"));
+        context.componentDidMount();
+        it("should add both listeners correctly",function(){
+            var subs = context.subscriptions;
+            assert.equal(subs.length,2);
+            assert.equal(subs[0].listenable,listenable1);
+            assert.equal(subs[1].listenable,listenable2);
         });
     });
 });
