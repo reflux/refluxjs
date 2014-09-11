@@ -28,8 +28,8 @@ var isFunction = exports.isFunction = function(value) {
 
 exports.EventEmitter = require('eventemitter3');
 
-exports.nextTick = function(callback,context) {
-    setTimeout(callback.bind(context), 0);
+exports.nextTick = function(callback) {
+    setTimeout(callback, 0);
 };
 
 exports.handleDefaultCallback = function (listener, listenable, defaultCallback) {
