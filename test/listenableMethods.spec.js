@@ -3,8 +3,8 @@ var chai = require('chai'),
     Reflux = require('../src'),
     sinon = require('sinon');
 
-describe("the publisher methods",function(){
-    var pub = Reflux.publisherMethods;
+describe("the listenable methods",function(){
+    var methods = Reflux.listenableMethods;
     describe("the listen method",function(){
         var emitter = {
                 addListener:sinon.spy(),
@@ -16,7 +16,7 @@ describe("the publisher methods",function(){
             },
             callback = sinon.spy(),
             cbcontext = {foo:"BAR"},
-            result = pub.listen.call(context,callback,cbcontext);
+            result = methods.listen.call(context,callback,cbcontext);
         it("should call addListener correctly",function(){
             var args = emitter.addListener.firstCall.args;
             assert.equal(args[0],context.eventLabel);
@@ -46,7 +46,7 @@ describe("the publisher methods",function(){
                     shouldEmit:sinon.stub().returns(true),
                     emitter: emitter
                 };
-            pub.trigger.call(context,"FOO","BAR");
+            methods.trigger.call(context,"FOO","BAR");
             it("should call preEmit correctly",function(){
                 assert.deepEqual(context.preEmit.firstCall.args,["FOO","BAR"]);
             });
@@ -70,7 +70,7 @@ describe("the publisher methods",function(){
                     shouldEmit:sinon.stub().returns(false),
                     emitter: emitter
                 };
-            pub.trigger.call(context,"FOO","BAR");
+            methods.trigger.call(context,"FOO","BAR");
             it("should not emit anything",function(){
                 assert.equal(emitter.emit.callCount,0);
             });

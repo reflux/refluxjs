@@ -17,9 +17,9 @@ module.exports = function(definition) {
     context = _.extend({
         eventLabel: "change",
         emitter: new _.EventEmitter()
-    }, definition, Reflux.listenerMethods, Reflux.publisherMethods,{
-        preEmit: definition.preEmit || Reflux.publisherMethods.preEmit,
-        shouldEmit: definition.shouldEmit || Reflux.publisherMethods.shouldEmit
+    }, definition, Reflux.listenerMethods, Reflux.listenableMethods,{
+        preEmit: definition.preEmit || Reflux.listenableMethods.preEmit,
+        shouldEmit: definition.shouldEmit || Reflux.listenableMethods.shouldEmit
     });
 
     functor = function() {
