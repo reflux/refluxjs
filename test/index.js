@@ -6,10 +6,8 @@ var statusUpdate = Reflux.createAction();
 
 // Creating a Data Store - Listening to textUpdate action
 var textStore = Reflux.createStore({
-    init: function() {
-        this.listenTo(textUpdate, this.output);
-    },
-    output: function() {
+    listenables: {textChanged:textUpdate},
+    textChanged: function() {
         var i, args = Array.prototype.slice.call(arguments, 0);
         for (i = 0; i < args.length; i++) {
             this.writeOut(args[i]);
@@ -22,10 +20,8 @@ var textStore = Reflux.createStore({
 
 // Creating a DataStore
 var statusStore = Reflux.createStore({
-    init: function() {
-        this.listenTo(statusUpdate, this.output);
-    },
-    output: function(flag) {
+    listenables: {statusChanged:statusUpdate},
+    statusChanged: function(flag) {
         var status = flag ? 'ONLINE' : 'OFFLINE';
         this.trigger(status);
     }
@@ -33,9 +29,8 @@ var statusStore = Reflux.createStore({
 
 // Creating an aggregate DataStore that is listening to textStore and statusStore
 var storyStore = Reflux.createStore({
+    listenables: {statusChanged:statusStore,textUpdated:textStore},
     init: function() {
-        this.listenTo(statusStore, this.statusChanged);
-        this.listenTo(textStore, this.textUpdated);
         this.storyArr = [];
     },
     statusChanged: function(flag) {
