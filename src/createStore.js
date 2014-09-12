@@ -6,38 +6,36 @@ var _ = require('./utils'),
  * Creates an event emitting Data Store
  *
  * @param {Object} definition The data store object definition
- * @returns {Store} A data store functor
+ * @returns {Store} A data store instance
  */
 module.exports = function(definition) {
 
-    var functor, context, arr, i=0;
-
     definition = definition || {};
 
-    context = _.extend({
-        eventLabel: "change",
-        emitter: new _.EventEmitter()
-    }, definition, Reflux.listenerMethods, Reflux.listenableMethods,{
+    function Store() {
+        var i=0, arr;
+        this.subscriptions = [];
+        this.emitter = new _.EventEmitter();
+        this.eventLabel = "change";
+        if (this.init && _.isFunction(this.init)) {
+            this.init();
+        }
+        if (this.listenables){
+            arr = [].concat(this.listenables);
+            for(;i < arr.length;i++){
+                this.listenToMany(arr[i]);
+            }
+        }
+    }
+
+    _.extend(Store.prototype, definition, Reflux.listenerMethods, Reflux.listenableMethods,{
         preEmit: definition.preEmit || Reflux.listenableMethods.preEmit,
         shouldEmit: definition.shouldEmit || Reflux.listenableMethods.shouldEmit
     });
 
-    functor = function() {
-        functor.triggerAsync.apply(functor,arguments);
-    };
+    var store = new Store();
 
-    _.extend(functor,context);
+    keep.createdStores.push(store);
 
-    if (_.isFunction(functor.init)) {
-        functor.init();
-    }
-    if (functor.listenables){
-        arr = [].concat(functor.listenables);
-        for(;i < arr.length;i++){
-            functor.listenToMany(arr[i]);
-        }
-    }
-
-    keep.createdStores.push(functor);
-    return functor;
+    return store;
 };

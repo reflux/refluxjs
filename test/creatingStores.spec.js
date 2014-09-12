@@ -248,18 +248,6 @@ describe('Creating stores', function() {
         });
     });
 
-    describe("when using as functor",function(){
-        var store = Reflux.createStore({}),
-            cb = sinon.spy(),
-            data = "SOMEDATA";
-        store.listen(cb);
-        store(data);
-        it("should execute triggerAsync like an action",function(){
-            assert.equal(cb.callCount,1);
-            assert.deepEqual(cb.firstCall.args,[data]);
-        });
-    });
-
     it("should not be possible to override API functions with props in the definition",function(){
         var def = {listenTo:"FOO",listen:"BAR",trigger:"BAZ",hasListener:"BIN",listenToMany:"BAH"},
             store = Reflux.createStore(def);
