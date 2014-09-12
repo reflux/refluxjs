@@ -159,6 +159,8 @@ In the above example, whenever the action is called, the store's `output` callba
 
 A data store is a publisher much like the actions, so they too have the `preEmit` and `shouldEmit` hooks.
 
+And again like actions, stores are functors, so you can also send messages by simply doing `store(someData)`.
+
 #### Listening to many actions at once 
 
 Since it is a very common pattern to listen to all actions from a `createActions` call in a store `init` call, the store has a `listenToMany` function that takes an object of listenables. Instead of doing this:
