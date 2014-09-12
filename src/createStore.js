@@ -1,5 +1,6 @@
 var _ = require('./utils'),
-    Reflux = require('../src');
+    Reflux = require('../src'),
+    keep = require('./keep');
 
 /**
  * Creates an event emitting Data Store
@@ -37,5 +38,6 @@ module.exports = function(definition) {
         }
     }
 
+    keep.createdStores.push(functor);
     return functor;
 };

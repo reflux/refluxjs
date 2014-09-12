@@ -4,9 +4,9 @@ var _ = require('./utils');
  * A module of methods for object that you want to be able to listen to.
  * This module is consumed by `createStore` and `createAction`
  */
-module.exports = {	
+module.exports = {
 
-	/**
+    /**
      * Hook used by the publisher that is invoked before emitting
      * and before `shouldEmit`. The arguments are the ones that the action
      * is invoked with.
