@@ -34,9 +34,9 @@
     "karma": "^0.12.23",
     "karma-mocha": "^0.1.9",
     "karma-phantomjs-launcher": "^0.1.4",
+    "karma-sauce-launcher": "git://github.com/bripkens/karma-sauce-launcher.git#job-visibility",
     "karma-bro": "^0.7.0",
     "karma-spec-reporter": "0.0.13",
-    "grunt-karma": "^0.9.0",
-    "karma-sauce-launcher": "^0.2.10"
+    "grunt-karma": "^0.9.0"
   }
 }
