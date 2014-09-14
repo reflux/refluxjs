@@ -17,6 +17,7 @@ describe('the connect module',function(){
         it("should add componentDidMount and WillUnmount",function(){
             assert.isFunction(context.componentDidMount);
             assert.isFunction(context.componentWillUnmount);
+            assert.equal(context.componentWillUnmount,Reflux.listenerMethods.stopListeningToAll);
         });
         result.componentDidMount();
         it("should call listen on the listenable correctly",function(){
