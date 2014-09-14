@@ -12,6 +12,8 @@ exports.listenTo = require('./listenTo');
 
 exports.all = require('./all');
 
+exports.connect = require('./connect');
+
 exports.createActions = function(actionNames) {
     var i = 0, actions = {};
     for (; i < actionNames.length; i++) {

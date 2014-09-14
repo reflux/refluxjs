@@ -5,6 +5,9 @@ var assert = require('chai').assert,
     Reflux = require('../src');
 
 describe('the connect module',function(){
+    it("should be exposed in Reflux",function(){
+        assert.equal(connect,Reflux.connect);
+    });
     describe("when calling without key",function(){
         var defaultdata = "DEFAULTDATA",
             listenable = {
