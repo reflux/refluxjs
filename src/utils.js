@@ -42,4 +42,4 @@ exports.object = function(keys,vals){
         o[keys[i]] = vals[i];
     }
     return o;
-}
+};

@@ -6,8 +6,7 @@ var assert = require('chai').assert,
 
 describe('the connect module',function(){
     describe("when calling without key",function(){
-        var defaultdata = "DATA",
-            triggerdata = "DATA",
+        var defaultdata = "DEFAULTDATA",
             listenable = {
                 listen: sinon.spy(),
                 getDefaultData: sinon.stub().returns(defaultdata)
@@ -33,8 +32,8 @@ describe('the connect module',function(){
         });
     });
     describe("when calling with key",function(){
-        var defaultdata = "DATA",
-            triggerdata = "DATA",
+        var defaultdata = "DEFAULTDATA",
+            triggerdata = "TRIGGERDATA",
             key = "KEY",
             listenable = {
                 listen: sinon.spy(),

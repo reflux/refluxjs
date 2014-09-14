@@ -16,5 +16,5 @@ module.exports = function(listenable,key){
             this.listenTo(listenable,cb,cb);
         },
         componentWillUnmount: Reflux.listenerMixin.componentWillUnmount
-    }
+    };
 };
