@@ -1,9 +1,9 @@
 var _ = require('./utils'),
-    Reflux = require('../src');
+    listenerMethods = require('./listenerMethods');
 
 /**
  * A module meant to be consumed as a mixin by a React component. Supplies the methods from
- * `listenerMethods` and takes care of teardown of subscriptions.
+ * `listenerMethods` mixin and takes care of teardown of subscriptions.
  */
 module.exports = _.extend({
 
@@ -15,6 +15,6 @@ module.exports = _.extend({
     /**
      * Cleans up all listener previously registered.
      */
-    componentWillUnmount: Reflux.listenerMethods.stopListeningToAll
+    componentWillUnmount: listenerMethods.stopListeningToAll
 
-},Reflux.listenerMethods);
+}, listenerMethods);
