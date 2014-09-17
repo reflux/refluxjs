@@ -97,7 +97,7 @@ module.exports = {
      * @param {Boolean} dontupdatearr If true, we don't remove the subscription object from this.subscriptions
      * @returns {Boolean} True if a subscription was found and removed, otherwise false.
      */
-    stopListeningTo: function(listenable,dontupdatearr){
+    stopListeningTo: function(listenable, dontupdatearr){
         for(var i=0; i<(this.subscriptions||[]).length;i++){
             if (this.subscriptions[i].listenable === listenable){
                 this.subscriptions[i].stop(dontupdatearr);

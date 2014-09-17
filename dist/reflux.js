@@ -294,7 +294,11 @@ var _ = _dereq_('./utils'),
     keep = _dereq_('./keep');
 
 /**
- * Creates an action functor object
+ * Creates an action functor object. It is mixed in with functions
+ * from the `publisherMethods` mixin. `preEmit` and `shouldEmit` may
+ * be overridden in the definition object.
+ *
+ * @param {Object} definition The action object definition
  */
 module.exports = function(definition) {
 
@@ -326,7 +330,9 @@ var _ = _dereq_('./utils'),
     keep = _dereq_('./keep');
 
 /**
- * Creates an event emitting Data Store
+ * Creates an event emitting Data Store. It is mixed in with functions
+ * from the `listenerMethods` and `publisherMethods` mixins. `preEmit`
+ * and `shouldEmit` may be overridden in the definition object.
  *
  * @param {Object} definition The data store object definition
  * @returns {Store} A data store instance
@@ -377,6 +383,12 @@ exports.listenTo = _dereq_('./listenTo');
 
 exports.all = _dereq_('./all');
 
+/**
+ * Convenience function for creating a set of actions
+ *
+ * @param actionNames the names for the actions to be created
+ * @returns an object with actions of corresponding action names
+ */
 exports.createActions = function(actionNames) {
     var i = 0, actions = {};
     for (; i < actionNames.length; i++) {
@@ -385,16 +397,25 @@ exports.createActions = function(actionNames) {
     return actions;
 };
 
+/**
+ * Sets the eventmitter that Reflux uses
+ */
 exports.setEventEmitter = function(ctx) {
     var _ = _dereq_('./utils');
     _.EventEmitter = ctx;
 };
 
+/**
+ * Sets the method used for deferring actions and stores
+ */
 exports.nextTick = function(nextTick) {
     var _ = _dereq_('./utils');
     _.nextTick = nextTick;
 };
 
+/**
+ * Provides the set of created actions and stores for introspection
+ */
 exports.__keep = _dereq_('./keep');
 
 },{"./all":2,"./createAction":3,"./createStore":4,"./keep":6,"./listenTo":7,"./listenerMethods":8,"./listenerMixin":9,"./publisherMethods":10,"./utils":11}],6:[function(_dereq_,module,exports){
@@ -549,7 +570,7 @@ module.exports = {
      * @param {Boolean} dontupdatearr If true, we don't remove the subscription object from this.subscriptions
      * @returns {Boolean} True if a subscription was found and removed, otherwise false.
      */
-    stopListeningTo: function(listenable,dontupdatearr){
+    stopListeningTo: function(listenable, dontupdatearr){
         for(var i=0; i<(this.subscriptions||[]).length;i++){
             if (this.subscriptions[i].listenable === listenable){
                 this.subscriptions[i].stop(dontupdatearr);
@@ -594,11 +615,11 @@ module.exports = {
 
 },{"./utils":11}],9:[function(_dereq_,module,exports){
 var _ = _dereq_('./utils'),
-    Reflux = _dereq_('../src');
+    listenerMethods = _dereq_('./listenerMethods');
 
 /**
  * A module meant to be consumed as a mixin by a React component. Supplies the methods from
- * `listenerMethods` and takes care of teardown of subscriptions.
+ * `listenerMethods` mixin and takes care of teardown of subscriptions.
  */
 module.exports = _.extend({
 
@@ -610,11 +631,11 @@ module.exports = _.extend({
     /**
      * Cleans up all listener previously registered.
      */
-    componentWillUnmount: Reflux.listenerMethods.stopListeningToAll
+    componentWillUnmount: listenerMethods.stopListeningToAll
 
-},Reflux.listenerMethods);
+}, listenerMethods);
 
-},{"../src":5,"./utils":11}],10:[function(_dereq_,module,exports){
+},{"./listenerMethods":8,"./utils":11}],10:[function(_dereq_,module,exports){
 var _ = _dereq_('./utils');
 
 /**

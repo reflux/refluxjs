@@ -3,7 +3,9 @@ var _ = require('./utils'),
     keep = require('./keep');
 
 /**
- * Creates an event emitting Data Store
+ * Creates an event emitting Data Store. It is mixed in with functions
+ * from the `listenerMethods` and `publisherMethods` mixins. `preEmit`
+ * and `shouldEmit` may be overridden in the definition object.
  *
  * @param {Object} definition The data store object definition
  * @returns {Store} A data store instance
