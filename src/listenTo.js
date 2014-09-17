@@ -29,7 +29,7 @@ module.exports = function(listenable,callback,initial){
             this.listenTo(listenable,callback,initial);
         },
         /**
-         * Cleans up all listener previously registered. 
+         * Cleans up all listener previously registered.
          */
         componentWillUnmount: Reflux.listenerMethods.stopListeningToAll
     };

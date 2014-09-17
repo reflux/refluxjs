@@ -13,7 +13,7 @@ module.exports = _.extend({
     subscriptions: [],
 
     /**
-     * Cleans up all listener previously registered. 
+     * Cleans up all listener previously registered.
      */
     componentWillUnmount: Reflux.listenerMethods.stopListeningToAll
 

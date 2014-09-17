@@ -5,7 +5,7 @@ var _ = require('./utils');
  * `listenerMixin` and the `listenTo` mixin factory.
  */
 module.exports = {
-	
+
     /**
      * An internal utility function used by `validateListening`
      *
@@ -26,7 +26,7 @@ module.exports = {
 
     /**
      * A convenience method that listens to all listenables in the given object.
-     * 
+     *
      * @param {Object} listenables An object of listenables. Keys will be used as callback method names.
      */
     listenToMany: function(listenables){
@@ -47,7 +47,7 @@ module.exports = {
      * @returns {String|Undefined} An error message, or undefined if there was no problem.
      */
     validateListening: function(listenable){
-    	if (listenable === this) {
+        if (listenable === this) {
             return "Listener is not able to listen to itself";
         }
         if (!_.isFunction(listenable.listen)) {
@@ -68,11 +68,11 @@ module.exports = {
      * @returns {Object} A subscription obj where `stop` is an unsub function and `listenable` is the object being listened to
      */
     listenTo: function(listenable, callback, defaultCallback) {
-    	var err = this.validateListening(listenable),
+        var err = this.validateListening(listenable),
             self = this;
-    	if (err){
-    		throw Error(err);
-    	}
+        if (err){
+            throw Error(err);
+        }
         this.fetchDefaultData(listenable, defaultCallback);
         if (!this.subscriptions) { this.subscriptions = [];}
         var desub = listenable.listen(this[callback]||callback, this),
