@@ -329,6 +329,8 @@ var Status = React.createClass({
 
 You can have multiple calls to `Reflux.listenTo` in the same `mixins` array.
 
+There is also `Reflux.listenToMany` which works in exactly the same way, exposing `listener.listenToMany`.
+
 ### Listening to changes in other data stores (aggregate data stores)
 
 A store may listen to another store's change, making it possible to safely chain stores for aggregated data without affecting other parts of the application. A store may listen to other stores using the same `listenTo` function as with actions:
