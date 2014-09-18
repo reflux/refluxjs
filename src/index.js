@@ -12,6 +12,8 @@ exports.listenTo = require('./listenTo');
 
 exports.all = require('./all');
 
+exports.connect = require('./connect');
+
 /**
  * Convenience function for creating a set of actions
  *

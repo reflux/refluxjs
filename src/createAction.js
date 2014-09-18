@@ -3,11 +3,7 @@ var _ = require('./utils'),
     keep = require('./keep');
 
 /**
- * Creates an action functor object. It is mixed in with functions
- * from the `publisherMethods` mixin. `preEmit` and `shouldEmit` may
- * be overridden in the definition object.
- *
- * @param {Object} definition The action object definition
+ * Creates an action functor object
  */
 module.exports = function(definition) {
 
