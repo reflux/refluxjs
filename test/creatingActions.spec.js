@@ -14,7 +14,7 @@ describe('Creating action', function() {
         assert.equal(action.preEmit,def.preEmit);
         assert.equal(action.shouldEmit,def.shouldEmit);
         assert.equal(action.random,def.random);
-        assert.equal(action.listen,Reflux.publisherMethods.listen);
+        assert.equal(action.listen,Reflux.listenableMethods.listen);
     });
 
     var action,

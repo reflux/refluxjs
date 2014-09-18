@@ -50,8 +50,8 @@ module.exports = {
         if (listenable === this) {
             return "Listener is not able to listen to itself";
         }
-        if (!_.isFunction(listenable.listen)) {
-            return listenable + " is missing a listen method";
+        if (!(_.isFunction(listenable.listen) || _.isFunction(listenable.subscribe))) {
+            return listenable + " is missing a listen/subscribe method";
         }
         if (this.hasListener(listenable)) {
             return "Listener cannot listen to this listenable because of circular loop";
@@ -69,24 +69,39 @@ module.exports = {
      */
     listenTo: function(listenable, callback, defaultCallback) {
         var err = this.validateListening(listenable),
-            self = this;
+            self = this,
+            desub,
+            unsubscriber,
+            subscriptionobj;
         if (err){
             throw Error(err);
         }
         this.fetchDefaultData(listenable, defaultCallback);
         if (!this.subscriptions) { this.subscriptions = [];}
-        var desub = listenable.listen(this[callback]||callback, this),
+        if (_.isFunction(listenable.listen)) {
+            desub = listenable.listen(this[callback]||callback, this);
             unsubscriber = function (dontupdatearr) {
                 desub();
                 if (!dontupdatearr) {
                     self.subscriptions.splice(self.subscriptions.indexOf(listenable), 1);
                 }
-            },
+            };
             subscriptionobj = {
                 stop: unsubscriber,
                 listenable: listenable
             };
-        this.subscriptions.push(subscriptionobj);
+            this.subscriptions.push(subscriptionobj);
+        } else if (_.isFunction(listenable.subscribe)) {
+            var boundCallback = function() {
+                callback.apply(self, arguments);
+            };
+            desub = listenable.subscribe(boundCallback);
+            subscriptionobj = {
+                stop: desub,
+                listenable: listenable
+            };
+            this.subscriptions.push(subscriptionobj);
+        }
         return subscriptionobj;
     },
 

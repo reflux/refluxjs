@@ -4,8 +4,8 @@ var chai = require('chai'),
 
 describe("the utils object",function(){
     describe("the callbackName method",function(){
-    	it("should correctly create a callback name",function(){
-    		assert.equal(_.callbackName("anAction"),"onAnAction");
-    	});
+        it("should correctly create a callback name",function(){
+            assert.equal(_.callbackName("anAction"),"onAnAction");
+        });
     });
 });

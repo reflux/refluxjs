@@ -4,7 +4,7 @@ var _ = require('./utils'),
 
 /**
  * Creates an action functor object. It is mixed in with functions
- * from the `publisherMethods` mixin. `preEmit` and `shouldEmit` may
+ * from the `listenableMethods` mixin. `preEmit` and `shouldEmit` may
  * be overridden in the definition object.
  *
  * @param {Object} definition The action object definition
@@ -16,13 +16,13 @@ module.exports = function(definition) {
     var context = _.extend({
         eventLabel: "action",
         emitter: new _.EventEmitter()
-    },definition,Reflux.publisherMethods,{
-        preEmit: definition.preEmit || Reflux.publisherMethods.preEmit,
-        shouldEmit: definition.shouldEmit || Reflux.publisherMethods.shouldEmit
+    },definition,Reflux.listenableMethods,{
+        preEmit: definition.preEmit || Reflux.listenableMethods.preEmit,
+        shouldEmit: definition.shouldEmit || Reflux.listenableMethods.shouldEmit
     });
 
     var functor = function() {
-        context.triggerAsync.apply(context,arguments);
+        functor.triggerAsync.apply(functor,arguments);
     };
 
     _.extend(functor,context);

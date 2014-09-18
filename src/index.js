@@ -1,6 +1,6 @@
 exports.listenerMethods = require('./listenerMethods');
 
-exports.publisherMethods = require('./publisherMethods');
+exports.listenableMethods = require('./listenableMethods');
 
 exports.createAction = require('./createAction');
 

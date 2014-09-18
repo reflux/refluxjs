@@ -4,7 +4,7 @@ var _ = require('./utils'),
 
 /**
  * Creates an event emitting Data Store. It is mixed in with functions
- * from the `listenerMethods` and `publisherMethods` mixins. `preEmit`
+ * from the `listenerMethods` and `listenableMethods` mixins. `preEmit`
  * and `shouldEmit` may be overridden in the definition object.
  *
  * @param {Object} definition The data store object definition
@@ -30,12 +30,13 @@ module.exports = function(definition) {
         }
     }
 
-    _.extend(Store.prototype, definition, Reflux.listenerMethods, Reflux.publisherMethods, {
-        preEmit: definition.preEmit || Reflux.publisherMethods.preEmit,
-        shouldEmit: definition.shouldEmit || Reflux.publisherMethods.shouldEmit
+    _.extend(Store.prototype, definition, Reflux.listenerMethods, Reflux.listenableMethods,{
+        preEmit: definition.preEmit || Reflux.listenableMethods.preEmit,
+        shouldEmit: definition.shouldEmit || Reflux.listenableMethods.shouldEmit
     });
 
     var store = new Store();
+
     keep.createdStores.push(store);
 
     return store;
