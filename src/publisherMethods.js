@@ -11,7 +11,7 @@ module.exports = {
      * and before `shouldEmit`. The arguments are the ones that the action
      * is invoked with. If this function returns something other than
      * undefined, that will be passed on as arguments for shouldEmit and
-     * trigger.
+     * emission.
      */
     preEmit: function() {},
 
