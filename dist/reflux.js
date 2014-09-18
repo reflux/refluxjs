@@ -294,7 +294,11 @@ var _ = _dereq_('./utils'),
     keep = _dereq_('./keep');
 
 /**
- * Creates an action functor object
+ * Creates an action functor object. It is mixed in with functions
+ * from the `listenableMethods` mixin. `preEmit` and `shouldEmit` may
+ * be overridden in the definition object.
+ *
+ * @param {Object} definition The action object definition
  */
 module.exports = function(definition) {
 
@@ -303,13 +307,13 @@ module.exports = function(definition) {
     var context = _.extend({
         eventLabel: "action",
         emitter: new _.EventEmitter()
-    },definition,Reflux.publisherMethods,{
-        preEmit: definition.preEmit || Reflux.publisherMethods.preEmit,
-        shouldEmit: definition.shouldEmit || Reflux.publisherMethods.shouldEmit
+    },definition,Reflux.listenableMethods,{
+        preEmit: definition.preEmit || Reflux.listenableMethods.preEmit,
+        shouldEmit: definition.shouldEmit || Reflux.listenableMethods.shouldEmit
     });
 
     var functor = function() {
-        context.triggerAsync.apply(context,arguments);
+        functor.triggerAsync.apply(functor,arguments);
     };
 
     _.extend(functor,context);
@@ -326,7 +330,9 @@ var _ = _dereq_('./utils'),
     keep = _dereq_('./keep');
 
 /**
- * Creates an event emitting Data Store
+ * Creates an event emitting Data Store. It is mixed in with functions
+ * from the `listenerMethods` and `listenableMethods` mixins. `preEmit`
+ * and `shouldEmit` may be overridden in the definition object.
  *
  * @param {Object} definition The data store object definition
  * @returns {Store} A data store instance
@@ -351,12 +357,13 @@ module.exports = function(definition) {
         }
     }
 
-    _.extend(Store.prototype, definition, Reflux.listenerMethods, Reflux.publisherMethods, {
-        preEmit: definition.preEmit || Reflux.publisherMethods.preEmit,
-        shouldEmit: definition.shouldEmit || Reflux.publisherMethods.shouldEmit
+    _.extend(Store.prototype, definition, Reflux.listenerMethods, Reflux.listenableMethods,{
+        preEmit: definition.preEmit || Reflux.listenableMethods.preEmit,
+        shouldEmit: definition.shouldEmit || Reflux.listenableMethods.shouldEmit
     });
 
     var store = new Store();
+
     keep.createdStores.push(store);
 
     return store;
@@ -365,7 +372,7 @@ module.exports = function(definition) {
 },{"../src":5,"./keep":6,"./utils":11}],5:[function(_dereq_,module,exports){
 exports.listenerMethods = _dereq_('./listenerMethods');
 
-exports.publisherMethods = _dereq_('./publisherMethods');
+exports.listenableMethods = _dereq_('./listenableMethods');
 
 exports.createAction = _dereq_('./createAction');
 
@@ -377,6 +384,12 @@ exports.listenTo = _dereq_('./listenTo');
 
 exports.all = _dereq_('./all');
 
+/**
+ * Convenience function for creating a set of actions
+ *
+ * @param actionNames the names for the actions to be created
+ * @returns an object with actions of corresponding action names
+ */
 exports.createActions = function(actionNames) {
     var i = 0, actions = {};
     for (; i < actionNames.length; i++) {
@@ -385,19 +398,28 @@ exports.createActions = function(actionNames) {
     return actions;
 };
 
+/**
+ * Sets the eventmitter that Reflux uses
+ */
 exports.setEventEmitter = function(ctx) {
     var _ = _dereq_('./utils');
     _.EventEmitter = ctx;
 };
 
+/**
+ * Sets the method used for deferring actions and stores
+ */
 exports.nextTick = function(nextTick) {
     var _ = _dereq_('./utils');
     _.nextTick = nextTick;
 };
 
+/**
+ * Provides the set of created actions and stores for introspection
+ */
 exports.__keep = _dereq_('./keep');
 
-},{"./all":2,"./createAction":3,"./createStore":4,"./keep":6,"./listenTo":7,"./listenerMethods":8,"./listenerMixin":9,"./publisherMethods":10,"./utils":11}],6:[function(_dereq_,module,exports){
+},{"./all":2,"./createAction":3,"./createStore":4,"./keep":6,"./listenTo":7,"./listenableMethods":8,"./listenerMethods":9,"./listenerMixin":10,"./utils":11}],6:[function(_dereq_,module,exports){
 exports.createdStores = [];
 
 exports.createdActions = [];
@@ -443,178 +465,13 @@ module.exports = function(listenable,callback,initial){
             this.listenTo(listenable,callback,initial);
         },
         /**
-         * Cleans up all listener previously registered. 
+         * Cleans up all listener previously registered.
          */
         componentWillUnmount: Reflux.listenerMethods.stopListeningToAll
     };
 };
 
 },{"../src":5}],8:[function(_dereq_,module,exports){
-var _ = _dereq_('./utils');
-
-/**
- * A module of methods related to listening. This module is consumed by `createStore`,
- * `listenerMixin` and the `listenTo` mixin factory.
- */
-module.exports = {
-	
-    /**
-     * An internal utility function used by `validateListening`
-     *
-     * @param {Action|Store} listenable The listenable we want to search for
-     * @returns {Boolean} The result of a recursive search among `this.subscriptions`
-     */
-    hasListener: function(listenable) {
-        var i = 0,
-            listener;
-        for (;i < (this.subscriptions||[]).length; ++i) {
-            listener = this.subscriptions[i].listenable;
-            if (listener === listenable || listener.hasListener && listener.hasListener(listenable)) {
-                return true;
-            }
-        }
-        return false;
-    },
-
-    /**
-     * A convenience method that listens to all listenables in the given object.
-     * 
-     * @param {Object} listenables An object of listenables. Keys will be used as callback method names.
-     */
-    listenToMany: function(listenables){
-        for(var key in listenables){
-            var cbname = _.callbackName(key),
-                localname = this[cbname] ? cbname : this[key] ? key : undefined;
-            if (localname){
-                this.listenTo(listenables[key],localname,this[cbname+"Default"]||this[localname+"Default"]||localname);
-            }
-        }
-    },
-
-    /**
-     * Checks if the current context can listen to the supplied listenable
-     *
-     * @param {Action|Store} listenable An Action or Store that should be
-     *  listened to.
-     * @returns {String|Undefined} An error message, or undefined if there was no problem.
-     */
-    validateListening: function(listenable){
-    	if (listenable === this) {
-            return "Listener is not able to listen to itself";
-        }
-        if (!_.isFunction(listenable.listen)) {
-            return listenable + " is missing a listen method";
-        }
-        if (this.hasListener(listenable)) {
-            return "Listener cannot listen to this listenable because of circular loop";
-        }
-    },
-
-    /**
-     * Sets up a subscription to the given listenable for the context object
-     *
-     * @param {Action|Store} listenable An Action or Store that should be
-     *  listened to.
-     * @param {Function|String} callback The callback to register as event handler
-     * @param {Function|String} defaultCallback The callback to register as default handler
-     * @returns {Object} A subscription obj where `stop` is an unsub function and `listenable` is the object being listened to
-     */
-    listenTo: function(listenable, callback, defaultCallback) {
-    	var err = this.validateListening(listenable),
-            self = this;
-    	if (err){
-    		throw Error(err);
-    	}
-        this.fetchDefaultData(listenable, defaultCallback);
-        if (!this.subscriptions) { this.subscriptions = [];}
-        var desub = listenable.listen(this[callback]||callback, this),
-            unsubscriber = function (dontupdatearr) {
-                desub();
-                if (!dontupdatearr) {
-                    self.subscriptions.splice(self.subscriptions.indexOf(listenable), 1);
-                }
-            },
-            subscriptionobj = {
-                stop: unsubscriber,
-                listenable: listenable
-            };
-        this.subscriptions.push(subscriptionobj);
-        return subscriptionobj;
-    },
-
-    /**
-     * Stops listening to a single listenable
-     *
-     * @param {Action|Store} listenable The action or store we no longer want to listen to
-     * @param {Boolean} dontupdatearr If true, we don't remove the subscription object from this.subscriptions
-     * @returns {Boolean} True if a subscription was found and removed, otherwise false.
-     */
-    stopListeningTo: function(listenable,dontupdatearr){
-        for(var i=0; i<(this.subscriptions||[]).length;i++){
-            if (this.subscriptions[i].listenable === listenable){
-                this.subscriptions[i].stop(dontupdatearr);
-                return true;
-            }
-        }
-        return false;
-    },
-
-    /**
-     * Stops all subscriptions and empties subscriptions array
-     *
-     */
-    stopListeningToAll: function(){
-        (this.subscriptions||[]).forEach(function(subscription) {
-            subscription.stop(true);
-        });
-        this.subscriptions = [];
-    },
-
-    /**
-     * Used in `listenTo`. Fetches initial data from a publisher if it has a `getDefaultData` method.
-     * @param {Action|Store} listenable The publisher we want to get default data from
-     * @param {Function|String} defaultCallback The method to receive the data
-     */
-    fetchDefaultData: function (listenable, defaultCallback) {
-        defaultCallback = (defaultCallback && this[defaultCallback]) || defaultCallback;
-        var me = this;
-        if (_.isFunction(defaultCallback) && _.isFunction(listenable.getDefaultData)) {
-            data = listenable.getDefaultData();
-            if (data && _.isFunction(data.then)) {
-                data.then(function() {
-                    defaultCallback.apply(me, arguments);
-                });
-            } else {
-                defaultCallback.call(this, data);
-            }
-        }
-    }
-};
-
-
-},{"./utils":11}],9:[function(_dereq_,module,exports){
-var _ = _dereq_('./utils'),
-    Reflux = _dereq_('../src');
-
-/**
- * A module meant to be consumed as a mixin by a React component. Supplies the methods from
- * `listenerMethods` and takes care of teardown of subscriptions.
- */
-module.exports = _.extend({
-
-    /**
-     * By adding this in the mixin we get error message if other React mixins try to use the same prop
-     */
-    subscriptions: [],
-
-    /**
-     * Cleans up all listener previously registered. 
-     */
-    componentWillUnmount: Reflux.listenerMethods.stopListeningToAll
-
-},Reflux.listenerMethods);
-
-},{"../src":5,"./utils":11}],10:[function(_dereq_,module,exports){
 var _ = _dereq_('./utils');
 
 /**
@@ -678,12 +535,191 @@ module.exports = {
     }
 };
 
-},{"./utils":11}],11:[function(_dereq_,module,exports){
+},{"./utils":11}],9:[function(_dereq_,module,exports){
+var _ = _dereq_('./utils');
+
+/**
+ * A module of methods related to listening. This module is consumed by `createStore`,
+ * `listenerMixin` and the `listenTo` mixin factory.
+ */
+module.exports = {
+
+    /**
+     * An internal utility function used by `validateListening`
+     *
+     * @param {Action|Store} listenable The listenable we want to search for
+     * @returns {Boolean} The result of a recursive search among `this.subscriptions`
+     */
+    hasListener: function(listenable) {
+        var i = 0,
+            listener;
+        for (;i < (this.subscriptions||[]).length; ++i) {
+            listener = this.subscriptions[i].listenable;
+            if (listener === listenable || listener.hasListener && listener.hasListener(listenable)) {
+                return true;
+            }
+        }
+        return false;
+    },
+
+    /**
+     * A convenience method that listens to all listenables in the given object.
+     *
+     * @param {Object} listenables An object of listenables. Keys will be used as callback method names.
+     */
+    listenToMany: function(listenables){
+        for(var key in listenables){
+            var cbname = _.callbackName(key),
+                localname = this[cbname] ? cbname : this[key] ? key : undefined;
+            if (localname){
+                this.listenTo(listenables[key],localname,this[cbname+"Default"]||this[localname+"Default"]||localname);
+            }
+        }
+    },
+
+    /**
+     * Checks if the current context can listen to the supplied listenable
+     *
+     * @param {Action|Store} listenable An Action or Store that should be
+     *  listened to.
+     * @returns {String|Undefined} An error message, or undefined if there was no problem.
+     */
+    validateListening: function(listenable){
+        if (listenable === this) {
+            return "Listener is not able to listen to itself";
+        }
+        if (!(_.isFunction(listenable.listen) || _.isFunction(listenable.subscribe))) {
+            return listenable + " is missing a listen/subscribe method";
+        }
+        if (this.hasListener(listenable)) {
+            return "Listener cannot listen to this listenable because of circular loop";
+        }
+    },
+
+    /**
+     * Sets up a subscription to the given listenable for the context object
+     *
+     * @param {Action|Store} listenable An Action or Store that should be
+     *  listened to.
+     * @param {Function|String} callback The callback to register as event handler
+     * @param {Function|String} defaultCallback The callback to register as default handler
+     * @returns {Object} A subscription obj where `stop` is an unsub function and `listenable` is the object being listened to
+     */
+    listenTo: function(listenable, callback, defaultCallback) {
+        var err = this.validateListening(listenable),
+            self = this,
+            desub,
+            unsubscriber,
+            subscriptionobj;
+        if (err){
+            throw Error(err);
+        }
+        this.fetchDefaultData(listenable, defaultCallback);
+        if (!this.subscriptions) { this.subscriptions = [];}
+        if (_.isFunction(listenable.listen)) {
+            desub = listenable.listen(this[callback]||callback, this);
+            unsubscriber = function (dontupdatearr) {
+                desub();
+                if (!dontupdatearr) {
+                    self.subscriptions.splice(self.subscriptions.indexOf(listenable), 1);
+                }
+            };
+            subscriptionobj = {
+                stop: unsubscriber,
+                listenable: listenable
+            };
+            this.subscriptions.push(subscriptionobj);
+        } else if (_.isFunction(listenable.subscribe)) {
+            var boundCallback = function() {
+                callback.apply(self, arguments);
+            };
+            desub = listenable.subscribe(boundCallback);
+            subscriptionobj = {
+                stop: desub,
+                listenable: listenable
+            };
+            this.subscriptions.push(subscriptionobj);
+        }
+        return subscriptionobj;
+    },
+
+    /**
+     * Stops listening to a single listenable
+     *
+     * @param {Action|Store} listenable The action or store we no longer want to listen to
+     * @param {Boolean} dontupdatearr If true, we don't remove the subscription object from this.subscriptions
+     * @returns {Boolean} True if a subscription was found and removed, otherwise false.
+     */
+    stopListeningTo: function(listenable, dontupdatearr){
+        for(var i=0; i<(this.subscriptions||[]).length;i++){
+            if (this.subscriptions[i].listenable === listenable){
+                this.subscriptions[i].stop(dontupdatearr);
+                return true;
+            }
+        }
+        return false;
+    },
+
+    /**
+     * Stops all subscriptions and empties subscriptions array
+     *
+     */
+    stopListeningToAll: function(){
+        (this.subscriptions||[]).forEach(function(subscription) {
+            subscription.stop(true);
+        });
+        this.subscriptions = [];
+    },
+
+    /**
+     * Used in `listenTo`. Fetches initial data from a publisher if it has a `getDefaultData` method.
+     * @param {Action|Store} listenable The publisher we want to get default data from
+     * @param {Function|String} defaultCallback The method to receive the data
+     */
+    fetchDefaultData: function (listenable, defaultCallback) {
+        defaultCallback = (defaultCallback && this[defaultCallback]) || defaultCallback;
+        var me = this;
+        if (_.isFunction(defaultCallback) && _.isFunction(listenable.getDefaultData)) {
+            data = listenable.getDefaultData();
+            if (data && _.isFunction(data.then)) {
+                data.then(function() {
+                    defaultCallback.apply(me, arguments);
+                });
+            } else {
+                defaultCallback.call(this, data);
+            }
+        }
+    }
+};
+
+
+},{"./utils":11}],10:[function(_dereq_,module,exports){
+var _ = _dereq_('./utils'),
+    listenerMethods = _dereq_('./listenerMethods');
+
+/**
+ * A module meant to be consumed as a mixin by a React component. Supplies the methods from
+ * `listenerMethods` mixin and takes care of teardown of subscriptions.
+ */
+module.exports = _.extend({
+
+    /**
+     * By adding this in the mixin we get error message if other React mixins try to use the same prop
+     */
+    subscriptions: [],
+
+    /**
+     * Cleans up all listener previously registered.
+     */
+    componentWillUnmount: listenerMethods.stopListeningToAll
+
+}, listenerMethods);
+
+},{"./listenerMethods":9,"./utils":11}],11:[function(_dereq_,module,exports){
 /*
- * isObject, extend, isFunction, and bind are taken from undescore/lodash in
+ * isObject, extend, isFunction are taken from undescore/lodash in
  * order to remove the dependency
  */
-
 var isObject = exports.isObject = function(obj) {
     var type = typeof obj;
     return type === 'function' || type === 'object' && !!obj;
