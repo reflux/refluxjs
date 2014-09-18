@@ -1,8 +1,7 @@
 /*
- * isObject, extend, isFunction, and bind are taken from undescore/lodash in
+ * isObject, extend, isFunction are taken from undescore/lodash in
  * order to remove the dependency
  */
-
 var isObject = exports.isObject = function(obj) {
     var type = typeof obj;
     return type === 'function' || type === 'object' && !!obj;
