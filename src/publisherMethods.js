@@ -47,7 +47,7 @@ module.exports = {
     trigger: function() {
         var args = arguments,
             pre = this.preEmit.apply(this, args);
-        args = pre === undefined ? args : [].concat(pre);
+        args = pre === undefined ? args : _.isArguments(pre) ? pre : [].concat(pre);
         if (this.shouldEmit.apply(this, args)) {
             this.emitter.emit(this.eventLabel, args);
         }

@@ -85,7 +85,29 @@ describe("the publisher methods",function(){
                     assert.deepEqual(args[1],newargs);
                 });
             });
-            describe("when preEmit returns something that's not undefined or an array",function(){
+            describe("when preEmit returns the arguments array",function(){
+                var emitter = {
+                        emit: sinon.spy()
+                    },
+                    oldargs = ["what","ever"],
+                    context = {
+                        eventLabel: "LABEL",
+                        preEmit:function(){return arguments;},
+                        shouldEmit:sinon.stub().returns(true),
+                        emitter: emitter
+                    };
+                pub.trigger.apply(context,oldargs);
+                it("should correctly call shouldEmit as if we returned an array",function(){
+                    assert.deepEqual(oldargs,context.shouldEmit.firstCall.args);
+                });
+                it("should call emit the same way too",function(){
+                    var args = emitter.emit.firstCall.args;
+                    assert.deepEqual(args[0],"LABEL");
+                    assert.deepEqual(args[1][0],oldargs[0]);
+                    assert.deepEqual(args[1][1],oldargs[1]);
+                });
+            });
+            describe("when preEmit returns a string",function(){
                 var emitter = {
                         emit: sinon.spy()
                     },
@@ -98,10 +120,98 @@ describe("the publisher methods",function(){
                         emitter: emitter
                     };
                 pub.trigger.apply(context,oldargs);
-                it("should ignore the non-array and call shouldEmit with the new arg",function(){
+                it("should call shouldEmit with the string",function(){
                     assert.deepEqual([newarg],context.shouldEmit.firstCall.args);
                 });
-                it("should call emit with the new arg too",function(){
+                it("should call emit with the string too",function(){
+                    var args = emitter.emit.firstCall.args;
+                    assert.deepEqual(args[0],"LABEL");
+                    assert.deepEqual(args[1],[newarg]);
+                });
+            });
+            describe("when preEmit returns a number",function(){
+                var emitter = {
+                        emit: sinon.spy()
+                    },
+                    oldargs = ["what","ever"],
+                    newarg = 12345,
+                    context = {
+                        eventLabel: "LABEL",
+                        preEmit:sinon.stub().returns(newarg),
+                        shouldEmit:sinon.stub().returns(true),
+                        emitter: emitter
+                    };
+                pub.trigger.apply(context,oldargs);
+                it("should call shouldEmit with the number",function(){
+                    assert.deepEqual([newarg],context.shouldEmit.firstCall.args);
+                });
+                it("should call emit with the number too",function(){
+                    var args = emitter.emit.firstCall.args;
+                    assert.deepEqual(args[0],"LABEL");
+                    assert.deepEqual(args[1],[newarg]);
+                });
+            });
+			describe("when preEmit returns false",function(){
+                var emitter = {
+                        emit: sinon.spy()
+                    },
+                    oldargs = ["what","ever"],
+                    newarg = false,
+                    context = {
+                        eventLabel: "LABEL",
+                        preEmit:sinon.stub().returns(newarg),
+                        shouldEmit:sinon.stub().returns(true),
+                        emitter: emitter
+                    };
+                pub.trigger.apply(context,oldargs);
+                it("should call shouldEmit with false",function(){
+                    assert.deepEqual([newarg],context.shouldEmit.firstCall.args);
+                });
+                it("should call emit with false too",function(){
+                    var args = emitter.emit.firstCall.args;
+                    assert.deepEqual(args[0],"LABEL");
+                    assert.deepEqual(args[1],[newarg]);
+                });
+            });
+            describe("when preEmit returns an object",function(){
+                var emitter = {
+                        emit: sinon.spy()
+                    },
+                    oldargs = ["what","ever"],
+                    newarg = {a:"foo",b:"bar"},
+                    context = {
+                        eventLabel: "LABEL",
+                        preEmit:sinon.stub().returns(newarg),
+                        shouldEmit:sinon.stub().returns(true),
+                        emitter: emitter
+                    };
+                pub.trigger.apply(context,oldargs);
+                it("should call shouldEmit with the object",function(){
+                    assert.deepEqual([newarg],context.shouldEmit.firstCall.args);
+                });
+                it("should call emit with the object too",function(){
+                    var args = emitter.emit.firstCall.args;
+                    assert.deepEqual(args[0],"LABEL");
+                    assert.deepEqual(args[1],[newarg]);
+                });
+            });
+			describe("when preEmit returns a function",function(){
+                var emitter = {
+                        emit: sinon.spy()
+                    },
+                    oldargs = ["what","ever"],
+                    newarg = function(foo,bar){},
+                    context = {
+                        eventLabel: "LABEL",
+                        preEmit:sinon.stub().returns(newarg),
+                        shouldEmit:sinon.stub().returns(true),
+                        emitter: emitter
+                    };
+                pub.trigger.apply(context,oldargs);
+                it("should call shouldEmit with the function",function(){
+                    assert.deepEqual([newarg],context.shouldEmit.firstCall.args);
+                });
+                it("should call emit with the function too",function(){
                     var args = emitter.emit.firstCall.args;
                     assert.deepEqual(args[0],"LABEL");
                     assert.deepEqual(args[1],[newarg]);
