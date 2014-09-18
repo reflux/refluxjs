@@ -3,15 +3,13 @@ var Reflux = require('../src');
 
 /**
  * A mixin factory for a React component. Meant as a more convenient way of using the `listenerMixin`,
- * without having to manually set listeners in the `componentDidMount` method.
+ * without having to manually set listeners in the `componentDidMount` method. This version is used
+ * to automatically set up a `listenToMany` call.
  *
- * @param {Action|Store} listenable An Action or Store that should be
- *  listened to.
- * @param {Function|String} callback The callback to register as event handler
- * @param {Function|String} defaultCallback The callback to register as default handler
- * @returns {Object} An object to be used as a mixin, which sets up the listener for the given listenable.
+ * @param {Object} listenables An object of listenables
+ * @returns {Object} An object to be used as a mixin, which sets up the listeners for the given listenables.
  */
-module.exports = function(listenable,callback,initial){
+module.exports = function(listenables){
     return {
         /**
          * Set up the mixin before the initial rendering occurs. Import methods from `listenerMethods`
@@ -21,12 +19,12 @@ module.exports = function(listenable,callback,initial){
             for(var m in Reflux.listenerMethods){
                 if (this[m] !== Reflux.listenerMethods[m]){
                     if (this[m]){
-                        throw "Can't have other property '"+m+"' when using Reflux.listenTo!";
+                        throw "Can't have other property '"+m+"' when using Reflux.listenToMany!";
                     }
                     this[m] = Reflux.listenerMethods[m];
                 }
             }
-            this.listenTo(listenable,callback,initial);
+            this.listenToMany(listenables);
         },
         /**
          * Cleans up all listener previously registered. 
