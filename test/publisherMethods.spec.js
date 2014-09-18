@@ -200,7 +200,7 @@ describe("the publisher methods",function(){
                         emit: sinon.spy()
                     },
                     oldargs = ["what","ever"],
-                    newarg = function(foo,bar){},
+                    newarg = function(foo,bar){console.log(foo,bar);},
                     context = {
                         eventLabel: "LABEL",
                         preEmit:sinon.stub().returns(newarg),
