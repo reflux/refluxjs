@@ -257,8 +257,7 @@ With the setup above this will output the following in the console:
 status:  ONLINE
 status:  OFFLINE
 ```
-
-#### React component example
+### React component example
 
 Register your component to listen for changes in your data stores, preferably in the `componentDidMount` [lifecycle method](http://facebook.github.io/react/docs/component-specs.html) and unregister in the `componentWillUnmount`, like this:
 
@@ -285,7 +284,7 @@ var Status = React.createClass({
 #### Convenience mixin for React
 
 You always need to unsubscribe components from observed actions and stores upon
-unmounting. To simplify this process you can use [mixins in React](http://facebook.github.io/react/docs/reusable-components.html#mixins). There is a convenience mixin available at `Reflux.listenerMixin`.
+unmounting. To simplify this process you can use [mixins in React](http://facebook.github.io/react/docs/reusable-components.html#mixins). There is a convenience mixin available at `Reflux.listenerMixin`. Using that, the above example can be written like thus:
 
 ```javascript
 var Status = React.createClass({
@@ -304,14 +303,12 @@ var Status = React.createClass({
 });
 ```
 
-The mixin provides the `listenTo` method for the React component, that works much like the one found in the Reflux's stores, and handles the listeners during mount and unmount for you.
-
-You also get the same `listenToMany` method as the store has.
+The mixin provides the `listenTo` method for the React component, that works much like the one found in the Reflux's stores, and handles the listeners during mount and unmount for you. You also get the same `listenToMany` method as the store has.
 
 
-### Using Reflux.listenTo
+#### Using Reflux.listenTo
 
-If you're not reliant on any special logic for the `this.listenTo` calls inside `componentDidMount`, you can use a call to `Reflux.listenTo` as a mixin. That will automatically set up the `componentDidMount` and the rest for you, as well as add the `listenerMixin` functionality. With this our example above can be reduced even further:
+If you're not reliant on any special logic for the `this.listenTo` calls inside `componentDidMount`, you can instead use a call to `Reflux.listenTo` as a mixin. That will automatically set up the `componentDidMount` and the rest for you, as well as add the `listenerMixin` functionality. With this our example above can be reduced even further:
 
 ```javascript
 var Status = React.createClass({
@@ -328,6 +325,19 @@ var Status = React.createClass({
 ```
 
 You can have multiple calls to `Reflux.listenTo` in the same `mixins` array.
+
+#### Using Reflux.connect
+
+If all you want to do is update the state of your component to whatever the data store transmits, you can use `Reflux.connect(listener,[stateKey])` as a mixin. If you supply a `stateKey` the state will be updated through `this.setState({<stateKey>:data})`, otherwise `this.setState(data)`. Here's the example above changed to use this syntax:
+
+```javascript
+var Status = React.createClass({
+    mixins: [Reflux.connect(statusStore,"currentStatus")],
+    render: function() {
+        // render specifics
+    }
+});
+```
 
 ### Listening to changes in other data stores (aggregate data stores)
 
