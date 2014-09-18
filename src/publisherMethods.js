@@ -9,8 +9,9 @@ module.exports = {
     /**
      * Hook used by the publisher that is invoked before emitting
      * and before `shouldEmit`. The arguments are the ones that the action
-     * is invoked with. If this function returns an array, that will be
-     * used as the action arguments instead.
+     * is invoked with. If this function returns something other than
+     * undefined, that will be passed on as arguments for shouldEmit and
+     * trigger.
      */
     preEmit: function() {},
 
@@ -46,7 +47,7 @@ module.exports = {
     trigger: function() {
         var args = arguments,
             pre = this.preEmit.apply(this, args);
-        args = _.isArray(pre) ? pre : args;
+        args = pre === undefined ? args : _.isArray(pre) ? pre : [pre];
         if (this.shouldEmit.apply(this, args)) {
             this.emitter.emit(this.eventLabel, args);
         }

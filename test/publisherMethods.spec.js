@@ -37,7 +37,7 @@ describe("the publisher methods",function(){
     });
     describe("the trigger method",function(){
         describe("when shouldEmit returns true",function(){
-            describe("when preEmit returns nothing",function(){
+            describe("when preEmit returns undefined",function(){
                 var emitter = {
                         emit: sinon.spy()
                     },
@@ -85,29 +85,26 @@ describe("the publisher methods",function(){
                     assert.deepEqual(args[1],newargs);
                 });
             });
-            describe("when preEmit returns something truthy that isn't an array",function(){
+            describe("when preEmit returns something that's not undefined or an array",function(){
                 var emitter = {
                         emit: sinon.spy()
                     },
                     oldargs = ["what","ever"],
-                    newargs = "I SHOULD BE DISCARDED",
+                    newarg = "I SHOULD BE USED AS A SINGLE ARG",
                     context = {
                         eventLabel: "LABEL",
-                        preEmit:sinon.stub().returns(newargs),
+                        preEmit:sinon.stub().returns(newarg),
                         shouldEmit:sinon.stub().returns(true),
                         emitter: emitter
                     };
                 pub.trigger.apply(context,oldargs);
-                it("should ignore the non-array and call shouldEmit with the old args",function(){
-                	var args = context.shouldEmit.firstCall.args;
-                    assert.deepEqual(args[0],oldargs[0]);
-                    assert.deepEqual(args[1],oldargs[1]);
+                it("should ignore the non-array and call shouldEmit with the new arg",function(){
+                    assert.deepEqual([newarg],context.shouldEmit.firstCall.args);
                 });
-                it("should call emit with the old args too",function(){
+                it("should call emit with the new arg too",function(){
                     var args = emitter.emit.firstCall.args;
                     assert.deepEqual(args[0],"LABEL");
-                    assert.deepEqual(args[1][0],oldargs[0]);
-                    assert.deepEqual(args[1][1],oldargs[1]);
+                    assert.deepEqual(args[1],[newarg]);
                 });
             });
         });
