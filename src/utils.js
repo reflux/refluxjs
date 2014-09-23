@@ -1,5 +1,5 @@
 /*
- * isObject, extend, isFunction are taken from undescore/lodash in
+ * isObject, extend, isFunction, isArguments are taken from undescore/lodash in
  * order to remove the dependency
  */
 var isObject = exports.isObject = function(obj) {
@@ -33,4 +33,9 @@ exports.nextTick = function(callback) {
 
 exports.callbackName = function(string){
     return "on"+string.charAt(0).toUpperCase()+string.slice(1);
+};
+
+exports.isArguments = function(value) {
+    return value && typeof value == 'object' && typeof value.length == 'number' &&
+      (toString.call(value) === '[object Arguments]' || (hasOwnProperty.call(value, 'callee' && !propertyIsEnumerable.call(value, 'callee')))) || false;
 };

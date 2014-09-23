@@ -103,7 +103,7 @@ Actions.statusUpdate();
 
 There are a couple of hooks avaiable for each action.
 
-* `preEmit` - Is called before the action emits an event. It receives the arguments from the action invocation.
+* `preEmit` - Is called before the action emits an event. It receives the arguments from the action invocation. If it returns something other than undefined, that will be used as arguments for `shouldEmit` and subsequent emission.
 
 * `shouldEmit` - Is called after `preEmit` and before the action emits an event. By default it returns `true` which will let the action emit the event. You may override this if you need to check the arguments that the action receives and see if it needs to emit the event.
 
