@@ -361,6 +361,28 @@ module.exports = {
 
 
 },{"./utils":13}],4:[function(_dereq_,module,exports){
+var _ = _dereq_('./utils'),
+    ListenerMethods = _dereq_('./ListenerMethods');
+
+/**
+ * A module meant to be consumed as a mixin by a React component. Supplies the methods from
+ * `ListenerMethods` mixin and takes care of teardown of subscriptions.
+ */
+module.exports = _.extend({
+
+    /**
+     * By adding this in the mixin we get error message if other React mixins try to use the same prop
+     */
+    subscriptions: [],
+
+    /**
+     * Cleans up all listener previously registered.
+     */
+    componentWillUnmount: ListenerMethods.stopListeningToAll
+
+}, ListenerMethods);
+
+},{"./ListenerMethods":3,"./utils":13}],5:[function(_dereq_,module,exports){
 var _ = _dereq_('./utils');
 
 /**
@@ -427,7 +449,7 @@ module.exports = {
     }
 };
 
-},{"./utils":13}],5:[function(_dereq_,module,exports){
+},{"./utils":13}],6:[function(_dereq_,module,exports){
 var createAction = _dereq_('./createAction');
 
 var slice = Array.prototype.slice;
@@ -511,7 +533,7 @@ module.exports = function(/* listenables... */) {
     }
 };
 
-},{"./createAction":7}],6:[function(_dereq_,module,exports){
+},{"./createAction":8}],7:[function(_dereq_,module,exports){
 var Reflux = _dereq_('../src'),
     _ = _dereq_('./utils');
 
@@ -533,7 +555,7 @@ module.exports = function(listenable,key){
     };
 };
 
-},{"../src":9,"./utils":13}],7:[function(_dereq_,module,exports){
+},{"../src":10,"./utils":13}],8:[function(_dereq_,module,exports){
 var _ = _dereq_('./utils'),
     Reflux = _dereq_('../src'),
     Keep = _dereq_('./Keep');
@@ -569,7 +591,7 @@ module.exports = function(definition) {
 
 };
 
-},{"../src":9,"./Keep":2,"./utils":13}],8:[function(_dereq_,module,exports){
+},{"../src":10,"./Keep":2,"./utils":13}],9:[function(_dereq_,module,exports){
 var _ = _dereq_('./utils'),
     Reflux = _dereq_('../src'),
     Keep = _dereq_('./Keep');
@@ -613,7 +635,7 @@ module.exports = function(definition) {
     return store;
 };
 
-},{"../src":9,"./Keep":2,"./utils":13}],9:[function(_dereq_,module,exports){
+},{"../src":10,"./Keep":2,"./utils":13}],10:[function(_dereq_,module,exports){
 exports.ListenerMethods = _dereq_('./ListenerMethods');
 
 exports.PublisherMethods = _dereq_('./PublisherMethods');
@@ -624,7 +646,7 @@ exports.createStore = _dereq_('./createStore');
 
 exports.connect = _dereq_('./connect');
 
-exports.ListenerMixin = _dereq_('./listenerMixin');
+exports.ListenerMixin = _dereq_('./ListenerMixin');
 
 exports.listenTo = _dereq_('./listenTo');
 
@@ -667,7 +689,7 @@ exports.nextTick = function(nextTick) {
  */
 exports.__keep = _dereq_('./Keep');
 
-},{"./Keep":2,"./ListenerMethods":3,"./PublisherMethods":4,"./all":5,"./connect":6,"./createAction":7,"./createStore":8,"./listenTo":10,"./listenToMany":11,"./listenerMixin":12,"./utils":13}],10:[function(_dereq_,module,exports){
+},{"./Keep":2,"./ListenerMethods":3,"./ListenerMixin":4,"./PublisherMethods":5,"./all":6,"./connect":7,"./createAction":8,"./createStore":9,"./listenTo":11,"./listenToMany":12,"./utils":13}],11:[function(_dereq_,module,exports){
 var Reflux = _dereq_('../src');
 
 
@@ -705,7 +727,7 @@ module.exports = function(listenable,callback,initial){
     };
 };
 
-},{"../src":9}],11:[function(_dereq_,module,exports){
+},{"../src":10}],12:[function(_dereq_,module,exports){
 var Reflux = _dereq_('../src');
 
 /**
@@ -740,29 +762,7 @@ module.exports = function(listenables){
     };
 };
 
-},{"../src":9}],12:[function(_dereq_,module,exports){
-var _ = _dereq_('./utils'),
-    ListenerMethods = _dereq_('./ListenerMethods');
-
-/**
- * A module meant to be consumed as a mixin by a React component. Supplies the methods from
- * `ListenerMethods` mixin and takes care of teardown of subscriptions.
- */
-module.exports = _.extend({
-
-    /**
-     * By adding this in the mixin we get error message if other React mixins try to use the same prop
-     */
-    subscriptions: [],
-
-    /**
-     * Cleans up all listener previously registered.
-     */
-    componentWillUnmount: ListenerMethods.stopListeningToAll
-
-}, ListenerMethods);
-
-},{"./ListenerMethods":3,"./utils":13}],13:[function(_dereq_,module,exports){
+},{"../src":10}],13:[function(_dereq_,module,exports){
 /*
  * isObject, extend, isFunction, isArguments are taken from undescore/lodash in
  * order to remove the dependency
@@ -812,6 +812,6 @@ exports.isArguments = function(value) {
     return value && typeof value == 'object' && typeof value.length == 'number' &&
       (toString.call(value) === '[object Arguments]' || (hasOwnProperty.call(value, 'callee' && !propertyIsEnumerable.call(value, 'callee')))) || false;
 };
-},{"eventemitter3":1}]},{},[9])
-(9)
+},{"eventemitter3":1}]},{},[10])
+(10)
 });
