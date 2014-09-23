@@ -1,35 +1,20 @@
-var _ = require('./utils');
-module.exports = {
+var _ = require('./utils'),
+    ListenerMethods = require('./ListenerMethods');
+
+/**
+ * A module meant to be consumed as a mixin by a React component. Supplies the methods from
+ * `ListenerMethods` mixin and takes care of teardown of subscriptions.
+ */
+module.exports = _.extend({
 
     /**
-     * Set up the mixin before the initial rendering occurs. Event listeners
-     * and callbacks should be registered once the component successfully
-     * mounted (as described in the React docs).
+     * By adding this in the mixin we get error message if other React mixins try to use the same prop
      */
-    componentWillMount: function() {
-        this.subscriptions = [];
-    },
-
+    subscriptions: [],
 
     /**
-     * Subscribes the given callback for action triggered
-     *
-     * @param {Action|Store} listenable An Action or Store that should be
-     *  listened to.
-     * @param {Function} callback The callback to register as event handler
-     * @param {Function} defaultCallback The callback to register as default handler
+     * Cleans up all listener previously registered.
      */
-    listenTo: function(listenable, callback, defaultCallback) {
-        var unsubscribe = listenable.listen(callback, this);
-        this.subscriptions.push(unsubscribe);
+    componentWillUnmount: ListenerMethods.stopListeningToAll
 
-        _.handleDefaultCallback(this, listenable, defaultCallback);
-    },
-
-    componentWillUnmount: function() {
-        this.subscriptions.forEach(function(unsubscribe) {
-            unsubscribe();
-        });
-        this.subscriptions = [];
-    }
-};
+}, ListenerMethods);

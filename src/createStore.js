@@ -1,67 +1,42 @@
-var _ = require('./utils');
+var _ = require('./utils'),
+    Reflux = require('../src'),
+    Keep = require('./Keep');
 
 /**
- * Creates an event emitting Data Store
+ * Creates an event emitting Data Store. It is mixed in with functions
+ * from the `ListenerMethods` and `PublisherMethods` mixins. `preEmit`
+ * and `shouldEmit` may be overridden in the definition object.
  *
  * @param {Object} definition The data store object definition
+ * @returns {Store} A data store instance
  */
 module.exports = function(definition) {
-    var store = new _.EventEmitter(),
-        eventLabel = "change";
+
+    definition = definition || {};
 
     function Store() {
-        this.registered = [];
+        var i=0, arr;
+        this.subscriptions = [];
+        this.emitter = new _.EventEmitter();
+        this.eventLabel = "change";
         if (this.init && _.isFunction(this.init)) {
             this.init();
         }
-    }
-    _.extend(Store.prototype, definition);
-    Store.prototype.listenTo = function(listenable, callback, defaultCallback) {
-        if (listenable === this) {
-            throw Error("Store is not able to listen to itself");
-        }
-        if (!_.isFunction(listenable.listen)) {
-            throw new TypeError(listenable + " is missing a listen method");
-        }
-        if (this.hasListener(listenable)) {
-            throw Error("Store cannot listen to this listenable because of circular loop");
-        }
-        _.handleDefaultCallback(this, listenable, defaultCallback);
-        this.registered.push(listenable);
-        var unsubscribe = listenable.listen(callback, this);
-        var self = this;
-        return function () {
-            unsubscribe();
-            self.registered.splice(self.registered.indexOf(listenable), 1);
-        };
-    };
-    Store.prototype.listen = function(callback, bindContext) {
-        var eventHandler = function(args) {
-            callback.apply(bindContext, args);
-        };
-        eventHandler.l = callback;
-        store.addListener(eventLabel, eventHandler);
-
-        return function() {
-            store.removeListener(eventLabel, eventHandler);
-        };
-    };
-    Store.prototype.trigger = function() {
-        store.emit(eventLabel, arguments);
-    };
-    Store.prototype.hasListener = function(listenable) {
-        var i = 0,
-            listener;
-
-        for (;i < this.registered.length; ++i) {
-            listener = this.registered[i];
-            if (listener === listenable || listener.hasListener && listener.hasListener(listenable)) {
-                return true;
+        if (this.listenables){
+            arr = [].concat(this.listenables);
+            for(;i < arr.length;i++){
+                this.listenToMany(arr[i]);
             }
         }
+    }
 
-        return false;
-    };
+    _.extend(Store.prototype, definition, Reflux.ListenerMethods, Reflux.PublisherMethods, {
+        preEmit: definition.preEmit || Reflux.PublisherMethods.preEmit,
+        shouldEmit: definition.shouldEmit || Reflux.PublisherMethods.shouldEmit
+    });
 
-    return new Store();
+    var store = new Store();
+    Keep.createdStores.push(store);
+
+    return store;
 };

@@ -12,17 +12,17 @@ describe('Managing subscriptions via ListenerMixin', function() {
         store;
 
     beforeEach(function() {
-      // simulate ReactJS component instantiation and mounting
-      component = Object.create(Reflux.ListenerMixin);
-      component.componentWillMount();
+        // simulate ReactJS component instantiation and mounting
+        component = Object.create(Reflux.ListenerMixin);
+        delete component.subscriptions;
 
-      action = Reflux.createAction();
+        action = Reflux.createAction();
 
-      promise = Q.Promise(function(resolve) {
-          component.listenTo(action, function() {
-              resolve(Array.prototype.slice.call(arguments, 0));
-          });
-      });
+        promise = Q.Promise(function(resolve) {
+            component.listenTo(action, function() {
+                resolve(Array.prototype.slice.call(arguments, 0));
+            });
+        });
     });
 
     it('should get argument given on action', function() {
@@ -37,33 +37,13 @@ describe('Managing subscriptions via ListenerMixin', function() {
         return assert.eventually.deepEqual(promise, [1337, 'ninja']);
     });
 
-    describe('when unmounting', function() {
-
-        beforeEach(function() {
-            component.componentWillUnmount();
-        });
-
-        it('the component should unsubscribe', function(done) {
-            var resolved = false;
-            promise.then(function() {
-                resolved = true;
-            });
-
-            action(1337, 'ninja');
-
-            setTimeout(function() {
-                assert.equal(resolved, false);
-                done();
-            }, 200);
-        });
-    });
-
     describe('get default data', function () {
         beforeEach(function() {
             component.componentWillUnmount();
         });
+
         function mountComponent() {
-            component.componentWillMount();
+            delete component.subscriptions;
             promise = Q.Promise(function(resolve) {
                 var setData = function () {
                     resolve(Array.prototype.slice.call(arguments, 0));
@@ -71,6 +51,7 @@ describe('Managing subscriptions via ListenerMixin', function() {
                 component.listenTo(store, setData, setData);
             });
         }
+
         it('should get default data from getDefaultData()', function () {
             store = Reflux.createStore({
                 getDefaultData: function () {
@@ -80,6 +61,7 @@ describe('Managing subscriptions via ListenerMixin', function() {
             mountComponent();
             return assert.eventually.equal(promise, 'default data');
         });
+
         it('should get default data from getDefaultData() returned promise', function () {
             store = Reflux.createStore({
                 getDefaultData: function () {
@@ -93,6 +75,21 @@ describe('Managing subscriptions via ListenerMixin', function() {
             mountComponent();
             return assert.eventually.equal(promise, 'default data');
         });
+    });
+
+    it("should include ListenerMethods",function(){
+        var s = Reflux.createStore({});
+        for(var m in Reflux.ListenerMethods){
+            assert.equal(s[m],Reflux.ListenerMethods[m]);
+        }
+    });
+
+    it("should use ListenerMethods.stopListeningToAll as componentWillUnmount",function(){
+        assert.equal(Reflux.ListenerMixin.componentWillUnmount,Reflux.ListenerMethods.stopListeningToAll);
+    });
+
+    it("should not mix in its own methods into ListenerMethods",function(){
+        assert.isUndefined(Reflux.ListenerMethods.componentWillUnmount);
     });
 
 });

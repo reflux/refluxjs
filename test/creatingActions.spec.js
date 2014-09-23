@@ -1,11 +1,21 @@
 var chai = require('chai'),
     assert = chai.assert,
     Reflux = require('../src'),
-    Q = require('q');
+    Q = require('q'),
+    sinon = require('sinon');
 
 chai.use(require('chai-as-promised'));
 
 describe('Creating action', function() {
+
+    it("should read preEmit, shouldEmit from definition, but not overwrite anything else",function(){
+        var def = {preEmit:"PRE",shouldEmit:"SHO",listen:"LIS",random:"RAN"},
+            action = Reflux.createAction(def);
+        assert.equal(action.preEmit, def.preEmit);
+        assert.equal(action.shouldEmit, def.shouldEmit);
+        assert.equal(action.random, def.random);
+        assert.equal(action.listen, Reflux.PublisherMethods.listen);
+    });
 
     var action,
         testArgs;
@@ -38,90 +48,58 @@ describe('Creating action', function() {
             return assert.eventually.deepEqual(promise, testArgs);
         });
 
+
         describe('when adding preEmit hook', function() {
+            var preEmit = sinon.spy(),
+                action = Reflux.createAction({preEmit:preEmit});
 
-            var savedPreEmit,
-                promisePreEmit;
-
-            beforeEach(function() {
-                savedPreEmit = action.preEmit;
-
-                promisePreEmit = Q.promise(function(resolve) {
-                    action.preEmit = function() {
-                        receivedArgs = Array.prototype.slice.call(arguments, 0);
-                        return resolve(receivedArgs);
-                    };
-                });
-            });
-
-            afterEach(function () {
-                action.preEmit = savedPreEmit;
-            });
+            action(1337,'test');
 
             it('should receive arguments from action functor', function() {
-                action.apply(null, testArgs);
-
-                return assert.eventually.deepEqual(promisePreEmit, testArgs);
+                assert.deepEqual(preEmit.firstCall.args,[1337,'test']);
             });
-
         });
 
-        describe('when replacing shouldEmit', function() {
+        describe('when adding shouldEmit hook',function(){
+            var context = {
+                validateListening:function(){},
+                fetchDefaultData:function(){}
+            };
 
-            var savedShouldEmit,
-                emitReturnValue,
-                promiseShouldEmit;
+            describe("when hook returns true",function(){
+                var shouldEmit = sinon.stub().returns(true),
+                    action = Reflux.createAction({shouldEmit:shouldEmit}),
+                    callback = sinon.spy();
+                Reflux.ListenerMethods.listenTo.call(context,action,callback);
+                action(1337,'test');
 
-            beforeEach(function () {
-                emitReturnValue = true;
-                savedShouldEmit = action.shouldEmit;
-
-                promiseShouldEmit = Q.promise(function(resolve) {
-                    action.shouldEmit = function() {
-                        receivedArgs = Array.prototype.slice.call(arguments, 0);
-                        resolve(receivedArgs);
-                        return emitReturnValue;
-                    };
+                it('should receive arguments from action functor', function() {
+                    assert.deepEqual(shouldEmit.firstCall.args,[1337,'test']);
                 });
 
-                hasRun = false;
-            });
-
-            afterEach(function() {
-                action.shouldEmit = savedShouldEmit;
-            });
-
-            it('should receive arguments from action functor', function() {
-                action.apply(null, testArgs);
-
-                return assert.eventually.deepEqual(promiseShouldEmit, testArgs);
-            });
-
-            describe('when shouldEmit returns false', function() {
-
-                beforeEach(function() {
-                    emitReturnValue = false;
-                });
-
-
-                it('should not emit when shouldEmit returns false', function(done) {
-                    var resolved = false;
-                    promise.then(function() {
-                        resolved = true;
-                    });
-
-                    action.apply(null, testArgs);
-
-                    setTimeout(function() {
-                      assert.isFalse(resolved);
-                      done();
-                    }, 20);
+                it('should still trigger to listeners',function(){
+                    assert.equal(callback.callCount,1);
+                    assert.deepEqual(callback.firstCall.args,[1337,'test']);
                 });
 
             });
 
+            describe("when hook returns false",function(){
+                var shouldEmit = sinon.stub().returns(false),
+                    action = Reflux.createAction({shouldEmit:shouldEmit}),
+                    callback = sinon.spy();
+                Reflux.ListenerMethods.listenTo.call(context,action,callback);
+                action(1337,'test');
+
+                it('should receive arguments from action functor', function() {
+                    assert.deepEqual(shouldEmit.firstCall.args,[1337,'test']);
+                });
+
+                it('should not trigger to listeners',function(){
+                    assert.equal(callback.callCount,0);
+                });
+            });
         });
-
     });
 
 });

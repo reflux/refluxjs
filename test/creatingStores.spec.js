@@ -2,7 +2,8 @@ var chai = require('chai'),
     assert = chai.assert,
     Reflux = require('../src'),
     _ = require('../src/utils'),
-    Q = require('q');
+    Q = require('q'),
+    sinon = require('sinon');
 
 chai.use(require('chai-as-promised'));
 
@@ -51,7 +52,7 @@ describe('Creating stores', function() {
         describe('and with listener unsubscribed', function() {
 
             beforeEach(function() {
-                unsubCallback();
+                unsubCallback.stop();
             });
 
             it('shouldn\'t have been called when action is called', function(done) {
@@ -187,6 +188,99 @@ describe('Creating stores', function() {
             return assert.eventually.equal(promise, '[...] default data');
         });
 
+    });
+
+    describe("the listenables property",function(){
+
+        describe("when given a single object",function(){
+            var defaultbardata = "DEFAULTBARDATA",
+                defaultbazdata = "DEFAULTBAZDATA",
+                listenables = {
+                    foo: {listen:sinon.spy()},
+                    bar: {
+                        listen:sinon.spy(),
+                        getDefaultData:sinon.stub().returns(defaultbardata)
+                    },
+                    baz: {
+                        listen:sinon.spy(),
+                        getDefaultData:sinon.stub().returns(defaultbazdata)
+                    },
+                    missing: {
+                        listen:sinon.spy()
+                    }
+                },
+                def = {
+                    onFoo:"methodFOO",
+                    bar:sinon.spy(),
+                    onBaz:sinon.spy(),
+                    onBazDefault:sinon.spy(),
+                    listenables:listenables
+                },
+                store = Reflux.createStore(def);
+
+            it("should listenTo all listenables with the corresponding callbacks",function(){
+                assert.deepEqual(listenables.foo.listen.firstCall.args,[def.onFoo,store]);
+                assert.deepEqual(listenables.bar.listen.firstCall.args,[def.bar,store]);
+                assert.deepEqual(listenables.baz.listen.firstCall.args,[def.onBaz,store]);
+            });
+
+            it("should not try to listen to actions without corresponding props in the store",function(){
+                assert.equal(listenables.missing.listen.callCount,0);
+            });
+
+            it("should call main callback if listenable has getDefaultData but listener has no default-specific cb",function(){
+                assert.equal(listenables.bar.getDefaultData.callCount,1);
+                assert.equal(def.bar.firstCall.args[0],defaultbardata);
+            });
+
+            it("should call default callback if exist and listenable has getDefaultData",function(){
+                assert.equal(listenables.baz.getDefaultData.callCount,1);
+                assert.equal(def.onBaz.callCount,0);
+                assert.equal(def.onBazDefault.firstCall.args[0],defaultbazdata);
+            });
+        });
+
+        describe("when given an array",function(){
+            var first = {foo:{listen:sinon.spy()}},
+                second = {bar:{listen:sinon.spy()},baz:{listen:sinon.spy()}},
+                arr = [first,second],
+                def = {foo:"foo",bar:"bar",baz:"baz",listenables:arr},
+                store = Reflux.createStore(def);
+
+            it("should add listeners from all objects in the array",function(){
+                assert.deepEqual(first.foo.listen.firstCall.args,[def.foo,store]);
+                assert.deepEqual(second.bar.listen.firstCall.args,[def.bar,store]);
+                assert.deepEqual(second.baz.listen.firstCall.args,[def.baz,store]);
+            });
+
+        });
+    });
+
+    it("should not be possible to override API functions with props in the definition",function(){
+        var def = {listenTo:"FOO",listen:"BAR",trigger:"BAZ",hasListener:"BIN",listenToMany:"BAH"},
+            store = Reflux.createStore(def);
+        assert.isFunction(store.listenTo);
+        assert.isFunction(store.trigger);
+        assert.isFunction(store.hasListener);
+        assert.isFunction(store.listenToMany);
+    });
+
+    it("should be possible to overwrite preEmit and shouldEmit",function(){
+        var def = {preEmit:"FOO",shouldEmit:"BAR"},
+            store = Reflux.createStore(def);
+        assert.equal(store.preEmit,def.preEmit);
+        assert.equal(store.shouldEmit,def.shouldEmit);
+    });
+
+    it("should include ListenerMethods",function(){
+        for(var m in Reflux.ListenerMethods){
+            assert.equal(Reflux.createStore({})[m],Reflux.ListenerMethods[m]);
+        }
+    });
+
+    it("should not mix in its own methods into ListenerMethods",function(){
+        assert.isUndefined(Reflux.ListenerMethods.listen);
+        assert.isUndefined(Reflux.ListenerMethods.trigger);
     });
 
 });
