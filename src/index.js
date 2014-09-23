@@ -6,6 +6,8 @@ exports.createAction = require('./createAction');
 
 exports.createStore = require('./createStore');
 
+exports.connect = require('./connect');
+
 exports.listenerMixin = exports.ListenerMixin = require('./listenerMixin');
 
 exports.listenTo = require('./listenTo');

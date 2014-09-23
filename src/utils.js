@@ -35,6 +35,14 @@ exports.callbackName = function(string){
     return "on"+string.charAt(0).toUpperCase()+string.slice(1);
 };
 
+exports.object = function(keys,vals){
+    var o={}, i=0;
+    for(;i<keys.length;i++){
+        o[keys[i]] = vals[i];
+    }
+    return o;
+};
+
 exports.isArguments = function(value) {
     return value && typeof value == 'object' && typeof value.length == 'number' &&
       (toString.call(value) === '[object Arguments]' || (hasOwnProperty.call(value, 'callee' && !propertyIsEnumerable.call(value, 'callee')))) || false;
