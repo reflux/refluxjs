@@ -12,17 +12,17 @@ describe('Managing subscriptions via ListenerMixin', function() {
         store;
 
     beforeEach(function() {
-      // simulate ReactJS component instantiation and mounting
-      component = Object.create(Reflux.ListenerMixin);
-      delete component.subscriptions;
+        // simulate ReactJS component instantiation and mounting
+        component = Object.create(Reflux.ListenerMixin);
+        delete component.subscriptions;
 
-      action = Reflux.createAction();
+        action = Reflux.createAction();
 
-      promise = Q.Promise(function(resolve) {
-          component.listenTo(action, function() {
-              resolve(Array.prototype.slice.call(arguments, 0));
-          });
-      });
+        promise = Q.Promise(function(resolve) {
+            component.listenTo(action, function() {
+                resolve(Array.prototype.slice.call(arguments, 0));
+            });
+        });
     });
 
     it('should get argument given on action', function() {
@@ -41,6 +41,7 @@ describe('Managing subscriptions via ListenerMixin', function() {
         beforeEach(function() {
             component.componentWillUnmount();
         });
+
         function mountComponent() {
             delete component.subscriptions;
             promise = Q.Promise(function(resolve) {
@@ -50,6 +51,7 @@ describe('Managing subscriptions via ListenerMixin', function() {
                 component.listenTo(store, setData, setData);
             });
         }
+
         it('should get default data from getDefaultData()', function () {
             store = Reflux.createStore({
                 getDefaultData: function () {
@@ -59,6 +61,7 @@ describe('Managing subscriptions via ListenerMixin', function() {
             mountComponent();
             return assert.eventually.equal(promise, 'default data');
         });
+
         it('should get default data from getDefaultData() returned promise', function () {
             store = Reflux.createStore({
                 getDefaultData: function () {
