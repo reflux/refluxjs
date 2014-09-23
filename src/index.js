@@ -12,6 +12,8 @@ exports.listenerMixin = exports.ListenerMixin = require('./listenerMixin');
 
 exports.listenTo = require('./listenTo');
 
+exports.listenToMany = require('./listenToMany');
+
 exports.all = require('./all');
 
 /**
