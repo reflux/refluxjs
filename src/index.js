@@ -8,7 +8,7 @@ exports.createStore = require('./createStore');
 
 exports.connect = require('./connect');
 
-exports.ListenerMixin = require('./listenerMixin');
+exports.ListenerMixin = require('./ListenerMixin');
 
 exports.listenTo = require('./listenTo');
 
