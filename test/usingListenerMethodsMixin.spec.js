@@ -1,11 +1,11 @@
 var chai = require('chai'),
     assert = chai.assert,
     Reflux = require('../src'),
-    //_ = require('../src/utils'),
     sinon = require('sinon');
 
-describe("the listenerMethods",function(){
-    var listenerMethods = Reflux.listenerMethods;
+describe("using the ListenerMethods",function(){
+    var ListenerMethods = Reflux.ListenerMethods;
+
     describe("the listenToMany function",function(){
         var listenables = { foo: "FOO", bar: "BAR", baz: "BAZ", missing: "MISSING"},
             context = {
@@ -15,7 +15,8 @@ describe("the listenerMethods",function(){
                 onBazDefault:"onBazDefault",
                 listenTo:sinon.spy()
             };
-        Reflux.listenerMixin.listenToMany.call(context,listenables);
+        Reflux.ListenerMixin.listenToMany.call(context,listenables);
+
         it("should call listenTo for all listenables with corresponding callbacks",function(){
             assert.equal(context.listenTo.callCount,3);
             assert.deepEqual(context.listenTo.firstCall.args,[listenables.foo,"onFoo","onFoo"]);
@@ -23,8 +24,10 @@ describe("the listenerMethods",function(){
             assert.deepEqual(context.listenTo.thirdCall.args,[listenables.baz,"onBaz","onBazDefault"]);
         });
     });
+
     describe("the listenTo function",function(){
-        var listenTo = listenerMethods.listenTo;
+        var listenTo = ListenerMethods.listenTo;
+
         it("will throw error if validation of listenable returns text",function(){
             var errormsg = "ERROR! ERROR!",
                 context = {validateListening: sinon.stub().returns(errormsg)},
@@ -35,6 +38,7 @@ describe("the listenerMethods",function(){
             assert.equal(context.validateListening.callCount,1);
             assert.equal(context.validateListening.firstCall.args[0],listenable);
         });
+
         describe("when setting a subscription",function(){
             var unsub = sinon.spy(),
                 listenable = {listen:sinon.stub().returns(unsub)},
@@ -45,15 +49,19 @@ describe("the listenerMethods",function(){
                     fetchDefaultData: sinon.stub()
                 },
                 subobj = listenTo.call(context,listenable,callback,defaultcallback);
+
             it("adds the returned subscription object to a new array if none was there",function(){
                 assert.equal(subobj,context.subscriptions[0]);
             });
+
             it("calls the listen method on the listener",function(){
                 assert.deepEqual(listenable.listen.firstCall.args,[callback,context]);
             });
+
             it("tries to get default data correctly",function(){
                 assert.deepEqual(context.fetchDefaultData.firstCall.args,[listenable,defaultcallback]);
             });
+
             describe("the returned subscription object",function(){
                 it("contains the listenable and a stop function",function(){
                     assert.isFunction(subobj.stop);
@@ -66,6 +74,7 @@ describe("the listenerMethods",function(){
                     });
                 });
             });
+
             describe("when setting a second subscription",function(){
                 var secondlistenable = {listen:sinon.stub()},
                     secondsubobj = listenTo.call(context,secondlistenable,callback);
@@ -73,6 +82,7 @@ describe("the listenerMethods",function(){
                     assert.equal(context.subscriptions[1],secondsubobj);
                 });
             });
+
             describe("when cancelling a subscription without passing true",function(){
                 var context = {
                         validateListening:function(){},
@@ -90,7 +100,9 @@ describe("the listenerMethods",function(){
             });
         });
     });
+
     describe('the fetchDefaultData method',function(){
+
         describe('when called with method name and publisher with getDefaultData method',function(){
             var defaultdata = "DEFAULTDATA",
                 listenable = {
@@ -99,26 +111,31 @@ describe("the listenerMethods",function(){
                 context = {
                     defcb: sinon.spy()
                 };
-            listenerMethods.fetchDefaultData.call(context,listenable,"defcb");
+            ListenerMethods.fetchDefaultData.call(context,listenable,"defcb");
+
             it("calls getDefaultData on the publisher",function(){
                 assert.equal(listenable.getDefaultData.callCount,1);
             });
+
             it("passes the returned data to the named method",function(){
                 assert.deepEqual(context.defcb.firstCall.args,[defaultdata]);
             });
         });
     });
+
     describe('the stopListeningToAll method', function() {
         var unsub1 = {stop:sinon.spy()},
             unsub2 = {stop:sinon.spy()},
             ctx = {subscriptions:[unsub1,unsub2]};
-        listenerMethods.stopListeningToAll.call(ctx);
+        ListenerMethods.stopListeningToAll.call(ctx);
+
         it('should call `stop` on all subscription objects in the subscriptions array', function() {
             assert.equal(unsub1.stop.callCount,1);
             assert.equal(unsub1.stop.firstCall.args[0],true);
             assert.equal(unsub2.stop.callCount,1);
             assert.equal(unsub2.stop.firstCall.args[0],true);
         });
+
         it("should end up with an empty subscriptions array",function(){
             assert.deepEqual(ctx.subscriptions,[]);
         });

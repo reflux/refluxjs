@@ -1,8 +1,7 @@
 var _ = require('./utils');
 
 /**
- * A module of methods related to listening. This module is consumed by `createStore`,
- * `listenerMixin` and the `listenTo` mixin factory.
+ * A module of methods related to listening.
  */
 module.exports = {
 

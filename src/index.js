@@ -1,6 +1,6 @@
-exports.listenerMethods = require('./listenerMethods');
+exports.ListenerMethods = require('./ListenerMethods');
 
-exports.publisherMethods = require('./publisherMethods');
+exports.PublisherMethods = require('./PublisherMethods');
 
 exports.createAction = require('./createAction');
 
@@ -8,7 +8,7 @@ exports.createStore = require('./createStore');
 
 exports.connect = require('./connect');
 
-exports.listenerMixin = exports.ListenerMixin = require('./listenerMixin');
+exports.ListenerMixin = require('./listenerMixin');
 
 exports.listenTo = require('./listenTo');
 
@@ -49,4 +49,4 @@ exports.nextTick = function(nextTick) {
 /**
  * Provides the set of created actions and stores for introspection
  */
-exports.__keep = require('./keep');
+exports.__keep = require('./Keep');

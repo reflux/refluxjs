@@ -205,220 +205,6 @@ if ('object' === typeof module && module.exports) {
 }
 
 },{}],2:[function(_dereq_,module,exports){
-var createAction = _dereq_('./createAction');
-
-var slice = Array.prototype.slice;
-
-/**
- * Track a set of Actions and Stores. Use Reflux.all if you need to handle
- * data coming in parallel.
- *
- * @param {...Action|Store} listenables Actions and Stores that should be
- *  tracked.
- * @returns {Action} An action which tracks the provided Actions and Stores.
- *  The action will emit once all of the provided listenables have emitted at
- *  least once.
- */
-module.exports = function(/* listenables... */) {
-    var numberOfListenables = arguments.length,
-        // create a new array of the expected size. The initial
-        // values will be falsy, which is fine for us.
-        // Once each item in the array is truthy, the callback can be called
-        listenablesEmitted,
-        // these arguments will be used to *apply* the action.
-        args,
-        // this action combines all the listenables
-        action = createAction();
-
-    action.hasListener = function(listenable) {
-        var i = 0, listener;
-
-        for (; i < args.length; ++i) {
-            listener = args[i];
-            if (listener === listenable || listener.hasListener && listener.hasListener(listenable)) {
-                return true;
-            }
-        }
-
-        return false;
-    };
-
-    reset();
-
-    for (var i = 0; i < numberOfListenables; i++) {
-        arguments[i].listen(newListener(i), null);
-    }
-
-    return action;
-
-    function reset() {
-        listenablesEmitted = new Array(numberOfListenables);
-        args = new Array(numberOfListenables);
-    }
-
-    function newListener(i) {
-        return function() {
-            listenablesEmitted[i] = true;
-            // Reflux users should not need to care about Array and arguments
-            // differences. This makes sure that they get the expected Array
-            // interface
-            args[i] = slice.call(arguments);
-            emitWhenAllListenablesEmitted();
-        };
-    }
-
-    function emitWhenAllListenablesEmitted() {
-        if (didAllListenablesEmit()) {
-            action.apply(action, args);
-            reset();
-        }
-    }
-
-    function didAllListenablesEmit() {
-        // reduce cannot be used because it only iterates over *present*
-        // elements in the array. Initially the Array doesn't contain
-        // elements. For this reason the usage of reduce would always indicate
-        // that all listenables emitted.
-        for (var i = 0; i < numberOfListenables; i++) {
-            if (!listenablesEmitted[i]) {
-                return false;
-            }
-        }
-        return true;
-    }
-};
-
-},{"./createAction":3}],3:[function(_dereq_,module,exports){
-var _ = _dereq_('./utils'),
-    Reflux = _dereq_('../src'),
-    keep = _dereq_('./keep');
-
-/**
- * Creates an action functor object. It is mixed in with functions
- * from the `publisherMethods` mixin. `preEmit` and `shouldEmit` may
- * be overridden in the definition object.
- *
- * @param {Object} definition The action object definition
- */
-module.exports = function(definition) {
-
-    definition = definition || {};
-
-    var context = _.extend({
-        eventLabel: "action",
-        emitter: new _.EventEmitter()
-    },definition,Reflux.publisherMethods,{
-        preEmit: definition.preEmit || Reflux.publisherMethods.preEmit,
-        shouldEmit: definition.shouldEmit || Reflux.publisherMethods.shouldEmit
-    });
-
-    var functor = function() {
-        context.triggerAsync.apply(context,arguments);
-    };
-
-    _.extend(functor,context);
-
-    keep.createdActions.push(functor);
-
-    return functor;
-
-};
-
-},{"../src":5,"./keep":6,"./utils":11}],4:[function(_dereq_,module,exports){
-var _ = _dereq_('./utils'),
-    Reflux = _dereq_('../src'),
-    keep = _dereq_('./keep');
-
-/**
- * Creates an event emitting Data Store. It is mixed in with functions
- * from the `listenerMethods` and `publisherMethods` mixins. `preEmit`
- * and `shouldEmit` may be overridden in the definition object.
- *
- * @param {Object} definition The data store object definition
- * @returns {Store} A data store instance
- */
-module.exports = function(definition) {
-
-    definition = definition || {};
-
-    function Store() {
-        var i=0, arr;
-        this.subscriptions = [];
-        this.emitter = new _.EventEmitter();
-        this.eventLabel = "change";
-        if (this.init && _.isFunction(this.init)) {
-            this.init();
-        }
-        if (this.listenables){
-            arr = [].concat(this.listenables);
-            for(;i < arr.length;i++){
-                this.listenToMany(arr[i]);
-            }
-        }
-    }
-
-    _.extend(Store.prototype, definition, Reflux.listenerMethods, Reflux.publisherMethods, {
-        preEmit: definition.preEmit || Reflux.publisherMethods.preEmit,
-        shouldEmit: definition.shouldEmit || Reflux.publisherMethods.shouldEmit
-    });
-
-    var store = new Store();
-    keep.createdStores.push(store);
-
-    return store;
-};
-
-},{"../src":5,"./keep":6,"./utils":11}],5:[function(_dereq_,module,exports){
-exports.listenerMethods = _dereq_('./listenerMethods');
-
-exports.publisherMethods = _dereq_('./publisherMethods');
-
-exports.createAction = _dereq_('./createAction');
-
-exports.createStore = _dereq_('./createStore');
-
-exports.listenerMixin = exports.ListenerMixin = _dereq_('./listenerMixin');
-
-exports.listenTo = _dereq_('./listenTo');
-
-exports.all = _dereq_('./all');
-
-/**
- * Convenience function for creating a set of actions
- *
- * @param actionNames the names for the actions to be created
- * @returns an object with actions of corresponding action names
- */
-exports.createActions = function(actionNames) {
-    var i = 0, actions = {};
-    for (; i < actionNames.length; i++) {
-        actions[actionNames[i]] = exports.createAction();
-    }
-    return actions;
-};
-
-/**
- * Sets the eventmitter that Reflux uses
- */
-exports.setEventEmitter = function(ctx) {
-    var _ = _dereq_('./utils');
-    _.EventEmitter = ctx;
-};
-
-/**
- * Sets the method used for deferring actions and stores
- */
-exports.nextTick = function(nextTick) {
-    var _ = _dereq_('./utils');
-    _.nextTick = nextTick;
-};
-
-/**
- * Provides the set of created actions and stores for introspection
- */
-exports.__keep = _dereq_('./keep');
-
-},{"./all":2,"./createAction":3,"./createStore":4,"./keep":6,"./listenTo":7,"./listenerMethods":8,"./listenerMixin":9,"./publisherMethods":10,"./utils":11}],6:[function(_dereq_,module,exports){
 exports.createdStores = [];
 
 exports.createdActions = [];
@@ -432,50 +218,11 @@ exports.reset = function() {
     }
 };
 
-},{}],7:[function(_dereq_,module,exports){
-var Reflux = _dereq_('../src');
-
-
-/**
- * A mixin factory for a React component. Meant as a more convenient way of using the `listenerMixin`,
- * without having to manually set listeners in the `componentDidMount` method.
- *
- * @param {Action|Store} listenable An Action or Store that should be
- *  listened to.
- * @param {Function|String} callback The callback to register as event handler
- * @param {Function|String} defaultCallback The callback to register as default handler
- * @returns {Object} An object to be used as a mixin, which sets up the listener for the given listenable.
- */
-module.exports = function(listenable,callback,initial){
-    return {
-        /**
-         * Set up the mixin before the initial rendering occurs. Import methods from `listenerMethods`
-         * and then make the call to `listenTo` with the arguments provided to the factory function
-         */
-        componentDidMount: function() {
-            for(var m in Reflux.listenerMethods){
-                if (this[m] !== Reflux.listenerMethods[m]){
-                    if (this[m]){
-                        throw "Can't have other property '"+m+"' when using Reflux.listenTo!";
-                    }
-                    this[m] = Reflux.listenerMethods[m];
-                }
-            }
-            this.listenTo(listenable,callback,initial);
-        },
-        /**
-         * Cleans up all listener previously registered.
-         */
-        componentWillUnmount: Reflux.listenerMethods.stopListeningToAll
-    };
-};
-
-},{"../src":5}],8:[function(_dereq_,module,exports){
+},{}],3:[function(_dereq_,module,exports){
 var _ = _dereq_('./utils');
 
 /**
- * A module of methods related to listening. This module is consumed by `createStore`,
- * `listenerMixin` and the `listenTo` mixin factory.
+ * A module of methods related to listening.
  */
 module.exports = {
 
@@ -613,29 +360,7 @@ module.exports = {
 };
 
 
-},{"./utils":11}],9:[function(_dereq_,module,exports){
-var _ = _dereq_('./utils'),
-    listenerMethods = _dereq_('./listenerMethods');
-
-/**
- * A module meant to be consumed as a mixin by a React component. Supplies the methods from
- * `listenerMethods` mixin and takes care of teardown of subscriptions.
- */
-module.exports = _.extend({
-
-    /**
-     * By adding this in the mixin we get error message if other React mixins try to use the same prop
-     */
-    subscriptions: [],
-
-    /**
-     * Cleans up all listener previously registered.
-     */
-    componentWillUnmount: listenerMethods.stopListeningToAll
-
-}, listenerMethods);
-
-},{"./listenerMethods":8,"./utils":11}],10:[function(_dereq_,module,exports){
+},{"./utils":13}],4:[function(_dereq_,module,exports){
 var _ = _dereq_('./utils');
 
 /**
@@ -647,7 +372,9 @@ module.exports = {
     /**
      * Hook used by the publisher that is invoked before emitting
      * and before `shouldEmit`. The arguments are the ones that the action
-     * is invoked with.
+     * is invoked with. If this function returns something other than
+     * undefined, that will be passed on as arguments for shouldEmit and
+     * emission.
      */
     preEmit: function() {},
 
@@ -681,8 +408,9 @@ module.exports = {
      * Publishes an event using `this.emitter` (if `shouldEmit` agrees)
      */
     trigger: function() {
-        var args = arguments;
-        this.preEmit.apply(this, args);
+        var args = arguments,
+            pre = this.preEmit.apply(this, args);
+        args = pre === undefined ? args : _.isArguments(pre) ? pre : [].concat(pre);
         if (this.shouldEmit.apply(this, args)) {
             this.emitter.emit(this.eventLabel, args);
         }
@@ -699,12 +427,346 @@ module.exports = {
     }
 };
 
-},{"./utils":11}],11:[function(_dereq_,module,exports){
+},{"./utils":13}],5:[function(_dereq_,module,exports){
+var createAction = _dereq_('./createAction');
+
+var slice = Array.prototype.slice;
+
+/**
+ * Track a set of Actions and Stores. Use Reflux.all if you need to handle
+ * data coming in parallel.
+ *
+ * @param {...Action|Store} listenables Actions and Stores that should be
+ *  tracked.
+ * @returns {Action} An action which tracks the provided Actions and Stores.
+ *  The action will emit once all of the provided listenables have emitted at
+ *  least once.
+ */
+module.exports = function(/* listenables... */) {
+    var numberOfListenables = arguments.length,
+        // create a new array of the expected size. The initial
+        // values will be falsy, which is fine for us.
+        // Once each item in the array is truthy, the callback can be called
+        listenablesEmitted,
+        // these arguments will be used to *apply* the action.
+        args,
+        // this action combines all the listenables
+        action = createAction();
+
+    action.hasListener = function(listenable) {
+        var i = 0, listener;
+
+        for (; i < args.length; ++i) {
+            listener = args[i];
+            if (listener === listenable || listener.hasListener && listener.hasListener(listenable)) {
+                return true;
+            }
+        }
+
+        return false;
+    };
+
+    reset();
+
+    for (var i = 0; i < numberOfListenables; i++) {
+        arguments[i].listen(newListener(i), null);
+    }
+
+    return action;
+
+    function reset() {
+        listenablesEmitted = new Array(numberOfListenables);
+        args = new Array(numberOfListenables);
+    }
+
+    function newListener(i) {
+        return function() {
+            listenablesEmitted[i] = true;
+            // Reflux users should not need to care about Array and arguments
+            // differences. This makes sure that they get the expected Array
+            // interface
+            args[i] = slice.call(arguments);
+            emitWhenAllListenablesEmitted();
+        };
+    }
+
+    function emitWhenAllListenablesEmitted() {
+        if (didAllListenablesEmit()) {
+            action.apply(action, args);
+            reset();
+        }
+    }
+
+    function didAllListenablesEmit() {
+        // reduce cannot be used because it only iterates over *present*
+        // elements in the array. Initially the Array doesn't contain
+        // elements. For this reason the usage of reduce would always indicate
+        // that all listenables emitted.
+        for (var i = 0; i < numberOfListenables; i++) {
+            if (!listenablesEmitted[i]) {
+                return false;
+            }
+        }
+        return true;
+    }
+};
+
+},{"./createAction":7}],6:[function(_dereq_,module,exports){
+var Reflux = _dereq_('../src'),
+    _ = _dereq_('./utils');
+
+module.exports = function(listenable,key){
+    return {
+        componentDidMount: function(){
+            for(var m in Reflux.ListenerMethods){
+                if (this[m] !== Reflux.ListenerMethods[m]){
+                    if (this[m]){
+                        throw "Can't have other property '"+m+"' when using Reflux.listenTo!";
+                    }
+                    this[m] = Reflux.ListenerMethods[m];
+                }
+            }
+            var me = this, cb = (key ? function(v){me.setState(_.object([key],[v]));} : this.setState);
+            this.listenTo(listenable,cb,cb);
+        },
+        componentWillUnmount: Reflux.ListenerMixin.componentWillUnmount
+    };
+};
+
+},{"../src":9,"./utils":13}],7:[function(_dereq_,module,exports){
+var _ = _dereq_('./utils'),
+    Reflux = _dereq_('../src'),
+    Keep = _dereq_('./Keep');
+
+/**
+ * Creates an action functor object. It is mixed in with functions
+ * from the `PublisherMethods` mixin. `preEmit` and `shouldEmit` may
+ * be overridden in the definition object.
+ *
+ * @param {Object} definition The action object definition
+ */
+module.exports = function(definition) {
+
+    definition = definition || {};
+
+    var context = _.extend({
+        eventLabel: "action",
+        emitter: new _.EventEmitter()
+    },definition,Reflux.PublisherMethods,{
+        preEmit: definition.preEmit || Reflux.PublisherMethods.preEmit,
+        shouldEmit: definition.shouldEmit || Reflux.PublisherMethods.shouldEmit
+    });
+
+    var functor = function() {
+        context.triggerAsync.apply(context, arguments);
+    };
+
+    _.extend(functor,context);
+
+    Keep.createdActions.push(functor);
+
+    return functor;
+
+};
+
+},{"../src":9,"./Keep":2,"./utils":13}],8:[function(_dereq_,module,exports){
+var _ = _dereq_('./utils'),
+    Reflux = _dereq_('../src'),
+    Keep = _dereq_('./Keep');
+
+/**
+ * Creates an event emitting Data Store. It is mixed in with functions
+ * from the `ListenerMethods` and `PublisherMethods` mixins. `preEmit`
+ * and `shouldEmit` may be overridden in the definition object.
+ *
+ * @param {Object} definition The data store object definition
+ * @returns {Store} A data store instance
+ */
+module.exports = function(definition) {
+
+    definition = definition || {};
+
+    function Store() {
+        var i=0, arr;
+        this.subscriptions = [];
+        this.emitter = new _.EventEmitter();
+        this.eventLabel = "change";
+        if (this.init && _.isFunction(this.init)) {
+            this.init();
+        }
+        if (this.listenables){
+            arr = [].concat(this.listenables);
+            for(;i < arr.length;i++){
+                this.listenToMany(arr[i]);
+            }
+        }
+    }
+
+    _.extend(Store.prototype, definition, Reflux.ListenerMethods, Reflux.PublisherMethods, {
+        preEmit: definition.preEmit || Reflux.PublisherMethods.preEmit,
+        shouldEmit: definition.shouldEmit || Reflux.PublisherMethods.shouldEmit
+    });
+
+    var store = new Store();
+    Keep.createdStores.push(store);
+
+    return store;
+};
+
+},{"../src":9,"./Keep":2,"./utils":13}],9:[function(_dereq_,module,exports){
+exports.ListenerMethods = _dereq_('./ListenerMethods');
+
+exports.PublisherMethods = _dereq_('./PublisherMethods');
+
+exports.createAction = _dereq_('./createAction');
+
+exports.createStore = _dereq_('./createStore');
+
+exports.connect = _dereq_('./connect');
+
+exports.ListenerMixin = _dereq_('./listenerMixin');
+
+exports.listenTo = _dereq_('./listenTo');
+
+exports.listenToMany = _dereq_('./listenToMany');
+
+exports.all = _dereq_('./all');
+
+/**
+ * Convenience function for creating a set of actions
+ *
+ * @param actionNames the names for the actions to be created
+ * @returns an object with actions of corresponding action names
+ */
+exports.createActions = function(actionNames) {
+    var i = 0, actions = {};
+    for (; i < actionNames.length; i++) {
+        actions[actionNames[i]] = exports.createAction();
+    }
+    return actions;
+};
+
+/**
+ * Sets the eventmitter that Reflux uses
+ */
+exports.setEventEmitter = function(ctx) {
+    var _ = _dereq_('./utils');
+    _.EventEmitter = ctx;
+};
+
+/**
+ * Sets the method used for deferring actions and stores
+ */
+exports.nextTick = function(nextTick) {
+    var _ = _dereq_('./utils');
+    _.nextTick = nextTick;
+};
+
+/**
+ * Provides the set of created actions and stores for introspection
+ */
+exports.__keep = _dereq_('./Keep');
+
+},{"./Keep":2,"./ListenerMethods":3,"./PublisherMethods":4,"./all":5,"./connect":6,"./createAction":7,"./createStore":8,"./listenTo":10,"./listenToMany":11,"./listenerMixin":12,"./utils":13}],10:[function(_dereq_,module,exports){
+var Reflux = _dereq_('../src');
+
+
+/**
+ * A mixin factory for a React component. Meant as a more convenient way of using the `ListenerMixin`,
+ * without having to manually set listeners in the `componentDidMount` method.
+ *
+ * @param {Action|Store} listenable An Action or Store that should be
+ *  listened to.
+ * @param {Function|String} callback The callback to register as event handler
+ * @param {Function|String} defaultCallback The callback to register as default handler
+ * @returns {Object} An object to be used as a mixin, which sets up the listener for the given listenable.
+ */
+module.exports = function(listenable,callback,initial){
+    return {
+        /**
+         * Set up the mixin before the initial rendering occurs. Import methods from `ListenerMethods`
+         * and then make the call to `listenTo` with the arguments provided to the factory function
+         */
+        componentDidMount: function() {
+            for(var m in Reflux.ListenerMethods){
+                if (this[m] !== Reflux.ListenerMethods[m]){
+                    if (this[m]){
+                        throw "Can't have other property '"+m+"' when using Reflux.listenTo!";
+                    }
+                    this[m] = Reflux.ListenerMethods[m];
+                }
+            }
+            this.listenTo(listenable,callback,initial);
+        },
+        /**
+         * Cleans up all listener previously registered.
+         */
+        componentWillUnmount: Reflux.ListenerMethods.stopListeningToAll
+    };
+};
+
+},{"../src":9}],11:[function(_dereq_,module,exports){
+var Reflux = _dereq_('../src');
+
+/**
+ * A mixin factory for a React component. Meant as a more convenient way of using the `listenerMixin`,
+ * without having to manually set listeners in the `componentDidMount` method. This version is used
+ * to automatically set up a `listenToMany` call.
+ *
+ * @param {Object} listenables An object of listenables
+ * @returns {Object} An object to be used as a mixin, which sets up the listeners for the given listenables.
+ */
+module.exports = function(listenables){
+    return {
+        /**
+         * Set up the mixin before the initial rendering occurs. Import methods from `ListenerMethods`
+         * and then make the call to `listenTo` with the arguments provided to the factory function
+         */
+        componentDidMount: function() {
+            for(var m in Reflux.ListenerMethods){
+                if (this[m] !== Reflux.ListenerMethods[m]){
+                    if (this[m]){
+                        throw "Can't have other property '"+m+"' when using Reflux.listenToMany!";
+                    }
+                    this[m] = Reflux.ListenerMethods[m];
+                }
+            }
+            this.listenToMany(listenables);
+        },
+        /**
+         * Cleans up all listener previously registered.
+         */
+        componentWillUnmount: Reflux.ListenerMethods.stopListeningToAll
+    };
+};
+
+},{"../src":9}],12:[function(_dereq_,module,exports){
+var _ = _dereq_('./utils'),
+    ListenerMethods = _dereq_('./ListenerMethods');
+
+/**
+ * A module meant to be consumed as a mixin by a React component. Supplies the methods from
+ * `ListenerMethods` mixin and takes care of teardown of subscriptions.
+ */
+module.exports = _.extend({
+
+    /**
+     * By adding this in the mixin we get error message if other React mixins try to use the same prop
+     */
+    subscriptions: [],
+
+    /**
+     * Cleans up all listener previously registered.
+     */
+    componentWillUnmount: ListenerMethods.stopListeningToAll
+
+}, ListenerMethods);
+
+},{"./ListenerMethods":3,"./utils":13}],13:[function(_dereq_,module,exports){
 /*
- * isObject, extend, isFunction, and bind are taken from undescore/lodash in
+ * isObject, extend, isFunction, isArguments are taken from undescore/lodash in
  * order to remove the dependency
  */
-
 var isObject = exports.isObject = function(obj) {
     var type = typeof obj;
     return type === 'function' || type === 'object' && !!obj;
@@ -738,6 +800,18 @@ exports.callbackName = function(string){
     return "on"+string.charAt(0).toUpperCase()+string.slice(1);
 };
 
-},{"eventemitter3":1}]},{},[5])
-(5)
+exports.object = function(keys,vals){
+    var o={}, i=0;
+    for(;i<keys.length;i++){
+        o[keys[i]] = vals[i];
+    }
+    return o;
+};
+
+exports.isArguments = function(value) {
+    return value && typeof value == 'object' && typeof value.length == 'number' &&
+      (toString.call(value) === '[object Arguments]' || (hasOwnProperty.call(value, 'callee' && !propertyIsEnumerable.call(value, 'callee')))) || false;
+};
+},{"eventemitter3":1}]},{},[9])
+(9)
 });

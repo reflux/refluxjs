@@ -11,10 +11,10 @@ describe('Creating action', function() {
     it("should read preEmit, shouldEmit from definition, but not overwrite anything else",function(){
         var def = {preEmit:"PRE",shouldEmit:"SHO",listen:"LIS",random:"RAN"},
             action = Reflux.createAction(def);
-        assert.equal(action.preEmit,def.preEmit);
-        assert.equal(action.shouldEmit,def.shouldEmit);
-        assert.equal(action.random,def.random);
-        assert.equal(action.listen,Reflux.publisherMethods.listen);
+        assert.equal(action.preEmit, def.preEmit);
+        assert.equal(action.shouldEmit, def.shouldEmit);
+        assert.equal(action.random, def.random);
+        assert.equal(action.listen, Reflux.PublisherMethods.listen);
     });
 
     var action,
@@ -52,7 +52,9 @@ describe('Creating action', function() {
         describe('when adding preEmit hook', function() {
             var preEmit = sinon.spy(),
                 action = Reflux.createAction({preEmit:preEmit});
+
             action(1337,'test');
+
             it('should receive arguments from action functor', function() {
                 assert.deepEqual(preEmit.firstCall.args,[1337,'test']);
             });
@@ -63,29 +65,36 @@ describe('Creating action', function() {
                 validateListening:function(){},
                 fetchDefaultData:function(){}
             };
+
             describe("when hook returns true",function(){
                 var shouldEmit = sinon.stub().returns(true),
                     action = Reflux.createAction({shouldEmit:shouldEmit}),
                     callback = sinon.spy();
-                Reflux.listenerMethods.listenTo.call(context,action,callback);
+                Reflux.ListenerMethods.listenTo.call(context,action,callback);
                 action(1337,'test');
+
                 it('should receive arguments from action functor', function() {
                     assert.deepEqual(shouldEmit.firstCall.args,[1337,'test']);
                 });
+
                 it('should still trigger to listeners',function(){
                     assert.equal(callback.callCount,1);
                     assert.deepEqual(callback.firstCall.args,[1337,'test']);
                 });
+
             });
+
             describe("when hook returns false",function(){
                 var shouldEmit = sinon.stub().returns(false),
                     action = Reflux.createAction({shouldEmit:shouldEmit}),
                     callback = sinon.spy();
-                Reflux.listenerMethods.listenTo.call(context,action,callback);
+                Reflux.ListenerMethods.listenTo.call(context,action,callback);
                 action(1337,'test');
+
                 it('should receive arguments from action functor', function() {
                     assert.deepEqual(shouldEmit.firstCall.args,[1337,'test']);
                 });
+
                 it('should not trigger to listeners',function(){
                     assert.equal(callback.callCount,0);
                 });

@@ -4,17 +4,17 @@ var Reflux = require('../src'),
 module.exports = function(listenable,key){
     return {
         componentDidMount: function(){
-            for(var m in Reflux.listenerMethods){
-                if (this[m] !== Reflux.listenerMethods[m]){
+            for(var m in Reflux.ListenerMethods){
+                if (this[m] !== Reflux.ListenerMethods[m]){
                     if (this[m]){
                         throw "Can't have other property '"+m+"' when using Reflux.listenTo!";
                     }
-                    this[m] = Reflux.listenerMethods[m];
+                    this[m] = Reflux.ListenerMethods[m];
                 }
             }
             var me = this, cb = (key ? function(v){me.setState(_.object([key],[v]));} : this.setState);
             this.listenTo(listenable,cb,cb);
         },
-        componentWillUnmount: Reflux.listenerMixin.componentWillUnmount
+        componentWillUnmount: Reflux.ListenerMixin.componentWillUnmount
     };
 };

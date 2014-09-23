@@ -5,7 +5,7 @@ var chai = require('chai'),
 
 chai.use(require('chai-as-promised'));
 
-describe('Managing subscriptions via listenerMixin', function() {
+describe('Managing subscriptions via ListenerMixin', function() {
     var component,
         action,
         promise,
@@ -13,7 +13,7 @@ describe('Managing subscriptions via listenerMixin', function() {
 
     beforeEach(function() {
       // simulate ReactJS component instantiation and mounting
-      component = Object.create(Reflux.listenerMixin);
+      component = Object.create(Reflux.ListenerMixin);
       delete component.subscriptions;
 
       action = Reflux.createAction();
@@ -74,19 +74,19 @@ describe('Managing subscriptions via listenerMixin', function() {
         });
     });
 
-    it("should include listenerMethods",function(){
+    it("should include ListenerMethods",function(){
         var s = Reflux.createStore({});
-        for(var m in Reflux.listenerMethods){
-            assert.equal(s[m],Reflux.listenerMethods[m]);
+        for(var m in Reflux.ListenerMethods){
+            assert.equal(s[m],Reflux.ListenerMethods[m]);
         }
     });
 
-    it("should use listenerMethods.stopListeningToAll as componentWillUnmount",function(){
-        assert.equal(Reflux.listenerMixin.componentWillUnmount,Reflux.listenerMethods.stopListeningToAll);
+    it("should use ListenerMethods.stopListeningToAll as componentWillUnmount",function(){
+        assert.equal(Reflux.ListenerMixin.componentWillUnmount,Reflux.ListenerMethods.stopListeningToAll);
     });
 
-    it("should not mix in its own methods into listenerMethods",function(){
-        assert.isUndefined(Reflux.listenerMethods.componentWillUnmount);
+    it("should not mix in its own methods into ListenerMethods",function(){
+        assert.isUndefined(Reflux.ListenerMethods.componentWillUnmount);
     });
 
 });
