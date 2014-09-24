@@ -37,6 +37,23 @@ describe('Managing subscriptions via ListenerMixin', function() {
         return assert.eventually.deepEqual(promise, [1337, 'ninja']);
     });
 
+    describe('using a store and listening to it', function() {
+        beforeEach(function () {
+            store = Reflux.createStore({
+                init: function() {
+                    this.listenTo(action, this.trigger);
+                }
+            });
+
+            component.listenTo(store, function() {});
+        });
+
+        it('should be possible to listen to the store using two different components', function() {
+            var component2 = Object.create(Reflux.ListenerMixin);
+            component2.listenTo(store, function() {});
+        });
+    });
+
     describe('get default data', function () {
         beforeEach(function() {
             component.componentWillUnmount();
