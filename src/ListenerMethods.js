@@ -16,7 +16,7 @@ module.exports = {
             listener;
         for (;i < (this.subscriptions||[]).length; ++i) {
             listener = this.subscriptions[i].listenable;
-            if (listener === listenable || listener.hasListener && listener.hasListener(listenable)) {
+            if ((listener === listenable && !listenable._isAction) || listener.hasListener && listener.hasListener(listenable)) {
                 return true;
             }
         }

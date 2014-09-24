@@ -237,7 +237,7 @@ module.exports = {
             listener;
         for (;i < (this.subscriptions||[]).length; ++i) {
             listener = this.subscriptions[i].listenable;
-            if (listener === listenable || listener.hasListener && listener.hasListener(listenable)) {
+            if ((listener === listenable && !listenable._isAction) || listener.hasListener && listener.hasListener(listenable)) {
                 return true;
             }
         }
@@ -472,12 +472,14 @@ module.exports = function(/* listenables... */) {
         // the original listenables
         listenables = slice.call(arguments);
 
+    action._isAction = false;
+
     action.hasListener = function(listenable) {
         var i = 0, listener;
 
         for (; i < listenables.length; ++i) {
             listener = listenables[i];
-            if (listener === listenable || listener.hasListener && listener.hasListener(listenable)) {
+            if ((listener === listenable && !listener._isAction) || listener.hasListener && listener.hasListener(listenable)) {
                 return true;
             }
         }
@@ -570,7 +572,8 @@ module.exports = function(definition) {
 
     var context = _.extend({
         eventLabel: "action",
-        emitter: new _.EventEmitter()
+        emitter: new _.EventEmitter(),
+        _isAction: true,
     },definition,Reflux.PublisherMethods,{
         preEmit: definition.preEmit || Reflux.PublisherMethods.preEmit,
         shouldEmit: definition.shouldEmit || Reflux.PublisherMethods.shouldEmit

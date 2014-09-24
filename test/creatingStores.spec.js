@@ -78,6 +78,19 @@ describe('Creating stores', function() {
 
         });
 
+        it('should be able to reuse action again further down the chain', function() {
+            Reflux.createStore({
+                init: function() {
+                    this.listenTo(store, this.trigger);
+                    this.listenTo(action, this.trigger);
+                }
+            });
+
+            action(1337);
+
+            return assert.eventually.deepEqual(promise, [1337]);
+        });
+
         describe('listening to the store', function() {
             var unsubStoreCallback, storeListenPromise;
 

@@ -15,7 +15,8 @@ module.exports = function(definition) {
 
     var context = _.extend({
         eventLabel: "action",
-        emitter: new _.EventEmitter()
+        emitter: new _.EventEmitter(),
+        _isAction: true,
     },definition,Reflux.PublisherMethods,{
         preEmit: definition.preEmit || Reflux.PublisherMethods.preEmit,
         shouldEmit: definition.shouldEmit || Reflux.PublisherMethods.shouldEmit
