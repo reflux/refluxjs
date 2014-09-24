@@ -2,6 +2,14 @@
 
 Check for latest changes on the [milestones page](https://github.com/spoike/refluxjs/milestones).
 
+## v0.1.9
+
+* Critical bug fixes
+
+## v0.1.8
+
+Update coming soon
+
 ## v0.1.7
 
 * Added support for initial data handling [#49](https://github.com/spoike/refluxjs/pull/49)
