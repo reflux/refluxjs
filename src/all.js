@@ -21,13 +21,15 @@ module.exports = function(/* listenables... */) {
         // these arguments will be used to *apply* the action.
         args,
         // this action combines all the listenables
-        action = createAction();
+        action = createAction(),
+        // the original listenables
+        listenables = slice.call(arguments);
 
     action.hasListener = function(listenable) {
         var i = 0, listener;
 
-        for (; i < args.length; ++i) {
-            listener = args[i];
+        for (; i < listenables.length; ++i) {
+            listener = listenables[i];
             if (listener === listenable || listener.hasListener && listener.hasListener(listenable)) {
                 return true;
             }

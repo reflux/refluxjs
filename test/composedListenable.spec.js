@@ -1,6 +1,7 @@
 var chai = require('chai'),
     assert = chai.assert,
     Reflux = require('../src'),
+    _ = require('../src/utils'),
     Q = require('q');
 
 chai.use(require('chai-as-promised'));
@@ -176,6 +177,26 @@ describe('Composed listenable with stores', function() {
             assert.throws(function() {
                 storeAll.listenTo(store2, function() {});
             }, Error);
+        });
+
+        describe('and with a component listening to other listenables', function() {
+
+            var Component,
+                anotherAction;
+
+            beforeEach(function () {
+                anotherAction = Reflux.createAction();
+                Component = function() {
+                    this.listenTo(storeAll, this.trigger);
+                    this.listenTo(anotherAction);
+                };
+                _.extend(Component.prototype, Reflux.ListenerMixin);
+            });
+
+            it('should not crash', function() {
+                new Component();
+            });
+
         });
 
     });
