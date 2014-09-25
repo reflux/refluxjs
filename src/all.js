@@ -1,4 +1,4 @@
-var createAction = require('./createAction');
+var createStore = require('./createStore');
 
 var slice = Array.prototype.slice;
 
@@ -6,10 +6,10 @@ var slice = Array.prototype.slice;
  * Track a set of Actions and Stores. Use Reflux.all if you need to handle
  * data coming in parallel.
  *
- * @param {...Action|Store} listenables Actions and Stores that should be
+ * @param {...Publishers} publishers Publishers that should be
  *  tracked.
- * @returns {Action} An action which tracks the provided Actions and Stores.
- *  The action will emit once all of the provided listenables have emitted at
+ * @returns {Store} A store which listens to the provided Publishers.
+ *  The store will emit once all of the provided publishers have emitted at
  *  least once.
  */
 module.exports = function(/* listenables... */) {
@@ -20,33 +20,19 @@ module.exports = function(/* listenables... */) {
         listenablesEmitted,
         // these arguments will be used to *apply* the action.
         args,
-        // this action combines all the listenables
-        action = createAction(),
         // the original listenables
         listenables = slice.call(arguments);
-
-    action._isAction = false;
-
-    action.hasListener = function(listenable) {
-        var i = 0, listener;
-
-        for (; i < listenables.length; ++i) {
-            listener = listenables[i];
-            if ((listener === listenable && !listener._isAction) || listener.hasListener && listener.hasListener(listenable)) {
-                return true;
+        // this store combines all the listenables
+        store = createStore({
+            init: function(){
+                for (var i = 0; i < numberOfListenables; i++) {
+                    this.listenTo(listenables[i],newListener(i));
+                }
+                reset();
             }
-        }
+        });
 
-        return false;
-    };
-
-    reset();
-
-    for (var i = 0; i < numberOfListenables; i++) {
-        arguments[i].listen(newListener(i), null);
-    }
-
-    return action;
+    return store;
 
     function reset() {
         listenablesEmitted = new Array(numberOfListenables);
@@ -66,7 +52,7 @@ module.exports = function(/* listenables... */) {
 
     function emitWhenAllListenablesEmitted() {
         if (didAllListenablesEmit()) {
-            action.apply(action, args);
+            store.trigger.apply(store,args);
             reset();
         }
     }
