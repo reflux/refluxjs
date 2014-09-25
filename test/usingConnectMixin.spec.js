@@ -71,4 +71,16 @@ describe('using the connect(...) mixin',function(){
             assert.deepEqual([_.object([key],[triggerdata])],context.setState.secondCall.args);
         });
     });
+    describe("when calling with falsy key",function(){
+        var triggerdata = "TRIGGERDATA",
+            key = 0,
+            listenable = {listen: sinon.spy()},
+            context = {setState: sinon.spy()},
+            result = _.extend(context,connect(listenable,key));
+        result.componentDidMount();
+        it("should send listenable callback which calls setState correctly",function(){
+            listenable.listen.firstCall.args[0](triggerdata);
+            assert.deepEqual([_.object([key],[triggerdata])],context.setState.firstCall.args);
+        });
+    });
 });
