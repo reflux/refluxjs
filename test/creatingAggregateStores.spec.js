@@ -49,7 +49,7 @@ describe('Creating aggregate stores', function() {
 
         it('should throw error when circular dependency happens', function() {
             assert.throws(function() {
-                aggregateStore.listenTo(store);
+                store.listenTo(aggregateStore);
             }, Error);
         });
 
@@ -63,7 +63,7 @@ describe('Creating aggregate stores', function() {
 
             it('should throw error when a longer circular dependency happens', function() {
                 assert.throws(function() {
-                    thirdStore.listenTo(store, function() {});
+                    store.listenTo(thirdStore, function() {});
                 });
             });
 

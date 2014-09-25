@@ -173,9 +173,9 @@ describe('Composed listenable with stores', function() {
             return assert.eventually.deepEqual(promise, [['a'], ['a']]);
         });
 
-        it('should not be able to listen to a store in the combined listenable', function() {
+        it('should not be able to be listened to by a store in the combined listenable', function() {
             assert.throws(function() {
-                storeAll.listenTo(store2, function() {});
+                store2.listenTo(storeAll, function() {});
             }, Error);
         });
 
