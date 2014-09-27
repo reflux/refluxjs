@@ -149,8 +149,7 @@ module.exports = {
             numberOfListenables = listenables.length,
             listener = this,
             listenablesEmitted,
-            args,
-            i;
+            args;
         for (var i = 0; i < numberOfListenables; i++) {
             this.listenTo(listenables[i],newListener(i));
         }
