@@ -8,7 +8,11 @@ Check for latest changes on the [milestones page](https://github.com/spoike/refl
 
 ## v0.1.8
 
-Update coming soon
+* Added `Reflux.connect`, `Reflux.listenTo`, `listenToMany` conveniences. See [#63](https://github.com/spoike/refluxjs/pull/63) and [#75](https://github.com/spoike/refluxjs/pull/75)
+* Stores may now use a `listenables` prop [#63](https://github.com/spoike/refluxjs/pull/63) to automatically register actions to callbacks
+* `preEmit` may now map or transform the action payload by returning something. See [58](https://github.com/spoike/refluxjs/issues/58) and [#78](https://github.com/spoike/refluxjs/pull/78)
+* Reflux now exposes a `keep` for easier introspection on actions and stores [#56](https://github.com/spoike/refluxjs/issues/56)
+* Added mixin interfaces `ListenerMethods` and `PublisherMethods` making it possible for users to extend Reflux's actions and stores. See [#45](https://github.com/spoike/refluxjs/issues/45)
 
 ## v0.1.7
 
