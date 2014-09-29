@@ -12,7 +12,7 @@ module.exports = function(listenable,key){
                     this[m] = Reflux.ListenerMethods[m];
                 }
             }
-            var me = this, cb = (key ? function(v){me.setState(_.object([key],[v]));} : this.setState);
+            var me = this, cb = (key === undefined ? this.setState : function(v){me.setState(_.object([key],[v]));});
             this.listenTo(listenable,cb,cb);
         },
         componentWillUnmount: Reflux.ListenerMixin.componentWillUnmount
