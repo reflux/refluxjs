@@ -1,4 +1,5 @@
-var _ = require('./utils');
+var _ = require('./utils'),
+    slice = Array.prototype.slice;
 
 /**
  * A module of methods related to listening.
@@ -134,6 +135,62 @@ module.exports = {
             } else {
                 defaultCallback.call(this, data);
             }
+        }
+    },
+
+    /**
+     * The callback will be called once all listenables have triggered at least once.
+     * @param {...Publishers} publishers Publishers that should be tracked.
+     * @param {Function|String} callback The method to call when all publishers have emitted
+     */
+    listenToAggregate: function(/* listenables... , callback */){
+        var listenables = slice.call(arguments),
+            callback = listenables.pop(),
+            numberOfListenables = listenables.length,
+            listener = this,
+            listenablesEmitted,
+            args;
+        for (var i = 0; i < numberOfListenables; i++) {
+            this.listenTo(listenables[i],newListener(i));
+        }
+        reset();
+
+        // ---- internal aggregation functions ----
+
+        function reset() {
+            listenablesEmitted = new Array(numberOfListenables);
+            args = new Array(numberOfListenables);
+        }
+
+        function newListener(i) {
+            return function() {
+                listenablesEmitted[i] = true;
+                // Reflux users should not need to care about Array and arguments
+                // differences. This makes sure that they get the expected Array
+                // interface
+                args[i] = slice.call(arguments);
+                emitWhenAllListenablesEmitted();
+            };
+        }
+
+        function emitWhenAllListenablesEmitted() {
+            if (didAllListenablesEmit()) {
+                (listener[callback]||callback).apply(listener,args);
+                reset();
+            }
+        }
+
+        function didAllListenablesEmit() {
+            // reduce cannot be used because it only iterates over *present*
+            // elements in the array. Initially the Array doesn't contain
+            // elements. For this reason the usage of reduce would always indicate
+            // that all listenables emitted.
+            for (var i = 0; i < numberOfListenables; i++) {
+                if (!listenablesEmitted[i]) {
+                    return false;
+                }
+            }
+            return true;
         }
     }
 };
