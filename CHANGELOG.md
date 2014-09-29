@@ -2,6 +2,10 @@
 
 Check for latest changes on the [milestones page](https://github.com/spoike/refluxjs/milestones).
 
+## v0.1.12
+
+* Bug fixes. Check the [0.1.12 milestone page](https://github.com/spoike/refluxjs/issues?q=milestone%3A0.1.12+is%3Aclosed).
+
 ## v0.1.9, v0.1.10, v0.1.11
 
 * Critical bug fixes. See [#80](https://github.com/spoike/refluxjs/issues/80), [#81](https://github.com/spoike/refluxjs/issues/81), and [#82](https://github.com/spoike/refluxjs/issues/82).
