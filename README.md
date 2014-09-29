@@ -168,8 +168,8 @@ var actions = Reflux.createActions(["fireBall","magicMissile"]);
 
 var Store = Reflux.createStore({
     init: function() {
-        this.listenTo(actions.fireBall,this.fireBall);
-        this.listenTo(actions.magicMissile,this.magicMissile);
+        this.listenTo(actions.fireBall,this.onFireBall);
+        this.listenTo(actions.magicMissile,this.onMagicMissile);
     },
     onFireBall: function(){
         // whoooosh!
