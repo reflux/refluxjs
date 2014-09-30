@@ -22,7 +22,7 @@ module.exports = function(definition) {
     });
 
     var functor = function() {
-        context.triggerAsync.apply(context, arguments);
+        functor.triggerAsync.apply(functor, arguments);
     };
 
     _.extend(functor,context);

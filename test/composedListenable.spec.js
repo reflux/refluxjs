@@ -38,6 +38,30 @@ describe('Composed listenables', function() {
         ]);
     });
 
+    it('can also be created using listener method', function() {
+        var all = Reflux.createStore({
+            init: function(){
+                this.listenToAggregate(action1,action2,action3,this.trigger);
+            }
+        });
+
+        var promise = Q.Promise(function(resolve) {
+            all.listen(function() {
+                resolve(Array.prototype.slice.call(arguments, 0));
+            });
+        });
+
+        action1('a', 'x');
+        action2('b', 'y');
+        action3('c', 'z');
+
+        return assert.eventually.deepEqual(promise, [
+            ['a', 'x'],
+            ['b', 'y'],
+            ['c', 'z']
+        ]);
+    });
+
 
     it('should not emit when only one listenable emits', function(done) {
         var called = false;
