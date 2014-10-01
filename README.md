@@ -2,7 +2,12 @@
 
 A simple library for unidirectional dataflow architecture inspired by ReactJS [Flux](http://facebook.github.io/react/blog/2014/05/06/flux.html).
 
-[![Build Status](https://travis-ci.org/spoike/refluxjs.svg?branch=master)](https://travis-ci.org/spoike/refluxjs)
+[![NPM Version][npm-image]][npm-url]
+[![NPM Downloads][downloads-image]][npm-url]
+[![Bower Version][bower-image]][bower-url]
+[![Dependencies][dependencies-image]][npm-url]
+[![Build Status][travis-image]][travis-url]
+[![Gratipay][gratipay-image]][gratipay-url]
 
 You can read an overview of Flux [here](http://facebook.github.io/react/docs/flux-overview.html), however the gist of it is to introduce a more functional programming style architecture by eschewing MVC like pattern and adopting a single data flow pattern.
 
@@ -457,3 +462,14 @@ This project is licensed under [BSD 3-Clause License](http://opensource.org/lice
 For more information about the license for this particular project [read the LICENSE.md file](LICENSE.md).
 
 This project uses [eventemitter3](https://github.com/3rd-Eden/EventEmitter3), is currently MIT licensed and [has it's license information here](https://github.com/3rd-Eden/EventEmitter3/blob/master/LICENSE).
+
+[npm-image]: http://img.shields.io/npm/v/reflux.svg
+[downloads-image]: http://img.shields.io/npm/dm/reflux.svg
+[dependencies-image]: http://img.shields.io/david/spoike/refluxjs.svg
+[npm-url]: https://www.npmjs.org/package/reflux
+[bower-image]: http://img.shields.io/bower/v/reflux.svg
+[bower-url]: http://bower.io/search/?q=reflux
+[travis-image]: http://img.shields.io/travis/spoike/refluxjs/master.svg
+[travis-url]: https://travis-ci.org/spoike/refluxjs
+[gratipay-image]: http://img.shields.io/gratipay/spoike.svg
+[gratipay-url]: https://gratipay.com/spoike/
