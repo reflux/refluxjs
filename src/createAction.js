@@ -15,7 +15,11 @@ module.exports = function(definition) {
 
     for(var d in definition){
         if (d!=="preEmit" && d!=="shouldEmit" && Reflux.PublisherMethods[d]){
-            throw new Error("Cannot override API method in action creation. Override on Reflux.PublisherMethods instead!");
+            if (d!=="preEmit" && !d="shouldEmit" && Reflux.PublisherMethods[d]) {
+                throw new Error("Cannot override API method " + d + 
+                    " in action creation. Use another method name or override it on Reflux.PublisherMethods instead."
+                );
+            }
         }
     }
 
