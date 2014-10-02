@@ -17,10 +17,7 @@ module.exports = function(definition) {
         eventLabel: "action",
         emitter: new _.EventEmitter(),
         _isAction: true
-    },definition,Reflux.PublisherMethods,{
-        preEmit: definition.preEmit || Reflux.PublisherMethods.preEmit,
-        shouldEmit: definition.shouldEmit || Reflux.PublisherMethods.shouldEmit
-    });
+    },Reflux.PublisherMethods,definition);
 
     var functor = function() {
         functor.triggerAsync.apply(functor, arguments);

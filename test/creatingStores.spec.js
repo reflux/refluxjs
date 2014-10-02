@@ -269,20 +269,13 @@ describe('Creating stores', function() {
         });
     });
 
-    it("should not be possible to override API functions with props in the definition",function(){
-        var def = {listenTo:"FOO",listen:"BAR",trigger:"BAZ",hasListener:"BIN",listenToMany:"BAH"},
+    it("should copy all from definition, even when overwriting API functions",function(){
+        var def = {listenTo:"FOO",preEmit:"BAZ",hasListener:"BIN",blah:"BAH"},
             store = Reflux.createStore(def);
-        assert.isFunction(store.listenTo);
-        assert.isFunction(store.trigger);
-        assert.isFunction(store.hasListener);
-        assert.isFunction(store.listenToMany);
-    });
-
-    it("should be possible to overwrite preEmit and shouldEmit",function(){
-        var def = {preEmit:"FOO",shouldEmit:"BAR"},
-            store = Reflux.createStore(def);
+        assert.equal(store.listenTo,def.listenTo);
         assert.equal(store.preEmit,def.preEmit);
-        assert.equal(store.shouldEmit,def.shouldEmit);
+        assert.equal(store.hasListener,def.hasListener);
+        assert.equal(store.blah,def.blah);
     });
 
     it("should include ListenerMethods",function(){

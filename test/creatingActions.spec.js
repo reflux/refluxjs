@@ -8,13 +8,13 @@ chai.use(require('chai-as-promised'));
 
 describe('Creating action', function() {
 
-    it("should read preEmit, shouldEmit from definition, but not overwrite anything else",function(){
+    it("should always prioritize definition methods over API methods",function(){
         var def = {preEmit:"PRE",shouldEmit:"SHO",listen:"LIS",random:"RAN"},
             action = Reflux.createAction(def);
         assert.equal(action.preEmit, def.preEmit);
         assert.equal(action.shouldEmit, def.shouldEmit);
         assert.equal(action.random, def.random);
-        assert.equal(action.listen, Reflux.PublisherMethods.listen);
+        assert.equal(action.listen, def.listen);
     });
 
     var action,

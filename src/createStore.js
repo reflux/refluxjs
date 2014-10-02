@@ -30,10 +30,7 @@ module.exports = function(definition) {
         }
     }
 
-    _.extend(Store.prototype, definition, Reflux.ListenerMethods, Reflux.PublisherMethods, {
-        preEmit: definition.preEmit || Reflux.PublisherMethods.preEmit,
-        shouldEmit: definition.shouldEmit || Reflux.PublisherMethods.shouldEmit
-    });
+    _.extend(Store.prototype, Reflux.ListenerMethods, Reflux.PublisherMethods, definition);
 
     var store = new Store();
     Keep.createdStores.push(store);
