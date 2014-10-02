@@ -1,6 +1,5 @@
 var _ = require('./utils'),
-    maker = require('./joins').instanceJoinCreator,
-    slice = Array.prototype.slice;
+    maker = require('./joins').instanceJoinCreator;
 
 /**
  * A module of methods related to listening.

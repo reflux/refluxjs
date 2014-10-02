@@ -24,7 +24,7 @@ exports.staticJoinCreator = function(strategy){
                 this[strategyMethodNames[strategy]].apply(this,listenables.concat("triggerAsync"));
             }
         });
-    }
+    };
 };
 
 /**
