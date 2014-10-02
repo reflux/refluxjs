@@ -13,6 +13,12 @@ module.exports = function(definition) {
 
     definition = definition || {};
 
+    for(var d in definition){
+        if (d!=="preEmit" && d!=="shouldEmit" && Reflux.PublisherMethods[d]){
+            throw "Cannot override API method in action creation. Override on Reflux.PublisherMethods instead!";
+        }
+    }
+
     var context = _.extend({
         eventLabel: "action",
         emitter: new _.EventEmitter(),

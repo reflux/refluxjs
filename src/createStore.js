@@ -14,6 +14,12 @@ module.exports = function(definition) {
 
     definition = definition || {};
 
+    for(var d in definition){
+        if (d!=="preEmit" && d!=="shouldEmit" && Reflux.PublisherMethods[d] || Reflux.ListenerMethods[d]){
+            throw "Cannot override API method in store creation. Override on Reflux.PublisherMethods / Reflux.ListenerMethods instead!";
+        }
+    }
+
     function Store() {
         var i=0, arr;
         this.subscriptions = [];
