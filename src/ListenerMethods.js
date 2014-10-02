@@ -1,4 +1,5 @@
 var _ = require('./utils'),
+    maker = require('./joins').instanceJoinCreator,
     slice = Array.prototype.slice;
 
 /**
@@ -140,58 +141,34 @@ module.exports = {
 
     /**
      * The callback will be called once all listenables have triggered at least once.
+     * It will be invoked with the last emission from each listenable.
      * @param {...Publishers} publishers Publishers that should be tracked.
      * @param {Function|String} callback The method to call when all publishers have emitted
      */
-    listenToAggregate: function(/* listenables... , callback */){
-        var listenables = slice.call(arguments),
-            callback = listenables.pop(),
-            numberOfListenables = listenables.length,
-            listener = this,
-            listenablesEmitted,
-            args;
-        for (var i = 0; i < numberOfListenables; i++) {
-            this.listenTo(listenables[i],newListener(i));
-        }
-        reset();
+    joinTrailing: maker("last"),
 
-        // ---- internal aggregation functions ----
+    /**
+     * The callback will be called once all listenables have triggered at least once.
+     * It will be invoked with the first emission from each listenable.
+     * @param {...Publishers} publishers Publishers that should be tracked.
+     * @param {Function|String} callback The method to call when all publishers have emitted
+     */
+    joinLeading: maker("first"),
 
-        function reset() {
-            listenablesEmitted = new Array(numberOfListenables);
-            args = new Array(numberOfListenables);
-        }
+    /**
+     * The callback will be called once all listenables have triggered at least once.
+     * It will be invoked with all emission from each listenable.
+     * @param {...Publishers} publishers Publishers that should be tracked.
+     * @param {Function|String} callback The method to call when all publishers have emitted
+     */
+    joinConcat: maker("all"),
 
-        function newListener(i) {
-            return function() {
-                listenablesEmitted[i] = true;
-                // Reflux users should not need to care about Array and arguments
-                // differences. This makes sure that they get the expected Array
-                // interface
-                args[i] = slice.call(arguments);
-                emitWhenAllListenablesEmitted();
-            };
-        }
-
-        function emitWhenAllListenablesEmitted() {
-            if (didAllListenablesEmit()) {
-                (listener[callback]||callback).apply(listener,args);
-                reset();
-            }
-        }
-
-        function didAllListenablesEmit() {
-            // reduce cannot be used because it only iterates over *present*
-            // elements in the array. Initially the Array doesn't contain
-            // elements. For this reason the usage of reduce would always indicate
-            // that all listenables emitted.
-            for (var i = 0; i < numberOfListenables; i++) {
-                if (!listenablesEmitted[i]) {
-                    return false;
-                }
-            }
-            return true;
-        }
-    }
+    /**
+     * The callback will be called once all listenables have triggered.
+     * If a callback triggers twice before that happens, an error is thrown.
+     * @param {...Publishers} publishers Publishers that should be tracked.
+     * @param {Function|String} callback The method to call when all publishers have emitted
+     */
+    joinStrict: maker("strict"),
 };
 

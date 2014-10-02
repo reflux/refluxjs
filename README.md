@@ -397,36 +397,52 @@ For better alternative to `setTimeout`, you may opt to use the [`setImmediate` p
 
 ### Joining parallel listeners with composed listenables
 
-Reflux makes it easy to listen to actions and stores that emit events in parallel. You can use this feature to compose and share listenable objects (composed listenables) among several stores.
+The Reflux API contains `join` methods that makes it easy to aggregate publishers that emit events in parallel. This corresponds to the `waitFor` method in Flux.
+
+#### Argument tracking
+
+A join is triggered once all participating publishers have emitted at least once. The callback will be called with the data from the various emissions, in the same order as the publishers were listed when the join was created.
+
+There are four join methods, each representing a different strategy to track the emission data:
+
+*    `joinLeading`: Only the first emission from each publisher is saved. Subsequent emissions by the same publisher before all others are finished are ignored.
+*    `joinTrailing`: If a publisher triggers twice, the second emission overwrites the first.
+*    `joinConcat`: An array of emission arguments are stored for each publisher.
+*    `joinStrict`: An error is thrown if a publisher emits twice before the join is completed.
+
+The method signatures all look like this:
 
 ```javascript
-var theTide = Reflux.all(waveAction, timeStore);
+joinXyz(...publisher,callback)
+```
 
-var clockStore = Reflux.createStore({
+Once a join is triggered it will reset, and thus it can trigger again when all publishers have emitted anew.
+
+#### Using the listener instance methods
+
+All objects using the listener API (stores, React components using `ListenerMixin`, or other components using the `ListenerMethods`) gain access to the four join instance methods, named after the argument strategy. Here's an example saving the last emission from each publisher: 
+
+```javascript
+var gainHeroBadgeStore = Reflux.createStore({
     init: function() {
-        this.listenTo(theTide, this.theTideCallback);
-    },
-    theTideCallback: function(waveActionArgs, timeStoreArgs) {
-      // ...
+        this.joinTrailing(actions.disarmBomb, actions.saveHostage, actions.recoverData, this.triggerAsync);
     }
 });
 
-// node.js environment
-if (process.env.DEVELOPMENT) {
-    theTide.listenTo(console.log.bind(console), window);
-}
+actions.disarmBomb("warehouse");
+actions.recoverData("seedyletter");
+actions.disarmBomb("docks");
+actions.saveHostage("offices",3);
+// `gainHeroBadgeStore` will now asyncronously trigger `[["docks"],["seedyletter"],["offices",3]]`.
 ```
 
-`Reflux.all` always passes the last arguments that a listenable emitted to your callback, discarding subsequent emits. Arguments are passed in order. This means that the first argument which the callback receives, is the set of arguments which was emitted by the first listenable that was passed to `Reflux.all` and so on for the other arguments.
+#### Using the static methods
 
-#### Comparison with Flux's `waitFor()`
+Since it is rather common to have a store where the only purpose is to listen to a join and trigger when the join is completed, the join methods have static counterparts on the `Reflux` object which return stores listening to the requested join. Using them, the store in the example above could instead be created like this:
 
-The `Reflux.all` functionality is similar to Flux's `waitFor()`, but differs in a few aspects:
-
-* Composed listenables may be reused by other stores
-* Composed listenables always emit asynchronously
-* Actions and stores may emit multiple times before the composed listenable (`theTide` in the example above) emits
-* Action and store callbacks are not executed in a single *synchronous* iteration
+```javascript
+var gainHeroBadgeStore = Reflux.joinTrailing(actions.disarmBomb, actions.saveHostage, actions.recoverData);
+```
 
 ### Sending default data with the listenTo function
 
