@@ -16,7 +16,7 @@ module.exports = function(definition) {
 
     for(var d in definition){
         if (d!=="preEmit" && d!=="shouldEmit" && Reflux.PublisherMethods[d] || Reflux.ListenerMethods[d]){
-            throw "Cannot override API method in store creation. Override on Reflux.PublisherMethods / Reflux.ListenerMethods instead!";
+            throw new Error("Cannot override API method in store creation. Override on Reflux.PublisherMethods / Reflux.ListenerMethods instead!");
         }
     }
 
