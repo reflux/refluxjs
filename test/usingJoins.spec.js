@@ -72,14 +72,13 @@ describe('using joins',function(){
             Reflux.createStore().listenTo(join,spy);
             action1('a');
             action2('b');
-            action1('x');
             action3('c');
             it("should emit with the arguments",function(){
                 assert.equal(spy.callCount,1);
                 assert.deepEqual(spy.firstCall.args,[['a'],['b'],['c']]);
             });
             it("should throw error if triggered more than once",function(){
-                action1.trigger('a'); // sync trigger to be able to test
+                action1.trigger('a'); // sync trigger to make sure error is correctly caught
                 assert.throws(function(){
                     action1.trigger('x');
                 });
