@@ -29,6 +29,27 @@ describe('Creating action', function() {
         assert.isFunction(action);
     });
 
+    describe("the synchronisity",function(){
+        var syncaction = Reflux.createAction({sync:true}),
+            asyncaction = Reflux.createAction(),
+            synccalled = false,
+            asynccalled = false,
+            store = Reflux.createStore({
+                sync: function(){synccalled=true;},
+                async: function(){asynccalled=true;}
+            });
+        store.listenTo(syncaction,"sync");
+        store.listenTo(asyncaction,"async");
+        it("should be asynchronous when not specified",function(){
+            asyncaction();
+            assert.equal(false,asynccalled);
+        });
+        it("should be synchronous if requested",function(){
+            syncaction();
+            assert.equal(true,synccalled);
+        });
+    });
+
     describe('when listening to action', function() {
 
         var promise;

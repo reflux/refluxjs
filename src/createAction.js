@@ -23,7 +23,7 @@ module.exports = function(definition) {
     });
 
     var functor = function() {
-        functor.triggerAsync.apply(functor, arguments);
+        functor[definition.sync?"trigger":"triggerAsync"].apply(functor, arguments);
     };
 
     _.extend(functor,context);
