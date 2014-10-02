@@ -433,7 +433,7 @@ actions.disarmBomb("warehouse");
 actions.recoverData("seedyletter");
 actions.disarmBomb("docks");
 actions.saveHostage("offices",3);
-// `gainHeroBadgeStore` will now asyncronously trigger `[["docks"],["seedyletter"],["offices",3]]`.
+// `gainHeroBadgeStore` will now asyncronously trigger `[["docks"],["offices",3],["seedyletter"]]`.
 ```
 
 #### Using the static methods
