@@ -68,21 +68,21 @@ module.exports = {
      * @returns {Object} A subscription obj where `stop` is an unsub function and `listenable` is the object being listened to
      */
     listenTo: function(listenable, callback, defaultCallback) {
-        var desub, unsubscriber, subscriptionobj, self = this;
+        var desub, unsubscriber, subscriptionobj, subs = this.subscriptions = this.subscriptions || [];
         _.throwIf(this.validateListening(listenable));
         this.fetchDefaultData(listenable, defaultCallback);
         desub = listenable.listen(this[callback]||callback, this);
         unsubscriber = function() {
-            var index = self.subscriptions.indexOf(subscriptionobj);
+            var index = subs.indexOf(subscriptionobj);
             _.throwIf(index === -1,'Tried to remove listen already gone from subscriptions list!');
-            self.subscriptions.splice(index, 1);
+            subs.splice(index, 1);
             desub();
         };
         subscriptionobj = {
             stop: unsubscriber,
             listenable: listenable
         };
-        this.subscriptions = (this.subscriptions||[]).concat(subscriptionobj);
+        subs.push(subscriptionobj);
         return subscriptionobj;
     },
 
@@ -93,12 +93,12 @@ module.exports = {
      * @returns {Boolean} True if a subscription was found and removed, otherwise false.
      */
     stopListeningTo: function(listenable){
-        var sub;
-        for(var i=0; i<(this.subscriptions||[]).length;i++){
-            sub = this.subscriptions[i];
+        var sub, i = 0, subs = this.subscriptions || [];
+        for(;i < subs.length; i++){
+            sub = subs[i];
             if (sub.listenable === listenable){
                 sub.stop();
-                _.throwIf(this.subscriptions.indexOf(sub)!==-1,'Failed to remove listen from subscriptions list!');
+                _.throwIf(subs.indexOf(sub)!==-1,'Failed to remove listen from subscriptions list!');
                 return true;
             }
         }
@@ -107,15 +107,12 @@ module.exports = {
 
     /**
      * Stops all subscriptions and empties subscriptions array
-     *
      */
     stopListeningToAll: function(){
-        var now;
-        if (this.subscriptions){
-            while((now=this.subscriptions.length)){
-                this.subscriptions[0].stop();
-                _.throwIf(now!==this.subscriptions.length+1,'Failed to remove listen from subscriptions list!');
-            }
+        var remaining, subs = this.subscriptions || [];
+        while((remaining=subs.length)){
+            subs[0].stop();
+            _.throwIf(subs.length!==remaining-1,'Failed to remove listen from subscriptions list!');
         }
     },
 
