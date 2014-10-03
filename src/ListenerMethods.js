@@ -95,7 +95,7 @@ module.exports = {
     stopListeningTo: function(listenable){
         var sub;
         for(var i=0; i<(this.subscriptions||[]).length;i++){
-            var sub = this.subscriptions[i];
+            sub = this.subscriptions[i];
             if (sub.listenable === listenable){
                 sub.stop();
                 _.throwIf(this.subscriptions.indexOf(sub)!==-1,'Failed to remove listen from subscriptions list!');
