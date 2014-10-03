@@ -62,6 +62,31 @@ describe('Stopping',function(){
                     });
                 });
             });
+            describe('when we weren\'t actually listening to the given listenable',function(){
+                var action1 = Action(),
+                    action2 = Action(),
+                    store = Store(),
+                    result;
+                store.listenTo(action1);
+                store.listenTo(action2);
+                result = Store().stopListeningTo(Action());
+                it('should return false',function(){
+                    assert.equal(false,result);
+                });
+                it('should leave the other listens intact',function(){
+                    assert.equal(2,store.subscriptions.length);
+                    assert.equal(action1,store.subscriptions[0].listenable);
+                    assert.equal(action2,store.subscriptions[1].listenable);
+                });
+            });
+            describe('when we don\'t have a subscriptions list',function(){
+                var store = Store(), result;
+                delete store.subscriptions;
+                result = store.stopListeningTo(Action());
+                it('should return false',function(){
+                    assert.equal(result,false);
+                });
+            });
         });
     });
     describe('all listens',function(){
@@ -82,6 +107,13 @@ describe('Stopping',function(){
                 assert.throws(function(){
                     store.stopListeningToAll();
                 });
+            });
+        });
+        describe('when we don\'t have a subscriptions list',function(){
+            var store = Store();
+            delete store.subscriptions;
+            it('should be a noop',function(){
+                store.stopListeningToAll();
             });
         });
     });
