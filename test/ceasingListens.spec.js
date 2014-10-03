@@ -1,9 +1,7 @@
-var chai = require('chai'),
-    assert = chai.assert,
+var assert = require('chai').assert,
     Reflux = require('../src'),
     Action = Reflux.createAction,
     Store = Reflux.createStore,
-    _ = require('../src/utils'),
     fn = function(){};
 
 describe('Stopping',function(){
