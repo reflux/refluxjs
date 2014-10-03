@@ -48,6 +48,28 @@ describe('Creating action', function() {
             syncaction();
             assert.equal(true,synccalled);
         });
+        describe("when changed during lifetime",function(){
+            var syncaction = Reflux.createAction({sync:true}),
+            asyncaction = Reflux.createAction(),
+            synccalled = false,
+            asynccalled = false,
+            store = Reflux.createStore({
+                sync: function(){synccalled=true;},
+                async: function(){asynccalled=true;}
+            });
+            store.listenTo(syncaction,"sync");
+            store.listenTo(asyncaction,"async");
+            it("should be asynchronous if initial sync was overridden",function(){
+                syncaction.sync = false;
+                syncaction();
+                assert.equal(false,synccalled);
+            });
+            it("should be synchronous if set during lifetime",function(){
+                asyncaction.sync = true;
+                asyncaction();
+                assert.equal(true,asynccalled);
+            });
+        });
     });
 
     describe('when listening to action', function() {
