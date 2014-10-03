@@ -1,6 +1,7 @@
 var _ = require('./utils'),
     Reflux = require('../src'),
-    Keep = require('./Keep');
+    Keep = require('./Keep'),
+    allowed = {preEmit:1,shouldEmit:1};
 
 /**
  * Creates an action functor object. It is mixed in with functions
@@ -14,12 +15,10 @@ module.exports = function(definition) {
     definition = definition || {};
 
     for(var d in definition){
-        if (d!=="preEmit" && d!=="shouldEmit" && Reflux.PublisherMethods[d]){
-            if (d!=="preEmit" && d!=="shouldEmit" && Reflux.PublisherMethods[d]) {
-                throw new Error("Cannot override API method " + d + 
-                    " in action creation. Use another method name or override it on Reflux.PublisherMethods instead."
-                );
-            }
+        if (!allowed[d] && Reflux.PublisherMethods[d]) {
+            throw new Error("Cannot override API method " + d + 
+                " in action creation. Use another method name or override it on Reflux.PublisherMethods instead."
+            );
         }
     }
 
