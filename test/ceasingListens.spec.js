@@ -6,27 +6,60 @@ var assert = require('chai').assert,
 
 describe('Stopping',function(){
     describe('a single listen', function(){
-        describe('when all is well',function(){
-            var store = Store(),
-                action1 = Action(),
-                action3 = Action();
-            store.listenTo(action1,fn);
-            store.listenTo(Action(),fn);
-            store.listenTo(action3,fn);
-            it('should remove that listener from the list but keep the others',function(){
-                store.subscriptions[1].stop();
-                assert.equal(2,store.subscriptions.length);
-                assert.equal(action1,store.subscriptions[0].listenable);
-                assert.equal(action3,store.subscriptions[1].listenable);
+        describe('by calling stop directly',function(){
+            describe('when all is well',function(){
+                var store = Store(),
+                    action1 = Action(),
+                    action3 = Action();
+                store.listenTo(action1,fn);
+                store.listenTo(Action(),fn);
+                store.listenTo(action3,fn);
+                it('should remove that listener from the list but keep the others',function(){
+                    store.subscriptions[1].stop();
+                    assert.equal(2,store.subscriptions.length);
+                    assert.equal(action1,store.subscriptions[0].listenable);
+                    assert.equal(action3,store.subscriptions[1].listenable);
+                });
+            });
+            describe('when the listener has already been removed from the list somehow',function(){
+                var store = Store();
+                store.listenTo(Action(),fn);
+                store.listenTo(Action(),fn);
+                it('should throw an error',function(){
+                    assert.throws(function(){
+                        store.subscriptions.pop().stop();
+                    });
+                });
             });
         });
-        describe('which has already been removed from the list somehow',function(){
-            var store = Store();
-            store.listenTo(Action(),fn);
-            store.listenTo(Action(),fn);
-            it('should throw an error',function(){
-                assert.throws(function(){
-                    store.subscriptions.pop().stop();
+        describe('by using stopListenTo',function(){
+            describe('when all is well',function(){
+                var store = Store(),
+                    action1 = Action(),
+                    action2 = Action(),
+                    action3 = Action();
+                store.listenTo(action1,fn);
+                store.listenTo(action2,fn);
+                store.listenTo(action3,fn);
+                var result = store.stopListeningTo(action2);
+                it('should remove that listener from the list but keep the others',function(){
+                    assert.equal(2,store.subscriptions.length);
+                    assert.equal(action1,store.subscriptions[0].listenable);
+                    assert.equal(action3,store.subscriptions[1].listenable);
+                });
+                it('should return true',function(){
+                    assert.equal(true,result);
+                });
+            });
+            describe('when the stop method won\'t remove it from the array',function(){
+                var store = Store(),
+                    action = Action();
+                store.listenTo(action,fn);
+                store.subscriptions[0].stop = fn;
+                it('should throw an error',function(){
+                    assert.throws(function(){
+                        store.stopListeningTo(action);
+                    });
                 });
             });
         });

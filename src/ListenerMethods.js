@@ -93,9 +93,12 @@ module.exports = {
      * @returns {Boolean} True if a subscription was found and removed, otherwise false.
      */
     stopListeningTo: function(listenable){
+        var sub;
         for(var i=0; i<(this.subscriptions||[]).length;i++){
-            if (this.subscriptions[i].listenable === listenable){
-                this.subscriptions[i].stop();
+            var sub = this.subscriptions[i];
+            if (sub.listenable === listenable){
+                sub.stop();
+                _.throwIf(this.subscriptions.indexOf(sub)!==-1,'Failed to remove listen from subscriptions list!');
                 return true;
             }
         }
