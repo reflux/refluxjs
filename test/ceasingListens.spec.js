@@ -10,13 +10,16 @@ describe('Stopping',function(){
     describe('a single listen', function(){
         describe('when all is well',function(){
             var store = Store(),
-                action2 = Action();
+                action1 = Action(),
+                action3 = Action();
+            store.listenTo(action1,fn);
             store.listenTo(Action(),fn);
-            store.listenTo(action2,fn);
+            store.listenTo(action3,fn);
             it('should remove that listener from the list but keep the others',function(){
-                store.subscriptions[0].stop();
-                assert.equal(1,store.subscriptions.length);
-                assert.equal(action2,store.subscriptions[0].listenable);
+                store.subscriptions[1].stop();
+                assert.equal(2,store.subscriptions.length);
+                assert.equal(action1,store.subscriptions[0].listenable);
+                assert.equal(action3,store.subscriptions[1].listenable);
             });
         });
         describe('which has already been removed from the list somehow',function(){
