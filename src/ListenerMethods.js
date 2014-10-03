@@ -68,25 +68,21 @@ module.exports = {
      * @returns {Object} A subscription obj where `stop` is an unsub function and `listenable` is the object being listened to
      */
     listenTo: function(listenable, callback, defaultCallback) {
-        var err = this.validateListening(listenable),
-            self = this;
-        if (err){
-            throw Error(err);
-        }
+        var desub, unsubscriber, subscriptionobj, self = this;
+        _.throwIf(this.validateListening(listenable));
         this.fetchDefaultData(listenable, defaultCallback);
-        if (!this.subscriptions) { this.subscriptions = [];}
-        var desub = listenable.listen(this[callback]||callback, this),
-            unsubscriber = function (dontupdatearr) {
-                desub();
-                if (!dontupdatearr) {
-                    self.subscriptions.splice(self.subscriptions.indexOf(listenable), 1);
-                }
-            },
-            subscriptionobj = {
-                stop: unsubscriber,
-                listenable: listenable
-            };
-        this.subscriptions.push(subscriptionobj);
+        desub = listenable.listen(this[callback]||callback, this);
+        unsubscriber = function() {
+            var index = self.subscriptions.indexOf(subscriptionobj);
+            _.throwIf(index === -1,'Tried to remove listen already gone from subscriptions list!');
+            self.subscriptions.splice(index, 1);
+            desub();
+        };
+        subscriptionobj = {
+            stop: unsubscriber,
+            listenable: listenable
+        };
+        this.subscriptions = (this.subscriptions||[]).concat(subscriptionobj);
         return subscriptionobj;
     },
 
@@ -94,13 +90,12 @@ module.exports = {
      * Stops listening to a single listenable
      *
      * @param {Action|Store} listenable The action or store we no longer want to listen to
-     * @param {Boolean} dontupdatearr If true, we don't remove the subscription object from this.subscriptions
      * @returns {Boolean} True if a subscription was found and removed, otherwise false.
      */
-    stopListeningTo: function(listenable, dontupdatearr){
+    stopListeningTo: function(listenable){
         for(var i=0; i<(this.subscriptions||[]).length;i++){
             if (this.subscriptions[i].listenable === listenable){
-                this.subscriptions[i].stop(dontupdatearr);
+                this.subscriptions[i].stop();
                 return true;
             }
         }
@@ -112,10 +107,13 @@ module.exports = {
      *
      */
     stopListeningToAll: function(){
-        (this.subscriptions||[]).forEach(function(subscription) {
-            subscription.stop(true);
-        });
-        this.subscriptions = [];
+        var now;
+        if (this.subscriptions){
+            while((now=this.subscriptions.length)){
+                this.subscriptions[0].stop();
+                _.throwIf(now!==this.subscriptions.length+1,'Failed to remove listen from subscriptions list!');
+            }
+        }
     },
 
     /**
