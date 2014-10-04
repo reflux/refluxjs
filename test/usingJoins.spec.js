@@ -161,19 +161,31 @@ describe('using joins',function(){
             });
         });
         describe('strictly joining arguments',function(){
-            var action1 = Reflux.createAction(),
-                action2 = Reflux.createAction(),
-                action3 = Reflux.createAction(),
-                store = Reflux.createStore(),
+            var action1,
+                action2,
+                action3,
+                store,
+                spy;
+
+            beforeEach(function () {
+                action1 = Reflux.createAction({sync: true});
+                action2 = Reflux.createAction({sync: true});
+                action3 = Reflux.createAction({sync: true});
+                store = Reflux.createStore();
                 spy = sinon.spy();
-            store.joinStrict(action1,action2,action3,spy);
-            action1('a');
-            action2('b');
-            action1('x');
-            action3('c');
-            it("should emit with the arguments",function(){
-                assert.equal(spy.callCount,1);
-                assert.deepEqual(spy.firstCall.args,[['a'],['b'],['c']]);
+                store.joinStrict(action1,action2,action3,spy);
+            });
+
+            it("should emit with the arguments",function(done){
+                action1('a');
+                action2('b');
+                action3('c');
+
+                setTimeout(function() {
+                    assert.equal(spy.callCount,1);
+                    assert.deepEqual(spy.firstCall.args,[['a'],['b'],['c']]);
+                    done();
+                }, 10);
             });
             it("should throw error if triggered more than once",function(){
                 action1.trigger('a'); // sync trigger to be able to test

@@ -62,7 +62,7 @@ function newListener(i,join) {
         var callargs = slice.call(arguments);
         if (join.listenablesEmitted[i]){
             switch(join.strategy){
-                case "strict": throw "Strict join failed because listener triggered twice.";
+                case "strict": throw new Error("Strict join failed because listener triggered twice.");
                 case "last": join.args[i] = callargs; break;
                 case "all": join.args[i].push(callargs);
             }
