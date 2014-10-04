@@ -1,6 +1,7 @@
 var _ = require('./utils'),
     Reflux = require('../src'),
-    Keep = require('./Keep');
+    Keep = require('./Keep'),
+    allowed = {preEmit:1,shouldEmit:1};
 
 /**
  * Creates an event emitting Data Store. It is mixed in with functions
@@ -13,6 +14,14 @@ var _ = require('./utils'),
 module.exports = function(definition) {
 
     definition = definition || {};
+
+    for(var d in definition){
+        if (!allowed[d] && (Reflux.PublisherMethods[d] || Reflux.ListenerMethods[d])){
+            throw new Error("Cannot override API method " + d + 
+                " in store creation. Use another method name or override it on Reflux.PublisherMethods / Reflux.ListenerMethods instead."
+            );
+        }
+    }
 
     function Store() {
         var i=0, arr;
@@ -30,10 +39,7 @@ module.exports = function(definition) {
         }
     }
 
-    _.extend(Store.prototype, definition, Reflux.ListenerMethods, Reflux.PublisherMethods, {
-        preEmit: definition.preEmit || Reflux.PublisherMethods.preEmit,
-        shouldEmit: definition.shouldEmit || Reflux.PublisherMethods.shouldEmit
-    });
+    _.extend(Store.prototype, Reflux.ListenerMethods, Reflux.PublisherMethods, definition);
 
     var store = new Store();
     Keep.createdStores.push(store);

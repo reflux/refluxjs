@@ -8,13 +8,25 @@ chai.use(require('chai-as-promised'));
 
 describe('Creating action', function() {
 
-    it("should read preEmit, shouldEmit from definition, but not overwrite anything else",function(){
-        var def = {preEmit:"PRE",shouldEmit:"SHO",listen:"LIS",random:"RAN"},
+    it("should implement the publisher API",function(){
+        var action = Reflux.createAction();
+        for(var apimethod in Reflux.PublisherMethods){
+            assert.equal(Reflux.PublisherMethods[apimethod],action[apimethod]);
+        }
+    });
+
+    it("should copy properties from the definition into the action",function(){
+        var def = {preEmit:"PRE",shouldEmit:"SHO",random:"RAN"},
             action = Reflux.createAction(def);
         assert.equal(action.preEmit, def.preEmit);
         assert.equal(action.shouldEmit, def.shouldEmit);
         assert.equal(action.random, def.random);
-        assert.equal(action.listen, Reflux.PublisherMethods.listen);
+    });
+
+    it("should throw an error if you overwrite any API other than preEmit and shouldEmit",function(){
+        assert.throws(function(){
+            Reflux.createAction({listen:"FOO"});
+        });
     });
 
     var action,

@@ -269,25 +269,32 @@ describe('Creating stores', function() {
         });
     });
 
-    it("should not be possible to override API functions with props in the definition",function(){
-        var def = {listenTo:"FOO",listen:"BAR",trigger:"BAZ",hasListener:"BIN",listenToMany:"BAH"},
+    it("should copy all props from definition",function(){
+        var def = {random:"FOO",preEmit:"BAZ",blah:"BAH"},
             store = Reflux.createStore(def);
-        assert.isFunction(store.listenTo);
-        assert.isFunction(store.trigger);
-        assert.isFunction(store.hasListener);
-        assert.isFunction(store.listenToMany);
+        assert.equal(store.random,def.random);
+        assert.equal(store.preEmit,def.preEmit);
+        assert.equal(store.blah,def.blah);
     });
 
-    it("should be possible to overwrite preEmit and shouldEmit",function(){
-        var def = {preEmit:"FOO",shouldEmit:"BAR"},
-            store = Reflux.createStore(def);
-        assert.equal(store.preEmit,def.preEmit);
-        assert.equal(store.shouldEmit,def.shouldEmit);
+    it("should fail when trying to override API methods",function(){
+        assert.throws(function(){
+            Reflux.createStore({listenTo:"FOO"});
+        });
+        assert.throws(function(){
+            Reflux.createStore({listen:"BAR"});
+        });
     });
 
     it("should include ListenerMethods",function(){
         for(var m in Reflux.ListenerMethods){
             assert.equal(Reflux.createStore({})[m],Reflux.ListenerMethods[m]);
+        }
+    });
+
+    it("should include PublisherMethods",function(){
+        for(var m in Reflux.PublisherMethods){
+            assert.equal(Reflux.createStore({})[m],Reflux.PublisherMethods[m]);
         }
     });
 
