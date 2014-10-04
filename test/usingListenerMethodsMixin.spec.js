@@ -67,12 +67,6 @@ describe("using the ListenerMethods",function(){
                     assert.isFunction(subobj.stop);
                     assert.equal(subobj.listenable,listenable);
                 });
-                describe("when the stop method is called with true",function(){
-                    subobj.stop(true);
-                    it("calls the unsub method from the listenable",function(){
-                        assert.equal(unsub.callCount,1);
-                    });
-                });
             });
 
             describe("when setting a second subscription",function(){
@@ -83,21 +77,6 @@ describe("using the ListenerMethods",function(){
                 });
             });
 
-            describe("when cancelling a subscription without passing true",function(){
-                var context = {
-                        validateListening:function(){},
-                        fetchDefaultData:function(){}
-                    },
-                    unsub = sinon.spy(),
-                    listenable = {listen:sinon.stub().returns(unsub)};
-                listenTo.call(context,listenable).stop();
-                it("still calls unsub for the subscription",function(){
-                    assert.equal(unsub.callCount,1);
-                });
-                it("removes the subscription object from the subscriptions array",function(){
-                    assert.deepEqual(context.subscriptions,[]);
-                });
-            });
         });
     });
 
@@ -123,21 +102,4 @@ describe("using the ListenerMethods",function(){
         });
     });
 
-    describe('the stopListeningToAll method', function() {
-        var unsub1 = {stop:sinon.spy()},
-            unsub2 = {stop:sinon.spy()},
-            ctx = {subscriptions:[unsub1,unsub2]};
-        ListenerMethods.stopListeningToAll.call(ctx);
-
-        it('should call `stop` on all subscription objects in the subscriptions array', function() {
-            assert.equal(unsub1.stop.callCount,1);
-            assert.equal(unsub1.stop.firstCall.args[0],true);
-            assert.equal(unsub2.stop.callCount,1);
-            assert.equal(unsub2.stop.firstCall.args[0],true);
-        });
-
-        it("should end up with an empty subscriptions array",function(){
-            assert.deepEqual(ctx.subscriptions,[]);
-        });
-    });
 });

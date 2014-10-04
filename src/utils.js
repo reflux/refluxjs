@@ -47,3 +47,9 @@ exports.isArguments = function(value) {
     return value && typeof value == 'object' && typeof value.length == 'number' &&
       (toString.call(value) === '[object Arguments]' || (hasOwnProperty.call(value, 'callee' && !propertyIsEnumerable.call(value, 'callee')))) || false;
 };
+
+exports.throwIf = function(val,msg){
+    if (val){
+        throw Error(msg||val);
+    }
+};
