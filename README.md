@@ -76,19 +76,22 @@ For a full example check the [`test/index.js`](test/index.js) file.
 
 ### Creating actions
 
-Create an action by calling `Reflux.createAction`.
+Create an action by calling `Reflux.createAction` with an optional options object.
 
 ```javascript
-var statusUpdate = Reflux.createAction();
+var statusUpdate = Reflux.createAction(options);
 ```
 
 An action is a functor that can be invoked like any function.
 
 ```javascript
-statusUpdate(); // Invokes the action statusUpdate
+statusUpdate(data); // Invokes the action statusUpdate
+statusUpdate.triggerAsync(data); // same effect as above
 ```
 
-It is as simple as that. There is also a convenience function for creating multiple actions.
+If `options.sync` is true, the functor will instead call `action.trigger` which is a synchronous operation. You can change `action.sync` during the lifetime of the action, and the following calls will honour that change.
+
+There is also a convenience function for creating multiple actions.
 
 ```javascript
 var Actions = Reflux.createActions([
