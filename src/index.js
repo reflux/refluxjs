@@ -14,7 +14,17 @@ exports.listenTo = require('./listenTo');
 
 exports.listenToMany = require('./listenToMany');
 
-exports.all = require('./all');
+
+var maker = require('./joins').staticJoinCreator;
+
+exports.joinTrailing = exports.all = maker("last"); // Reflux.all alias for backward compatibility
+
+exports.joinLeading = maker("first");
+
+exports.joinStrict = maker("strict");
+
+exports.joinConcat = maker("all");
+
 
 /**
  * Convenience function for creating a set of actions
