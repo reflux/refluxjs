@@ -23,7 +23,7 @@ describe('using joins',function(){
             action1('11');
             action3('3');
             it("should emit again after all fire a second time",function(){
-                assert.deepEqual(spy.secondCall.args,[['11'],['2'],['3']]); 
+                assert.deepEqual(spy.secondCall.args,[['11'],['2'],['3']]);
             });
             action1('FOO');
             action3('BAR');
@@ -64,19 +64,34 @@ describe('using joins',function(){
             });
         });
         describe('strictly joining arguments',function(){
-            var action1 = Reflux.createAction(),
-                action2 = Reflux.createAction(),
-                action3 = Reflux.createAction(),
-                join = Reflux.joinStrict(action1,action2,action3),
+            var action1,
+                action2,
+                action3,
+                join,
+                spy;
+
+            beforeEach(function() {
+                action1 = Reflux.createAction({sync: false});
+                action2 = Reflux.createAction({sync: false});
+                action3 = Reflux.createAction({sync: false});
+                join = Reflux.joinStrict(action1,action2,action3);
                 spy = sinon.spy();
-            Reflux.createStore().listenTo(join,spy);
-            action1('a');
-            action2('b');
-            action3('c');
-            it("should emit with the arguments",function(){
-                assert.equal(spy.callCount,1);
-                assert.deepEqual(spy.firstCall.args,[['a'],['b'],['c']]);
+
+                Reflux.createStore().listenTo(join, spy);
             });
+
+            it("should emit with the arguments",function(done){
+                action1('a');
+                action2('b');
+                action3('c');
+
+                setTimeout(function() {
+                    assert.equal(spy.callCount,1);
+                    assert.deepEqual(spy.firstCall.args,[['a'],['b'],['c']]);
+                    done();
+                }, 10);
+            });
+
             it("should throw error if triggered more than once",function(){
                 action1.trigger('a'); // sync trigger to make sure error is correctly caught
                 assert.throws(function(){
@@ -105,7 +120,7 @@ describe('using joins',function(){
             action1('11');
             action3('3');
             it("should emit again after all fire a second time",function(){
-                assert.deepEqual(spy.secondCall.args,[['11'],['2'],['3']]); 
+                assert.deepEqual(spy.secondCall.args,[['11'],['2'],['3']]);
             });
             action1('FOO');
             action3('BAR');
