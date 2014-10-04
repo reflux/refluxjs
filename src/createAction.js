@@ -24,7 +24,7 @@ module.exports = function(definition) {
 
     var context = _.extend({
         eventLabel: "action",
-        emitter: new _.EventEmitter()
+        emitter: new _.EventEmitter(),
         _isAction: true
     },Reflux.PublisherMethods,definition);
 
