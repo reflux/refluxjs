@@ -13,11 +13,11 @@ module.exports = function(config) {
         ],
 
         files: [
-            'test/*.js'
+            'test/*.spec.js'
         ],
 
         preprocessors: {
-            'test/*.js': ['browserify']
+            'test/*.spec.js': ['browserify']
         },
 
         browserify: {
