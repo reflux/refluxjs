@@ -219,7 +219,8 @@ exports.reset = function() {
 };
 
 },{}],3:[function(_dereq_,module,exports){
-var _ = _dereq_('./utils');
+var _ = _dereq_('./utils'),
+    maker = _dereq_('./joins').instanceJoinCreator;
 
 /**
  * A module of methods related to listening.
@@ -237,7 +238,7 @@ module.exports = {
             listener;
         for (;i < (this.subscriptions||[]).length; ++i) {
             listener = this.subscriptions[i].listenable;
-            if ((listener === listenable && !listenable._isAction) || listener.hasListener && listener.hasListener(listenable)) {
+            if (listener === listenable || listener.hasListener && listener.hasListener(listenable)) {
                 return true;
             }
         }
@@ -273,7 +274,7 @@ module.exports = {
         if (!_.isFunction(listenable.listen)) {
             return listenable + " is missing a listen method";
         }
-        if (this.hasListener(listenable)) {
+        if (listenable.hasListener && listenable.hasListener(this)) {
             return "Listener cannot listen to this listenable because of circular loop";
         }
     },
@@ -288,25 +289,21 @@ module.exports = {
      * @returns {Object} A subscription obj where `stop` is an unsub function and `listenable` is the object being listened to
      */
     listenTo: function(listenable, callback, defaultCallback) {
-        var err = this.validateListening(listenable),
-            self = this;
-        if (err){
-            throw Error(err);
-        }
+        var desub, unsubscriber, subscriptionobj, subs = this.subscriptions = this.subscriptions || [];
+        _.throwIf(this.validateListening(listenable));
         this.fetchDefaultData(listenable, defaultCallback);
-        if (!this.subscriptions) { this.subscriptions = [];}
-        var desub = listenable.listen(this[callback]||callback, this),
-            unsubscriber = function (dontupdatearr) {
-                desub();
-                if (!dontupdatearr) {
-                    self.subscriptions.splice(self.subscriptions.indexOf(listenable), 1);
-                }
-            },
-            subscriptionobj = {
-                stop: unsubscriber,
-                listenable: listenable
-            };
-        this.subscriptions.push(subscriptionobj);
+        desub = listenable.listen(this[callback]||callback, this);
+        unsubscriber = function() {
+            var index = subs.indexOf(subscriptionobj);
+            _.throwIf(index === -1,'Tried to remove listen already gone from subscriptions list!');
+            subs.splice(index, 1);
+            desub();
+        };
+        subscriptionobj = {
+            stop: unsubscriber,
+            listenable: listenable
+        };
+        subs.push(subscriptionobj);
         return subscriptionobj;
     },
 
@@ -314,13 +311,15 @@ module.exports = {
      * Stops listening to a single listenable
      *
      * @param {Action|Store} listenable The action or store we no longer want to listen to
-     * @param {Boolean} dontupdatearr If true, we don't remove the subscription object from this.subscriptions
      * @returns {Boolean} True if a subscription was found and removed, otherwise false.
      */
-    stopListeningTo: function(listenable, dontupdatearr){
-        for(var i=0; i<(this.subscriptions||[]).length;i++){
-            if (this.subscriptions[i].listenable === listenable){
-                this.subscriptions[i].stop(dontupdatearr);
+    stopListeningTo: function(listenable){
+        var sub, i = 0, subs = this.subscriptions || [];
+        for(;i < subs.length; i++){
+            sub = subs[i];
+            if (sub.listenable === listenable){
+                sub.stop();
+                _.throwIf(subs.indexOf(sub)!==-1,'Failed to remove listen from subscriptions list!');
                 return true;
             }
         }
@@ -329,13 +328,13 @@ module.exports = {
 
     /**
      * Stops all subscriptions and empties subscriptions array
-     *
      */
     stopListeningToAll: function(){
-        (this.subscriptions||[]).forEach(function(subscription) {
-            subscription.stop(true);
-        });
-        this.subscriptions = [];
+        var remaining, subs = this.subscriptions || [];
+        while((remaining=subs.length)){
+            subs[0].stop();
+            _.throwIf(subs.length!==remaining-1,'Failed to remove listen from subscriptions list!');
+        }
     },
 
     /**
@@ -356,11 +355,43 @@ module.exports = {
                 defaultCallback.call(this, data);
             }
         }
-    }
+    },
+
+    /**
+     * The callback will be called once all listenables have triggered at least once.
+     * It will be invoked with the last emission from each listenable.
+     * @param {...Publishers} publishers Publishers that should be tracked.
+     * @param {Function|String} callback The method to call when all publishers have emitted
+     */
+    joinTrailing: maker("last"),
+
+    /**
+     * The callback will be called once all listenables have triggered at least once.
+     * It will be invoked with the first emission from each listenable.
+     * @param {...Publishers} publishers Publishers that should be tracked.
+     * @param {Function|String} callback The method to call when all publishers have emitted
+     */
+    joinLeading: maker("first"),
+
+    /**
+     * The callback will be called once all listenables have triggered at least once.
+     * It will be invoked with all emission from each listenable.
+     * @param {...Publishers} publishers Publishers that should be tracked.
+     * @param {Function|String} callback The method to call when all publishers have emitted
+     */
+    joinConcat: maker("all"),
+
+    /**
+     * The callback will be called once all listenables have triggered.
+     * If a callback triggers twice before that happens, an error is thrown.
+     * @param {...Publishers} publishers Publishers that should be tracked.
+     * @param {Function|String} callback The method to call when all publishers have emitted
+     */
+    joinStrict: maker("strict"),
 };
 
 
-},{"./utils":13}],4:[function(_dereq_,module,exports){
+},{"./joins":10,"./utils":13}],4:[function(_dereq_,module,exports){
 var _ = _dereq_('./utils'),
     ListenerMethods = _dereq_('./ListenerMethods');
 
@@ -445,94 +476,6 @@ module.exports = {
 };
 
 },{"./utils":13}],6:[function(_dereq_,module,exports){
-var createAction = _dereq_('./createAction');
-
-var slice = Array.prototype.slice;
-
-/**
- * Track a set of Actions and Stores. Use Reflux.all if you need to handle
- * data coming in parallel.
- *
- * @param {...Action|Store} listenables Actions and Stores that should be
- *  tracked.
- * @returns {Action} An action which tracks the provided Actions and Stores.
- *  The action will emit once all of the provided listenables have emitted at
- *  least once.
- */
-module.exports = function(/* listenables... */) {
-    var numberOfListenables = arguments.length,
-        // create a new array of the expected size. The initial
-        // values will be falsy, which is fine for us.
-        // Once each item in the array is truthy, the callback can be called
-        listenablesEmitted,
-        // these arguments will be used to *apply* the action.
-        args,
-        // this action combines all the listenables
-        action = createAction(),
-        // the original listenables
-        listenables = slice.call(arguments);
-
-    action._isAction = false;
-
-    action.hasListener = function(listenable) {
-        var i = 0, listener;
-
-        for (; i < listenables.length; ++i) {
-            listener = listenables[i];
-            if ((listener === listenable && !listener._isAction) || listener.hasListener && listener.hasListener(listenable)) {
-                return true;
-            }
-        }
-
-        return false;
-    };
-
-    reset();
-
-    for (var i = 0; i < numberOfListenables; i++) {
-        arguments[i].listen(newListener(i), null);
-    }
-
-    return action;
-
-    function reset() {
-        listenablesEmitted = new Array(numberOfListenables);
-        args = new Array(numberOfListenables);
-    }
-
-    function newListener(i) {
-        return function() {
-            listenablesEmitted[i] = true;
-            // Reflux users should not need to care about Array and arguments
-            // differences. This makes sure that they get the expected Array
-            // interface
-            args[i] = slice.call(arguments);
-            emitWhenAllListenablesEmitted();
-        };
-    }
-
-    function emitWhenAllListenablesEmitted() {
-        if (didAllListenablesEmit()) {
-            action.apply(action, args);
-            reset();
-        }
-    }
-
-    function didAllListenablesEmit() {
-        // reduce cannot be used because it only iterates over *present*
-        // elements in the array. Initially the Array doesn't contain
-        // elements. For this reason the usage of reduce would always indicate
-        // that all listenables emitted.
-        for (var i = 0; i < numberOfListenables; i++) {
-            if (!listenablesEmitted[i]) {
-                return false;
-            }
-        }
-        return true;
-    }
-};
-
-},{"./createAction":8}],7:[function(_dereq_,module,exports){
 var Reflux = _dereq_('../src'),
     _ = _dereq_('./utils');
 
@@ -554,10 +497,11 @@ module.exports = function(listenable,key){
     };
 };
 
-},{"../src":10,"./utils":13}],8:[function(_dereq_,module,exports){
+},{"../src":9,"./utils":13}],7:[function(_dereq_,module,exports){
 var _ = _dereq_('./utils'),
     Reflux = _dereq_('../src'),
-    Keep = _dereq_('./Keep');
+    Keep = _dereq_('./Keep'),
+    allowed = {preEmit:1,shouldEmit:1};
 
 /**
  * Creates an action functor object. It is mixed in with functions
@@ -570,17 +514,22 @@ module.exports = function(definition) {
 
     definition = definition || {};
 
+    for(var d in definition){
+        if (!allowed[d] && Reflux.PublisherMethods[d]) {
+            throw new Error("Cannot override API method " + d +
+                " in action creation. Use another method name or override it on Reflux.PublisherMethods instead."
+            );
+        }
+    }
+
     var context = _.extend({
         eventLabel: "action",
         emitter: new _.EventEmitter(),
-        _isAction: true,
-    },definition,Reflux.PublisherMethods,{
-        preEmit: definition.preEmit || Reflux.PublisherMethods.preEmit,
-        shouldEmit: definition.shouldEmit || Reflux.PublisherMethods.shouldEmit
-    });
+        _isAction: true
+    },Reflux.PublisherMethods,definition);
 
     var functor = function() {
-        context.triggerAsync.apply(context, arguments);
+        functor[functor.sync?"trigger":"triggerAsync"].apply(functor, arguments);
     };
 
     _.extend(functor,context);
@@ -591,10 +540,11 @@ module.exports = function(definition) {
 
 };
 
-},{"../src":10,"./Keep":2,"./utils":13}],9:[function(_dereq_,module,exports){
+},{"../src":9,"./Keep":2,"./utils":13}],8:[function(_dereq_,module,exports){
 var _ = _dereq_('./utils'),
     Reflux = _dereq_('../src'),
-    Keep = _dereq_('./Keep');
+    Keep = _dereq_('./Keep'),
+    allowed = {preEmit:1,shouldEmit:1};
 
 /**
  * Creates an event emitting Data Store. It is mixed in with functions
@@ -607,6 +557,14 @@ var _ = _dereq_('./utils'),
 module.exports = function(definition) {
 
     definition = definition || {};
+
+    for(var d in definition){
+        if (!allowed[d] && (Reflux.PublisherMethods[d] || Reflux.ListenerMethods[d])){
+            throw new Error("Cannot override API method " + d + 
+                " in store creation. Use another method name or override it on Reflux.PublisherMethods / Reflux.ListenerMethods instead."
+            );
+        }
+    }
 
     function Store() {
         var i=0, arr;
@@ -624,10 +582,7 @@ module.exports = function(definition) {
         }
     }
 
-    _.extend(Store.prototype, definition, Reflux.ListenerMethods, Reflux.PublisherMethods, {
-        preEmit: definition.preEmit || Reflux.PublisherMethods.preEmit,
-        shouldEmit: definition.shouldEmit || Reflux.PublisherMethods.shouldEmit
-    });
+    _.extend(Store.prototype, Reflux.ListenerMethods, Reflux.PublisherMethods, definition);
 
     var store = new Store();
     Keep.createdStores.push(store);
@@ -635,7 +590,7 @@ module.exports = function(definition) {
     return store;
 };
 
-},{"../src":10,"./Keep":2,"./utils":13}],10:[function(_dereq_,module,exports){
+},{"../src":9,"./Keep":2,"./utils":13}],9:[function(_dereq_,module,exports){
 exports.ListenerMethods = _dereq_('./ListenerMethods');
 
 exports.PublisherMethods = _dereq_('./PublisherMethods');
@@ -652,7 +607,17 @@ exports.listenTo = _dereq_('./listenTo');
 
 exports.listenToMany = _dereq_('./listenToMany');
 
-exports.all = _dereq_('./all');
+
+var maker = _dereq_('./joins').staticJoinCreator;
+
+exports.joinTrailing = exports.all = maker("last"); // Reflux.all alias for backward compatibility
+
+exports.joinLeading = maker("first");
+
+exports.joinStrict = maker("strict");
+
+exports.joinConcat = maker("all");
+
 
 /**
  * Convenience function for creating a set of actions
@@ -689,7 +654,93 @@ exports.nextTick = function(nextTick) {
  */
 exports.__keep = _dereq_('./Keep');
 
-},{"./Keep":2,"./ListenerMethods":3,"./ListenerMixin":4,"./PublisherMethods":5,"./all":6,"./connect":7,"./createAction":8,"./createStore":9,"./listenTo":11,"./listenToMany":12,"./utils":13}],11:[function(_dereq_,module,exports){
+},{"./Keep":2,"./ListenerMethods":3,"./ListenerMixin":4,"./PublisherMethods":5,"./connect":6,"./createAction":7,"./createStore":8,"./joins":10,"./listenTo":11,"./listenToMany":12,"./utils":13}],10:[function(_dereq_,module,exports){
+/**
+ * Internal module used to create static and instance join methods
+ */
+
+var slice = Array.prototype.slice,
+    createStore = _dereq_("./createStore"),
+    strategyMethodNames = {
+        strict: "joinStrict",
+        first: "joinLeading",
+        last: "joinTrailing",
+        all: "joinConcat"
+    };
+
+/**
+ * Used in `index.js` to create the static join methods
+ * @param {String} strategy Which strategy to use when tracking listenable trigger arguments
+ * @returns {Function} A static function which returns a store with a join listen on the given listenables using the given strategy
+ */
+exports.staticJoinCreator = function(strategy){
+    return function(/* listenables... */) {
+        var listenables = slice.call(arguments);
+        return createStore({
+            init: function(){
+                this[strategyMethodNames[strategy]].apply(this,listenables.concat("triggerAsync"));
+            }
+        });
+    };
+};
+
+/**
+ * Used in `ListenerMethods.js` to create the instance join methods
+ * @param {String} strategy Which strategy to use when tracking listenable trigger arguments
+ * @returns {Function} An instance method which sets up a join listen on the given listenables using the given strategy
+ */
+exports.instanceJoinCreator = function(strategy){
+    return function(/* listenables..., callback*/){
+        var listenables = slice.call(arguments),
+            callback = listenables.pop(),
+            numberOfListenables = listenables.length,
+            join = {
+                numberOfListenables: numberOfListenables,
+                callback: this[callback]||callback,
+                listener: this,
+                strategy: strategy
+            };
+        for (var i = 0; i < numberOfListenables; i++) {
+            this.listenTo(listenables[i],newListener(i,join));
+        }
+        reset(join);
+    };
+};
+
+// ---- internal join functions ----
+
+function reset(join) {
+    join.listenablesEmitted = new Array(join.numberOfListenables);
+    join.args = new Array(join.numberOfListenables);
+}
+
+function newListener(i,join) {
+    return function() {
+        var callargs = slice.call(arguments);
+        if (join.listenablesEmitted[i]){
+            switch(join.strategy){
+                case "strict": throw "Strict join failed because listener triggered twice.";
+                case "last": join.args[i] = callargs; break;
+                case "all": join.args[i].push(callargs);
+            }
+        } else {
+            join.listenablesEmitted[i] = true;
+            join.args[i] = (join.strategy==="all"?[callargs]:callargs);
+        }
+        emitIfAllListenablesEmitted(join);
+    };
+}
+
+function emitIfAllListenablesEmitted(join) {
+    for (var i = 0; i < join.numberOfListenables; i++) {
+        if (!join.listenablesEmitted[i]) {
+            return;
+        }
+    }
+    join.callback.apply(join.listener,join.args);
+    reset(join);
+}
+},{"./createStore":8}],11:[function(_dereq_,module,exports){
 var Reflux = _dereq_('../src');
 
 
@@ -727,7 +778,7 @@ module.exports = function(listenable,callback,initial){
     };
 };
 
-},{"../src":10}],12:[function(_dereq_,module,exports){
+},{"../src":9}],12:[function(_dereq_,module,exports){
 var Reflux = _dereq_('../src');
 
 /**
@@ -762,7 +813,7 @@ module.exports = function(listenables){
     };
 };
 
-},{"../src":10}],13:[function(_dereq_,module,exports){
+},{"../src":9}],13:[function(_dereq_,module,exports){
 /*
  * isObject, extend, isFunction, isArguments are taken from undescore/lodash in
  * order to remove the dependency
@@ -812,6 +863,13 @@ exports.isArguments = function(value) {
     return value && typeof value == 'object' && typeof value.length == 'number' &&
       (toString.call(value) === '[object Arguments]' || (hasOwnProperty.call(value, 'callee' && !propertyIsEnumerable.call(value, 'callee')))) || false;
 };
-},{"eventemitter3":1}]},{},[10])
-(10)
+
+exports.throwIf = function(val,msg){
+    if (val){
+        throw Error(msg||val);
+    }
+};
+
+},{"eventemitter3":1}]},{},[9])
+(9)
 });
