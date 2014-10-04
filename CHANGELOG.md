@@ -2,9 +2,16 @@
 
 Check for latest changes on the [milestones page](https://github.com/spoike/refluxjs/milestones).
 
+## v0.1.13
+
+* Added more join methods, i.e. `listener.joinLeading`, `listener.joinTrailing`, `listener.joinConcat` and `listener.joinStrict`
+ [#92](https://github.com/spoike/refluxjs/pull/92).
+* Actions can be set to sync or async trigger [#93](https://github.com/spoike/refluxjs/pull/93).
+* And various bug fixes. Check the [milestone page](https://github.com/spoike/refluxjs/issues?q=milestone%3A0.1.13+is%3Aclosed).
+
 ## v0.1.12
 
-* Bug fixes. Check the [0.1.12 milestone page](https://github.com/spoike/refluxjs/issues?q=milestone%3A0.1.12+is%3Aclosed).
+* Bug fixes. Check the [milestone page](https://github.com/spoike/refluxjs/issues?q=milestone%3A0.1.12+is%3Aclosed).
 
 ## v0.1.9, v0.1.10, v0.1.11
 
