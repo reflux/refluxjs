@@ -194,5 +194,12 @@ describe('using joins',function(){
                 });
             });
         });
+        describe('with a single participant in the join',function(){
+            it('should fail',function(){
+                assert.throws(function(){
+                    Reflux.createStore().joinConcat(Reflux.createAction(),function(){});
+                });
+            });
+        });
     });
 });
