@@ -6,6 +6,16 @@ var assert = require('chai').assert,
     sinon = require('sinon');
 
 describe('Stopping',function(){
+    describe('listening to a publisher that\'s only part of a join',function(){
+        var store = Store(),
+            action1 = Action(),
+            action2 = Action();
+        store.joinTrailing(action1,action2,function(){});
+        it('should fail',function(){
+            assert.equal(store.stopListeningTo(action1),false);
+            assert.equal(store.subscriptions.length,1);
+        });
+    });
     describe('a join',function(){
         var store = Store(),
             action1 = Action({sync:true}),
