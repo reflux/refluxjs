@@ -102,4 +102,24 @@ describe("using the ListenerMethods",function(){
         });
     });
 
+    describe('the hasListener method',function(){
+        var action1 = Reflux.createAction(),
+            action2 = Reflux.createAction(),
+            action3 = Reflux.createAction(),
+            action4 = Reflux.createAction(),
+            store = Reflux.createStore();
+        store.listenTo(action1,function(){});
+        store.joinLeading(action1,action2,action3,function(){});
+        it('should return true if context is listening',function(){
+            assert.equal(true,store.hasListener(action1));
+        });
+        it('should return false if context isn\'t listening',function(){
+            assert.equal(false,store.hasListener(action4));
+        });
+        it('should return true if context is listening to listenable as part of a join',function(){
+            assert.equal(true,store.hasListener(action2));
+            assert.equal(true,store.hasListener(action3));
+        });
+    });
+
 });

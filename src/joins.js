@@ -3,6 +3,7 @@
  */
 
 var slice = Array.prototype.slice,
+    _ = require("./utils"),
     createStore = require("./createStore"),
     strategyMethodNames = {
         strict: "joinStrict",
@@ -42,15 +43,34 @@ exports.instanceJoinCreator = function(strategy){
                 callback: this[callback]||callback,
                 listener: this,
                 strategy: strategy
-            };
-        for (var i = 0; i < numberOfListenables; i++) {
-            this.listenTo(listenables[i],newListener(i,join));
+            }, i, cancels = [], subobj, me = this;
+        for (i = 0; i < numberOfListenables; i++) {
+            _.throwIf(this.validateListening(listenables[i]));
+        }
+        for (i = 0; i < numberOfListenables; i++) {
+            cancels.push(listenables[i].listen(newListener(i,join),this));
         }
         reset(join);
+        subobj = {listenable: listenables};
+        subobj.stop = makeStopper(subobj,cancels,this);
+        this.subscriptions = (this.subscriptions || []).concat(subobj);
+        return subobj;
     };
 };
 
 // ---- internal join functions ----
+
+function makeStopper(subobj,cancels,context){
+    return function() {
+        var i, subs = context.subscriptions;
+            index = (subs ? subs.indexOf(subobj) : -1);
+        _.throwIf(index === -1,'Tried to remove join already gone from subscriptions list!');
+        for(i=0;i < cancels.length; i++){
+            cancels[i]();
+        }
+        subs.splice(index, 1);
+    }   
+}
 
 function reset(join) {
     join.listenablesEmitted = new Array(join.numberOfListenables);

@@ -13,12 +13,14 @@ module.exports = {
      * @returns {Boolean} The result of a recursive search among `this.subscriptions`
      */
     hasListener: function(listenable) {
-        var i = 0,
-            listener;
+        var i = 0, j, listener, listenables;
         for (;i < (this.subscriptions||[]).length; ++i) {
-            listener = this.subscriptions[i].listenable;
-            if (listener === listenable || listener.hasListener && listener.hasListener(listenable)) {
-                return true;
+            listenables = [].concat(this.subscriptions[i].listenable);
+            for (j = 0; j < listenables.length; j++){
+                listener = listenables[j];
+                if (listener === listenable || listener.hasListener && listener.hasListener(listenable)) {
+                    return true;
+                }
             }
         }
         return false;
