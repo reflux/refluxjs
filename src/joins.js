@@ -43,7 +43,7 @@ exports.instanceJoinCreator = function(strategy){
                 callback: this[callback]||callback,
                 listener: this,
                 strategy: strategy
-            }, i, cancels = [], subobj, me = this;
+            }, i, cancels = [], subobj;
         for (i = 0; i < numberOfListenables; i++) {
             _.throwIf(this.validateListening(listenables[i]));
         }
@@ -69,7 +69,7 @@ function makeStopper(subobj,cancels,context){
             cancels[i]();
         }
         subs.splice(index, 1);
-    }   
+    };
 }
 
 function reset(join) {
