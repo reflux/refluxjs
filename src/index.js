@@ -60,3 +60,14 @@ exports.nextTick = function(nextTick) {
  * Provides the set of created actions and stores for introspection
  */
 exports.__keep = require('./Keep');
+
+/**
+ * Warn if Function.prototype.bind not available
+ */
+if (!Function.prototype.bind) {
+  console.error(
+    'Function.prototype.bind not available. ' +
+    'ES5 shim required. ' +
+    'https://github.com/spoike/refluxjs#es5'
+  );
+}
