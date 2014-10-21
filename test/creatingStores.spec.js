@@ -303,4 +303,20 @@ describe('Creating stores', function() {
         assert.isUndefined(Reflux.ListenerMethods.trigger);
     });
 
+    describe('store methods', function() {
+        var store;
+
+        beforeEach(function() {
+            store = Reflux.createStore({
+                reflect: function() {
+                    return this;
+                }
+            });
+        });
+
+        it('should be bound to store instance', function() {
+            var reflect = store.reflect;
+            return assert.equal(store, reflect());
+        });
+    });
 });

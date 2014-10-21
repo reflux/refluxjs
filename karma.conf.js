@@ -13,6 +13,7 @@ module.exports = function(config) {
         ],
 
         files: [
+            'test/shims/phantomjs-shims.js',
             'test/*.spec.js'
         ],
 
