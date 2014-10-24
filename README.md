@@ -96,7 +96,7 @@ There is also a convenience function for creating multiple actions.
 ```javascript
 var Actions = Reflux.createActions([
     "statusUpdate",
-    "statusEdited",
+    "statusFetch",
     "statusAdded"
   ]);
 
@@ -111,6 +111,8 @@ Actions.statusUpdate();
 
 There are a couple of hooks avaiable for each action.
 
+* `handleCall` - Allow to intercept actions triggers. The function is passed a callback which triggers the emit chain (`preEmit`, `shouldEmit`) plus the arguments passed to the action call.
+
 * `preEmit` - Is called before the action emits an event. It receives the arguments from the action invocation. If it returns something other than undefined, that will be used as arguments for `shouldEmit` and subsequent emission.
 
 * `shouldEmit` - Is called after `preEmit` and before the action emits an event. By default it returns `true` which will let the action emit the event. You may override this if you need to check the arguments that the action receives and see if it needs to emit the event.
@@ -118,11 +120,18 @@ There are a couple of hooks avaiable for each action.
 Example usage:
 
 ```javascript
+Actions.statusFetch.handleCall = function(next) {
+	ajax.get('/status',function(status){
+		next(status); // Listening stores receive the status as action data.
+	});
+};
+
 Actions.statusUpdate.preEmit = function() { console.log(arguments); };
 Actions.statusUpdate.shouldEmit = function(value) {
     return value > 0;
 };
 
+Actions.statusFetch();
 Actions.statusUpdate(0);
 Actions.statusUpdate(1);
 // Should output: 1
@@ -132,6 +141,7 @@ You can also set the hooks by sending them in a definition object as you create 
 
 ```javascript
 var action = Reflux.createAction({
+	handleCall: function(){...},
     preEmit: function(){...},
     shouldEmit: function(){...}
 });
