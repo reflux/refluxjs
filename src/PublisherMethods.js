@@ -45,11 +45,20 @@ module.exports = {
      * Publishes an event using `this.emitter` (if `shouldEmit` agrees)
      */
     trigger: function() {
-        var args = arguments,
-            pre = this.preEmit.apply(this, args);
-        args = pre === undefined ? args : _.isArguments(pre) ? pre : [].concat(pre);
-        if (this.shouldEmit.apply(this, args)) {
-            this.emitter.emit(this.eventLabel, args);
+        var me = this;
+        var trigger = function() {
+            var args = arguments,
+                pre = me.preEmit.apply(me, args);
+            args = pre === undefined ? args : _.isArguments(pre) ? pre : [].concat(pre);
+            if (me.shouldEmit.apply(me, args)) {
+                me.emitter.emit(me.eventLabel, args);
+            }
+        };
+
+        if (_.isFunction(this.handleCall)) {
+            this.handleCall.apply(this, [trigger].concat(Array.prototype.slice.call(arguments)));            
+        } else {
+            trigger.apply(null, arguments);
         }
     },
 
