@@ -628,7 +628,7 @@ exports.joinConcat = maker("all");
 exports.createActions = function(actionNames) {
     var i = 0, actions = {};
     for (; i < actionNames.length; i++) {
-        actions[actionNames[i]] = exports.createAction();
+        actions[actionNames[i]] = exports.createAction({ '__name' : actionNames[i] });
     }
     return actions;
 };
