@@ -13,12 +13,14 @@ module.exports = {
      * @returns {Boolean} The result of a recursive search among `this.subscriptions`
      */
     hasListener: function(listenable) {
-        var i = 0,
-            listener;
+        var i = 0, j, listener, listenables;
         for (;i < (this.subscriptions||[]).length; ++i) {
-            listener = this.subscriptions[i].listenable;
-            if (listener === listenable || listener.hasListener && listener.hasListener(listenable)) {
-                return true;
+            listenables = [].concat(this.subscriptions[i].listenable);
+            for (j = 0; j < listenables.length; j++){
+                listener = listenables[j];
+                if (listener === listenable || listener.hasListener && listener.hasListener(listenable)) {
+                    return true;
+                }
             }
         }
         return false;
@@ -141,6 +143,7 @@ module.exports = {
      * It will be invoked with the last emission from each listenable.
      * @param {...Publishers} publishers Publishers that should be tracked.
      * @param {Function|String} callback The method to call when all publishers have emitted
+     * @returns {Object} A subscription obj where `stop` is an unsub function and `listenable` is an array of listenables
      */
     joinTrailing: maker("last"),
 
@@ -149,6 +152,7 @@ module.exports = {
      * It will be invoked with the first emission from each listenable.
      * @param {...Publishers} publishers Publishers that should be tracked.
      * @param {Function|String} callback The method to call when all publishers have emitted
+     * @returns {Object} A subscription obj where `stop` is an unsub function and `listenable` is an array of listenables
      */
     joinLeading: maker("first"),
 
@@ -157,6 +161,7 @@ module.exports = {
      * It will be invoked with all emission from each listenable.
      * @param {...Publishers} publishers Publishers that should be tracked.
      * @param {Function|String} callback The method to call when all publishers have emitted
+     * @returns {Object} A subscription obj where `stop` is an unsub function and `listenable` is an array of listenables
      */
     joinConcat: maker("all"),
 
@@ -165,6 +170,7 @@ module.exports = {
      * If a callback triggers twice before that happens, an error is thrown.
      * @param {...Publishers} publishers Publishers that should be tracked.
      * @param {Function|String} callback The method to call when all publishers have emitted
+     * @returns {Object} A subscription obj where `stop` is an unsub function and `listenable` is an array of listenables
      */
     joinStrict: maker("strict"),
 };

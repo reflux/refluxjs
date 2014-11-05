@@ -2,9 +2,47 @@ var assert = require('chai').assert,
     Reflux = require('../src'),
     Action = Reflux.createAction,
     Store = Reflux.createStore,
-    fn = function(){};
+    fn = function(){},
+    sinon = require('sinon');
 
 describe('Stopping',function(){
+    describe('listening to a publisher that\'s only part of a join',function(){
+        var store = Store(),
+            action1 = Action(),
+            action2 = Action();
+        store.joinTrailing(action1,action2,function(){});
+        it('should fail',function(){
+            assert.equal(store.stopListeningTo(action1),false);
+            assert.equal(store.subscriptions.length,1);
+        });
+    });
+    describe('a join',function(){
+        var store = Store(),
+            action1 = Action({sync:true}),
+            action2 = Action({sync:true}),
+            action3 = Action({sync:true}),
+            indivcallback = sinon.spy(),
+            joincallback = sinon.spy(),
+            subobj;
+        store.listenTo(action2,indivcallback);
+        subobj = store.joinLeading(action1,action2,action3,joincallback);
+        subobj.stop();
+        action1("A");
+        action2("B");
+        action3("C");
+        it('should leave the individual listening intact',function(){
+            assert.equal(store.subscriptions.length,1);
+            assert.equal(store.subscriptions[0].listenable,action2);
+            action2("foo","bar");
+            assert.deepEqual(["foo","bar"],indivcallback.lastCall.args);
+        });
+        it('should not fire join callback anymore',function(done){
+            setTimeout(function(){
+                assert.equal(joincallback.callCount,0);
+                done();
+            },10);
+        });
+    });
     describe('a single listen', function(){
         describe('by calling stop directly',function(){
             describe('when all is well',function(){
