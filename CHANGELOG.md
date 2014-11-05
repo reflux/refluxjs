@@ -2,6 +2,11 @@
 
 Check for latest changes on the [milestones page](https://github.com/spoike/refluxjs/milestones).
 
+## v0.1.14, v0.1.15
+
+* You may now stop listening to joined listenables individually [#96](https://github.com/spoike/refluxjs/pull/96).
+* Reflux will now throw an error if you attempt to join less than two listenables [#97](https://github.com/spoike/refluxjs/pull/97).
+
 ## v0.1.13
 
 * Added more join methods, i.e. `listener.joinLeading`, `listener.joinTrailing`, `listener.joinConcat` and `listener.joinStrict`
