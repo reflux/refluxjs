@@ -3,6 +3,7 @@
  */
 
 var slice = Array.prototype.slice,
+    _ = require("./utils"),
     createStore = require("./createStore"),
     strategyMethodNames = {
         strict: "joinStrict",
@@ -34,6 +35,7 @@ exports.staticJoinCreator = function(strategy){
  */
 exports.instanceJoinCreator = function(strategy){
     return function(/* listenables..., callback*/){
+        _.throwIf(arguments.length < 3,'Cannot create a join with less than 2 listenables!');
         var listenables = slice.call(arguments),
             callback = listenables.pop(),
             numberOfListenables = listenables.length,
