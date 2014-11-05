@@ -1,6 +1,6 @@
 {
   "name": "reflux",
-  "version": "0.1.13",
+  "version": "0.1.14",
   "description": "A simple library for uni-directional dataflow application architecture inspired by ReactJS Flux",
   "main": "src/index.js",
   "scripts": {
