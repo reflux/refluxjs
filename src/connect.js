@@ -3,6 +3,15 @@ var Reflux = require('../src'),
 
 module.exports = function(listenable,key){
     return {
+        getInitialState: function(){
+            if (key === undefined) {
+                return listenable.getDefaultData();
+            } else {
+                var defaultData = {};
+                defaultData[key] = listenable.getDefaultData();
+                return defaultData;
+            }
+        },
         componentDidMount: function(){
             for(var m in Reflux.ListenerMethods){
                 if (this[m] !== Reflux.ListenerMethods[m]){
@@ -13,7 +22,7 @@ module.exports = function(listenable,key){
                 }
             }
             var me = this, cb = (key === undefined ? this.setState : function(v){me.setState(_.object([key],[v]));});
-            this.listenTo(listenable,cb,cb);
+            this.listenTo(listenable,cb);
         },
         componentWillUnmount: Reflux.ListenerMixin.componentWillUnmount
     };

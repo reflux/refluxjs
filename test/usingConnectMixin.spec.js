@@ -19,10 +19,15 @@ describe('using the connect(...) mixin',function(){
             context = {setState: sinon.spy()},
             result = _.extend(context,connect(listenable));
 
-        it("should add componentDidMount and WillUnmount",function(){
+        it("should add getInitialState and componentDidMount and WillUnmount",function(){
+            assert.isFunction(context.getInitialState);
             assert.isFunction(context.componentDidMount);
             assert.isFunction(context.componentWillUnmount);
             assert.equal(context.componentWillUnmount,Reflux.ListenerMethods.stopListeningToAll);
+        });
+
+        it("should pass default data to state",function(){
+            assert.deepEqual(defaultdata,context.getInitialState());
         });
 
         result.componentDidMount();
@@ -31,10 +36,6 @@ describe('using the connect(...) mixin',function(){
             assert.equal(1,listenable.listen.callCount);
             assert.equal(context.setState,listenable.listen.firstCall.args[0]);
             assert.equal(context,listenable.listen.firstCall.args[1]);
-        });
-
-        it("should pass default data to state",function(){
-            assert.deepEqual([defaultdata],context.setState.firstCall.args);
         });
 
         it("should store the subscription object correctly",function(){
@@ -54,6 +55,10 @@ describe('using the connect(...) mixin',function(){
             context = {setState: sinon.spy()},
             result = _.extend(context,connect(listenable,key));
 
+        it("should pass default data to state correctly",function(){
+            assert.deepEqual({KEY:defaultdata},context.getInitialState());
+        });
+
         result.componentDidMount();
 
         it("should call listen on the listenable correctly",function(){
@@ -62,13 +67,9 @@ describe('using the connect(...) mixin',function(){
             assert.equal(context,listenable.listen.firstCall.args[1]);
         });
 
-        it("should pass default data to state correctly",function(){
-            assert.deepEqual([{KEY:defaultdata}],context.setState.firstCall.args);
-        });
-
         it("should send listenable callback which calls setState correctly",function(){
             listenable.listen.firstCall.args[0](triggerdata);
-            assert.deepEqual([_.object([key],[triggerdata])],context.setState.secondCall.args);
+            assert.deepEqual([_.object([key],[triggerdata])],context.setState.firstCall.args);
         });
     });
     describe("when calling with falsy key",function(){
