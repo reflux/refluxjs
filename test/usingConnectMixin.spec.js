@@ -10,6 +10,18 @@ describe('using the connect(...) mixin',function(){
         assert.equal(connect, Reflux.connect);
     });
 
+    describe("when calling with action",function() {
+        var listenable = {
+                listen: sinon.spy()
+            },
+            context = {setState: sinon.spy()};
+        _.extend(context,connect(listenable));
+
+        it("should pass empty object to state",function(){
+            assert.deepEqual({},context.getInitialState());
+        });
+    });
+
     describe("when calling without key",function(){
         var defaultdata = "DEFAULTDATA",
             listenable = {

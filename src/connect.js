@@ -4,7 +4,9 @@ var Reflux = require('../src'),
 module.exports = function(listenable,key){
     return {
         getInitialState: function(){
-            if (key === undefined) {
+            if (!_.isFunction(listenable.getDefaultData)) {
+                return {};
+            } else if (key === undefined) {
                 return listenable.getDefaultData();
             } else {
                 var defaultData = {};
