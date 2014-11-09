@@ -26,7 +26,7 @@ describe('using the connect(...) mixin',function(){
         var defaultdata = "DEFAULTDATA",
             listenable = {
                 listen: sinon.spy(),
-                getDefaultData: sinon.stub().returns(defaultdata)
+                getInitialState: sinon.stub().returns(defaultdata)
             },
             context = {setState: sinon.spy()},
             result = _.extend(context,connect(listenable));
@@ -62,7 +62,7 @@ describe('using the connect(...) mixin',function(){
             key = "KEY",
             listenable = {
                 listen: sinon.spy(),
-                getDefaultData: sinon.stub().returns(defaultdata)
+                getInitialState: sinon.stub().returns(defaultdata)
             },
             context = {setState: sinon.spy()},
             result = _.extend(context,connect(listenable,key));

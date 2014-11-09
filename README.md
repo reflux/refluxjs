@@ -428,7 +428,7 @@ Once a join is triggered it will reset, and thus it can trigger again when all p
 
 #### Using the listener instance methods
 
-All objects using the listener API (stores, React components using `ListenerMixin`, or other components using the `ListenerMethods`) gain access to the four join instance methods, named after the argument strategy. Here's an example saving the last emission from each publisher: 
+All objects using the listener API (stores, React components using `ListenerMixin`, or other components using the `ListenerMethods`) gain access to the four join instance methods, named after the argument strategy. Here's an example saving the last emission from each publisher:
 
 ```javascript
 var gainHeroBadgeStore = Reflux.createStore({
@@ -454,12 +454,12 @@ var gainHeroBadgeStore = Reflux.joinTrailing(actions.disarmBomb, actions.saveHos
 
 ### Sending default data with the listenTo function
 
-The `listenTo` function provided by the `Store` and the `ListenerMixin` has a third parameter that accepts a callback. This callback will be invoked when the listener is registered with whatever the `getDefaultData` is returning.
+The `listenTo` function provided by the `Store` and the `ListenerMixin` has a third parameter that accepts a callback. This callback will be invoked when the listener is registered with whatever the `getInitialState` is returning.
 
 ```javascript
 var exampleStore = Reflux.createStore({
     init: function() {},
-    getDefaultData: function() {
+    getInitialState: function() {
         return "the initial data";
     }
 });
@@ -470,7 +470,7 @@ this.listenTo(exampleStore, onChangeCallback, initialCallback)
 // initialCallback will be invoked immediately with "the initial data" as first argument
 ```
 
-Remember the `listenToMany` method? In case you use that with other stores, it supports `getDefaultData`. That data is sent to the normal listening callback, or a `this.on<Listenablename>Default` method if that exists.
+Remember the `listenToMany` method? In case you use that with other stores, it supports `getInitialState`. That data is sent to the normal listening callback, or a `this.on<Listenablename>Default` method if that exists.
 
 ## Colophon
 

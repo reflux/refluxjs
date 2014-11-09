@@ -72,7 +72,7 @@ module.exports = {
     listenTo: function(listenable, callback, defaultCallback) {
         var desub, unsubscriber, subscriptionobj, subs = this.subscriptions = this.subscriptions || [];
         _.throwIf(this.validateListening(listenable));
-        this.fetchDefaultData(listenable, defaultCallback);
+        this.fetchInitialState(listenable, defaultCallback);
         desub = listenable.listen(this[callback]||callback, this);
         unsubscriber = function() {
             var index = subs.indexOf(subscriptionobj);
@@ -119,15 +119,15 @@ module.exports = {
     },
 
     /**
-     * Used in `listenTo`. Fetches initial data from a publisher if it has a `getDefaultData` method.
+     * Used in `listenTo`. Fetches initial data from a publisher if it has a `getInitialState` method.
      * @param {Action|Store} listenable The publisher we want to get default data from
      * @param {Function|String} defaultCallback The method to receive the data
      */
-    fetchDefaultData: function (listenable, defaultCallback) {
+    fetchInitialState: function (listenable, defaultCallback) {
         defaultCallback = (defaultCallback && this[defaultCallback]) || defaultCallback;
         var me = this;
-        if (_.isFunction(defaultCallback) && _.isFunction(listenable.getDefaultData)) {
-            data = listenable.getDefaultData();
+        if (_.isFunction(defaultCallback) && _.isFunction(listenable.getInitialState)) {
+            data = listenable.getInitialState();
             if (data && _.isFunction(data.then)) {
                 data.then(function() {
                     defaultCallback.apply(me, arguments);
@@ -174,4 +174,3 @@ module.exports = {
      */
     joinStrict: maker("strict"),
 };
-

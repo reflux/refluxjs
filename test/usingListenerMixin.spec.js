@@ -69,9 +69,9 @@ describe('Managing subscriptions via ListenerMixin', function() {
             });
         }
 
-        it('should get default data from getDefaultData()', function () {
+        it('should get default data from getInitialState()', function () {
             store = Reflux.createStore({
-                getDefaultData: function () {
+                getInitialState: function () {
                     return 'default data';
                 }
             });
@@ -79,9 +79,9 @@ describe('Managing subscriptions via ListenerMixin', function() {
             return assert.eventually.equal(promise, 'default data');
         });
 
-        it('should get default data from getDefaultData() returned promise', function () {
+        it('should get default data from getInitialState() returned promise', function () {
             store = Reflux.createStore({
-                getDefaultData: function () {
+                getInitialState: function () {
                     return Q.Promise(function (resolve) {
                         setTimeout(function () {
                             resolve('default data');

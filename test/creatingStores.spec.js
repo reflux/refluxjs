@@ -177,9 +177,9 @@ describe('Creating stores', function() {
             return assert.eventually.deepEqual(promise, ['[...] 1337', '[...] ninja']);
         });
 
-        it('should get default data from getDefaultData()', function() {
+        it('should get default data from getInitialState()', function() {
             var store = Reflux.createStore(_.extend(baseDefinition, {
-                getDefaultData: function () {
+                getInitialState: function () {
                     return ['default data'];
                 }
             }));
@@ -187,9 +187,9 @@ describe('Creating stores', function() {
             return assert.eventually.equal(promise, '[...] default data');
         });
 
-        it('should get default data from getDefaultData() returned promise', function() {
+        it('should get default data from getInitialState() returned promise', function() {
             var store = Reflux.createStore(_.extend(baseDefinition, {
-                getDefaultData: function () {
+                getInitialState: function () {
                     return Q.Promise(function (resolve) {
                         setTimeout(function () {
                             resolve(['default data']);
@@ -212,11 +212,11 @@ describe('Creating stores', function() {
                     foo: {listen:sinon.spy()},
                     bar: {
                         listen:sinon.spy(),
-                        getDefaultData:sinon.stub().returns(defaultbardata)
+                        getInitialState:sinon.stub().returns(defaultbardata)
                     },
                     baz: {
                         listen:sinon.spy(),
-                        getDefaultData:sinon.stub().returns(defaultbazdata)
+                        getInitialState:sinon.stub().returns(defaultbazdata)
                     },
                     missing: {
                         listen:sinon.spy()
@@ -241,13 +241,13 @@ describe('Creating stores', function() {
                 assert.equal(listenables.missing.listen.callCount,0);
             });
 
-            it("should call main callback if listenable has getDefaultData but listener has no default-specific cb",function(){
-                assert.equal(listenables.bar.getDefaultData.callCount,1);
+            it("should call main callback if listenable has getInitialState but listener has no default-specific cb",function(){
+                assert.equal(listenables.bar.getInitialState.callCount,1);
                 assert.equal(def.bar.firstCall.args[0],defaultbardata);
             });
 
-            it("should call default callback if exist and listenable has getDefaultData",function(){
-                assert.equal(listenables.baz.getDefaultData.callCount,1);
+            it("should call default callback if exist and listenable has getInitialState",function(){
+                assert.equal(listenables.baz.getInitialState.callCount,1);
                 assert.equal(def.onBaz.callCount,0);
                 assert.equal(def.onBazDefault.firstCall.args[0],defaultbazdata);
             });

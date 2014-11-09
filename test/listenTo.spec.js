@@ -11,7 +11,7 @@ describe('the listenTo shorthand',function(){
             defaultdata = "DATA",
             listenable = {
                 listen: sinon.stub().returns(unsubscriber),
-                getDefaultData: sinon.stub().returns(defaultdata)
+                getInitialState: sinon.stub().returns(defaultdata)
             },
             initial = sinon.spy(),
             callback = "CALLBACK",
@@ -41,7 +41,7 @@ describe('the listenTo shorthand',function(){
             });
 
             it("should send listenable default data to initial (via listenTo)",function(){
-                assert.equal(listenable.getDefaultData.callCount,1);
+                assert.equal(listenable.getInitialState.callCount,1);
                 assert.equal(initial.callCount,1);
                 assert.equal(initial.firstCall.args[0],defaultdata);
             });

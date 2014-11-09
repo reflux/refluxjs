@@ -4,14 +4,12 @@ var Reflux = require('../src'),
 module.exports = function(listenable,key){
     return {
         getInitialState: function(){
-            if (!_.isFunction(listenable.getDefaultData)) {
+            if (!_.isFunction(listenable.getInitialState)) {
                 return {};
             } else if (key === undefined) {
-                return listenable.getDefaultData();
+                return listenable.getInitialState();
             } else {
-                var defaultData = {};
-                defaultData[key] = listenable.getDefaultData();
-                return defaultData;
+                return _.object([key],[listenable.getInitialState()]);
             }
         },
         componentDidMount: function(){
