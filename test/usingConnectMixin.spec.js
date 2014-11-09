@@ -23,10 +23,10 @@ describe('using the connect(...) mixin',function(){
     });
 
     describe("when calling without key",function(){
-        var defaultdata = "DEFAULTDATA",
+        var initialstate = "DEFAULTDATA",
             listenable = {
                 listen: sinon.spy(),
-                getInitialState: sinon.stub().returns(defaultdata)
+                getInitialState: sinon.stub().returns(initialstate)
             },
             context = {setState: sinon.spy()},
             result = _.extend(context,connect(listenable));
@@ -38,8 +38,8 @@ describe('using the connect(...) mixin',function(){
             assert.equal(context.componentWillUnmount,Reflux.ListenerMethods.stopListeningToAll);
         });
 
-        it("should pass default data to state",function(){
-            assert.deepEqual(defaultdata,context.getInitialState());
+        it("should pass initial state to state",function(){
+            assert.deepEqual(initialstate,context.getInitialState());
         });
 
         result.componentDidMount();
@@ -57,18 +57,18 @@ describe('using the connect(...) mixin',function(){
     });
 
     describe("when calling with key",function(){
-        var defaultdata = "DEFAULTDATA",
+        var initialstate = "DEFAULTDATA",
             triggerdata = "TRIGGERDATA",
             key = "KEY",
             listenable = {
                 listen: sinon.spy(),
-                getInitialState: sinon.stub().returns(defaultdata)
+                getInitialState: sinon.stub().returns(initialstate)
             },
             context = {setState: sinon.spy()},
             result = _.extend(context,connect(listenable,key));
 
-        it("should pass default data to state correctly",function(){
-            assert.deepEqual({KEY:defaultdata},context.getInitialState());
+        it("should pass initial state to state correctly",function(){
+            assert.deepEqual({KEY:initialstate},context.getInitialState());
         });
 
         result.componentDidMount();

@@ -58,7 +58,7 @@ describe("using the ListenerMethods",function(){
                 assert.deepEqual(listenable.listen.firstCall.args,[callback,context]);
             });
 
-            it("tries to get default data correctly",function(){
+            it("tries to get initial state correctly",function(){
                 assert.deepEqual(context.fetchInitialState.firstCall.args,[listenable,defaultcallback]);
             });
 
@@ -83,9 +83,9 @@ describe("using the ListenerMethods",function(){
     describe('the fetchInitialState method',function(){
 
         describe('when called with method name and publisher with getInitialState method',function(){
-            var defaultdata = "DEFAULTDATA",
+            var initialstate = "DEFAULTDATA",
                 listenable = {
-                    getInitialState: sinon.stub().returns(defaultdata)
+                    getInitialState: sinon.stub().returns(initialstate)
                 },
                 context = {
                     defcb: sinon.spy()
@@ -97,7 +97,7 @@ describe("using the ListenerMethods",function(){
             });
 
             it("passes the returned data to the named method",function(){
-                assert.deepEqual(context.defcb.firstCall.args,[defaultdata]);
+                assert.deepEqual(context.defcb.firstCall.args,[initialstate]);
             });
         });
     });

@@ -120,7 +120,7 @@ module.exports = {
 
     /**
      * Used in `listenTo`. Fetches initial data from a publisher if it has a `getInitialState` method.
-     * @param {Action|Store} listenable The publisher we want to get default data from
+     * @param {Action|Store} listenable The publisher we want to get initial state from
      * @param {Function|String} defaultCallback The method to receive the data
      */
     fetchInitialState: function (listenable, defaultCallback) {

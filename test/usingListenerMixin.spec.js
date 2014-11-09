@@ -54,7 +54,7 @@ describe('Managing subscriptions via ListenerMixin', function() {
         });
     });
 
-    describe('get default data', function () {
+    describe('get initial state', function () {
         beforeEach(function() {
             component.componentWillUnmount();
         });
@@ -69,28 +69,28 @@ describe('Managing subscriptions via ListenerMixin', function() {
             });
         }
 
-        it('should get default data from getInitialState()', function () {
+        it('should get initial state from getInitialState()', function () {
             store = Reflux.createStore({
                 getInitialState: function () {
-                    return 'default data';
+                    return 'initial state';
                 }
             });
             mountComponent();
-            return assert.eventually.equal(promise, 'default data');
+            return assert.eventually.equal(promise, 'initial state');
         });
 
-        it('should get default data from getInitialState() returned promise', function () {
+        it('should get initial state from getInitialState() returned promise', function () {
             store = Reflux.createStore({
                 getInitialState: function () {
                     return Q.Promise(function (resolve) {
                         setTimeout(function () {
-                            resolve('default data');
+                            resolve('initial state');
                         }, 20);
                     });
                 }
             });
             mountComponent();
-            return assert.eventually.equal(promise, 'default data');
+            return assert.eventually.equal(promise, 'initial state');
         });
     });
 

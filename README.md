@@ -452,7 +452,7 @@ Since it is rather common to have a store where the only purpose is to listen to
 var gainHeroBadgeStore = Reflux.joinTrailing(actions.disarmBomb, actions.saveHostage, actions.recoverData);
 ```
 
-### Sending default data with the listenTo function
+### Sending initial state with the listenTo function
 
 The `listenTo` function provided by the `Store` and the `ListenerMixin` has a third parameter that accepts a callback. This callback will be invoked when the listener is registered with whatever the `getInitialState` is returning.
 

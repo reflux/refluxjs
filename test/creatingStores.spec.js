@@ -177,28 +177,28 @@ describe('Creating stores', function() {
             return assert.eventually.deepEqual(promise, ['[...] 1337', '[...] ninja']);
         });
 
-        it('should get default data from getInitialState()', function() {
+        it('should get initial state from getInitialState()', function() {
             var store = Reflux.createStore(_.extend(baseDefinition, {
                 getInitialState: function () {
-                    return ['default data'];
+                    return ['initial state'];
                 }
             }));
             var promise = createPromiseForTest(store);
-            return assert.eventually.equal(promise, '[...] default data');
+            return assert.eventually.equal(promise, '[...] initial state');
         });
 
-        it('should get default data from getInitialState() returned promise', function() {
+        it('should get initial state from getInitialState() returned promise', function() {
             var store = Reflux.createStore(_.extend(baseDefinition, {
                 getInitialState: function () {
                     return Q.Promise(function (resolve) {
                         setTimeout(function () {
-                            resolve(['default data']);
+                            resolve(['initial state']);
                         }, 20);
                     });
                 }
             }));
             var promise = createPromiseForTest(store);
-            return assert.eventually.equal(promise, '[...] default data');
+            return assert.eventually.equal(promise, '[...] initial state');
         });
 
     });
@@ -206,17 +206,17 @@ describe('Creating stores', function() {
     describe("the listenables property",function(){
 
         describe("when given a single object",function(){
-            var defaultbardata = "DEFAULTBARDATA",
-                defaultbazdata = "DEFAULTBAZDATA",
+            var initialbarstate = "DEFAULTBARDATA",
+                initialbazstate = "DEFAULTBAZDATA",
                 listenables = {
                     foo: {listen:sinon.spy()},
                     bar: {
                         listen:sinon.spy(),
-                        getInitialState:sinon.stub().returns(defaultbardata)
+                        getInitialState:sinon.stub().returns(initialbarstate)
                     },
                     baz: {
                         listen:sinon.spy(),
-                        getInitialState:sinon.stub().returns(defaultbazdata)
+                        getInitialState:sinon.stub().returns(initialbazstate)
                     },
                     missing: {
                         listen:sinon.spy()
@@ -243,13 +243,13 @@ describe('Creating stores', function() {
 
             it("should call main callback if listenable has getInitialState but listener has no default-specific cb",function(){
                 assert.equal(listenables.bar.getInitialState.callCount,1);
-                assert.equal(def.bar.firstCall.args[0],defaultbardata);
+                assert.equal(def.bar.firstCall.args[0],initialbarstate);
             });
 
             it("should call default callback if exist and listenable has getInitialState",function(){
                 assert.equal(listenables.baz.getInitialState.callCount,1);
                 assert.equal(def.onBaz.callCount,0);
-                assert.equal(def.onBazDefault.firstCall.args[0],defaultbazdata);
+                assert.equal(def.onBazDefault.firstCall.args[0],initialbazstate);
             });
         });
 
