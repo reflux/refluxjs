@@ -39,7 +39,7 @@ module.exports = function(definition) {
         }
     }
 
-    _.extend(Store.prototype, Reflux.ListenerMethods, Reflux.PublisherMethods, definition);
+    _.extend(Store.prototype, Reflux.ListenerMethods, Reflux.PublisherMethods, Reflux.StoreMethods, definition);
 
     var store = new Store();
     Keep.createdStores.push(store);

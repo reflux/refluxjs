@@ -277,6 +277,13 @@ describe('Creating stores', function() {
         assert.equal(store.blah,def.blah);
     });
 
+    it("should copy properties from Reflux.StoreMethods into the action",function(){
+        Reflux.StoreMethods = {exampleProp: 'exp', exampleFn: function() {}};
+        var store = Reflux.createStore();
+        assert.equal(store.exampleProp, Reflux.StoreMethods.exampleProp);
+        assert.equal(store.exampleFn, Reflux.StoreMethods.exampleFn);
+    });
+
     it("should fail when trying to override API methods",function(){
         assert.throws(function(){
             Reflux.createStore({listenTo:"FOO"});

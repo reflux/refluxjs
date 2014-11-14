@@ -26,7 +26,7 @@ module.exports = function(definition) {
         eventLabel: "action",
         emitter: new _.EventEmitter(),
         _isAction: true
-    },Reflux.PublisherMethods,definition);
+    }, Reflux.PublisherMethods, Reflux.ActionMethods, definition);
 
     var functor = function() {
         functor[functor.sync?"trigger":"triggerAsync"].apply(functor, arguments);

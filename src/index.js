@@ -1,6 +1,10 @@
+exports.ActionMethods = require('./ActionMethods');
+
 exports.ListenerMethods = require('./ListenerMethods');
 
 exports.PublisherMethods = require('./PublisherMethods');
+
+exports.StoreMethods = require('./StoreMethods');
 
 exports.createAction = require('./createAction');
 

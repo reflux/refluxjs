@@ -8,6 +8,10 @@ chai.use(require('chai-as-promised'));
 
 describe('Creating action', function() {
 
+    beforeEach(function(){
+        Reflux.ActionMethods = {};
+    });
+
     it("should implement the publisher API",function(){
         var action = Reflux.createAction();
         for(var apimethod in Reflux.PublisherMethods){
@@ -21,6 +25,13 @@ describe('Creating action', function() {
         assert.equal(action.preEmit, def.preEmit);
         assert.equal(action.shouldEmit, def.shouldEmit);
         assert.equal(action.random, def.random);
+    });
+
+    it("should copy properties from Reflux.ActionMethods into the action",function(){
+        Reflux.ActionMethods = {exampleProp: 'exp', exampleFn: function() {}};
+        var action = Reflux.createAction();
+        assert.equal(action.exampleProp, Reflux.ActionMethods.exampleProp);
+        assert.equal(action.exampleFn, Reflux.ActionMethods.exampleFn);
     });
 
     it("should throw an error if you overwrite any API other than preEmit and shouldEmit",function(){
