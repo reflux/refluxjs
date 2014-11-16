@@ -8,10 +8,6 @@ chai.use(require('chai-as-promised'));
 
 describe('Creating action', function() {
 
-    beforeEach(function(){
-        Reflux.ActionMethods = {};
-    });
-
     it("should implement the publisher API",function(){
         var action = Reflux.createAction();
         for(var apimethod in Reflux.PublisherMethods){
@@ -27,17 +23,32 @@ describe('Creating action', function() {
         assert.equal(action.random, def.random);
     });
 
-    it("should copy properties from Reflux.ActionMethods into the action",function(){
-        Reflux.ActionMethods = {exampleProp: 'exp', exampleFn: function() {}};
-        var action = Reflux.createAction();
-        assert.equal(action.exampleProp, Reflux.ActionMethods.exampleProp);
-        assert.equal(action.exampleFn, Reflux.ActionMethods.exampleFn);
-    });
-
     it("should throw an error if you overwrite any API other than preEmit and shouldEmit",function(){
         assert.throws(function(){
             Reflux.createAction({listen:"FOO"});
         });
+    });
+
+    describe('Reflux.ActionMethods', function() {
+
+      afterEach(function(){
+          Reflux.ActionMethods = {};
+      });
+
+      it("should copy properties from Reflux.ActionMethods into the action",function(){
+          Reflux.ActionMethods = {preEmit: function() {}, exampleFn: function() {}};
+          var action = Reflux.createAction();
+          assert.equal(action.preEmit, Reflux.ActionMethods.preEmit);
+          assert.equal(action.exampleFn, Reflux.ActionMethods.exampleFn);
+      });
+
+      it("should throw an error if you overwrite any API other than preEmit and shouldEmit in Reflux.ActionMethods",function(){
+        Reflux.ActionMethods.listen = "FOO";
+          assert.throws(function(){
+              Reflux.createAction({});
+          });
+      });
+
     });
 
     var action,

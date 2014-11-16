@@ -16,6 +16,8 @@ describe('Creating stores', function() {
             unsubCallback;
 
         beforeEach(function() {
+            Reflux.StoreMethods = {};
+
             promise = Q.Promise(function(resolve) {
                 action = Reflux.createAction();
                 store = Reflux.createStore({
@@ -277,13 +279,6 @@ describe('Creating stores', function() {
         assert.equal(store.blah,def.blah);
     });
 
-    it("should copy properties from Reflux.StoreMethods into the action",function(){
-        Reflux.StoreMethods = {exampleProp: 'exp', exampleFn: function() {}};
-        var store = Reflux.createStore();
-        assert.equal(store.exampleProp, Reflux.StoreMethods.exampleProp);
-        assert.equal(store.exampleFn, Reflux.StoreMethods.exampleFn);
-    });
-
     it("should fail when trying to override API methods",function(){
         assert.throws(function(){
             Reflux.createStore({listenTo:"FOO"});
@@ -303,6 +298,20 @@ describe('Creating stores', function() {
         for(var m in Reflux.PublisherMethods){
             assert.equal(Reflux.createStore({})[m],Reflux.PublisherMethods[m]);
         }
+    });
+
+    it("should copy properties from Reflux.StoreMethods into the store",function(){
+        Reflux.StoreMethods = {preEmit: function() {}, exampleFn: function() {}};
+        var store = Reflux.createStore();
+        assert.equal(store.preEmit, Reflux.StoreMethods.preEmit);
+        assert.equal(store.exampleFn, Reflux.StoreMethods.exampleFn);
+    });
+
+    it("should fail when trying to override API methods in Reflux.StoreMethods",function(){
+        Reflux.StoreMethods = { listen: "BAR" };
+        assert.throws(function(){
+            Reflux.createStore({});
+        });
     });
 
     it("should not mix in its own methods into ListenerMethods",function(){
