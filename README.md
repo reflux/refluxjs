@@ -109,7 +109,7 @@ Actions.statusUpdate();
 
 #### Action hooks
 
-There are a couple of hooks avaiable for each action.
+There are a couple of hooks available for each action.
 
 * `preEmit` - Is called before the action emits an event. It receives the arguments from the action invocation. If it returns something other than undefined, that will be used as arguments for `shouldEmit` and subsequent emission.
 
@@ -135,6 +135,19 @@ var action = Reflux.createAction({
     preEmit: function(){...},
     shouldEmit: function(){...}
 });
+```
+
+#### Reflux.ActionMethods
+
+If you would like to have a common set of methods available to all actions you can extend the `Reflux.ActionMethods` object, which is mixed into the actions when they are created.
+
+Example usage:
+
+```javascript
+Reflux.ActionMethods.exampleMethod = function() { console.log(arguments); };
+
+Actions.statusUpdate.exampleMethod('arg1');
+// Should output: 'arg1'
 ```
 
 ### Creating data stores
@@ -166,6 +179,19 @@ var statusStore = Reflux.createStore({
 In the above example, whenever the action is called, the store's `output` callback will be called with whatever parameters was sent in the action. E.g. if the action is called as `statusUpdate(true)` then the flag argument in `output` function is `true`.
 
 A data store is a publisher much like the actions, so they too have the `preEmit` and `shouldEmit` hooks.
+
+#### Reflux.StoreMethods
+
+If you would like to have a common set of methods available to all stores you can extend the `Reflux.StoreMethods` object, which is mixed into the stores when they are created.
+
+Example usage:
+
+```javascript
+Reflux.StoreMethods.exampleMethod = function() { console.log(arguments); };
+
+statusStore.exampleMethod('arg1');
+// Should output: 'arg1'
+```
 
 #### Listening to many actions at once
 
