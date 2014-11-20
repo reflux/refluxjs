@@ -1,7 +1,7 @@
 var Reflux = require('../src'),
     _ = require('./utils');
 
-module.exports = function(listenable,key){
+module.exports = function(listenable,key, useReplaceState){
     return {
         getInitialState: function(){
             if (!_.isFunction(listenable.getInitialState)) {
@@ -14,6 +14,7 @@ module.exports = function(listenable,key){
         },
         componentDidMount: function(){
             var warned = false;
+            var updateMethod = useReplaceState ? "replaceState" : "setState";
             for(var m in Reflux.ListenerMethods){
                 if (this[m] && typeof console && typeof console.warn === "function" && !warned ){
                     console.warn(
@@ -26,7 +27,7 @@ module.exports = function(listenable,key){
                 }
                 this[m] = Reflux.ListenerMethods[m];
             }
-            var me = this, cb = (key === undefined ? this.setState : function(v){me.setState(_.object([key],[v]));});
+            var me = this, cb = (key === undefined ? this[updateMethod] : function(v){me[updateMethod](_.object([key],[v]));});
             this.listenTo(listenable,cb);
         },
         componentWillUnmount: Reflux.ListenerMixin.componentWillUnmount
