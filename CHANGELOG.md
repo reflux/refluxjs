@@ -2,6 +2,13 @@
 
 Check for latest changes on the [milestones page](https://github.com/spoike/refluxjs/milestones).
 
+## v0.2.0
+
+* Breaking change: Set initial state before componentDidMount (in `Reflux.connect`) [#117](https://github.com/spoike/refluxjs/pull/117)
+* Allow extension of actions and stores (with `Reflux.ActionMethods` and `Reflux.StoreMethods`) [#121](https://github.com/spoike/refluxjs/pull/121)
+* Automatically bind store methods [#100](https://github.com/spoike/refluxjs/pull/100)
+* Bugfix: Connect and listenermixin combo [#131](https://github.com/spoike/refluxjs/pull/131)
+
 ## v0.1.14, v0.1.15
 
 * You may now stop listening to joined listenables individually [#96](https://github.com/spoike/refluxjs/pull/96).
