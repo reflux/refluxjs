@@ -118,7 +118,7 @@ describe('Creating action', function() {
         describe('when adding shouldEmit hook',function(){
             var context = {
                 validateListening:function(){},
-                fetchDefaultData:function(){}
+                fetchInitialState:function(){}
             };
 
             describe("when hook returns true",function(){

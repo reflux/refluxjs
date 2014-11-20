@@ -177,28 +177,28 @@ describe('Creating stores', function() {
             return assert.eventually.deepEqual(promise, ['[...] 1337', '[...] ninja']);
         });
 
-        it('should get default data from getDefaultData()', function() {
+        it('should get initial state from getInitialState()', function() {
             var store = Reflux.createStore(_.extend(baseDefinition, {
-                getDefaultData: function () {
-                    return ['default data'];
+                getInitialState: function () {
+                    return ['initial state'];
                 }
             }));
             var promise = createPromiseForTest(store);
-            return assert.eventually.equal(promise, '[...] default data');
+            return assert.eventually.equal(promise, '[...] initial state');
         });
 
-        it('should get default data from getDefaultData() returned promise', function() {
+        it('should get initial state from getInitialState() returned promise', function() {
             var store = Reflux.createStore(_.extend(baseDefinition, {
-                getDefaultData: function () {
+                getInitialState: function () {
                     return Q.Promise(function (resolve) {
                         setTimeout(function () {
-                            resolve(['default data']);
+                            resolve(['initial state']);
                         }, 20);
                     });
                 }
             }));
             var promise = createPromiseForTest(store);
-            return assert.eventually.equal(promise, '[...] default data');
+            return assert.eventually.equal(promise, '[...] initial state');
         });
 
     });
@@ -206,17 +206,17 @@ describe('Creating stores', function() {
     describe("the listenables property",function(){
 
         describe("when given a single object",function(){
-            var defaultbardata = "DEFAULTBARDATA",
-                defaultbazdata = "DEFAULTBAZDATA",
+            var initialbarstate = "DEFAULTBARDATA",
+                initialbazstate = "DEFAULTBAZDATA",
                 listenables = {
                     foo: {listen:sinon.spy()},
                     bar: {
                         listen:sinon.spy(),
-                        getDefaultData:sinon.stub().returns(defaultbardata)
+                        getInitialState:sinon.stub().returns(initialbarstate)
                     },
                     baz: {
                         listen:sinon.spy(),
-                        getDefaultData:sinon.stub().returns(defaultbazdata)
+                        getInitialState:sinon.stub().returns(initialbazstate)
                     },
                     missing: {
                         listen:sinon.spy()
@@ -241,15 +241,15 @@ describe('Creating stores', function() {
                 assert.equal(listenables.missing.listen.callCount,0);
             });
 
-            it("should call main callback if listenable has getDefaultData but listener has no default-specific cb",function(){
-                assert.equal(listenables.bar.getDefaultData.callCount,1);
-                assert.equal(def.bar.firstCall.args[0],defaultbardata);
+            it("should call main callback if listenable has getInitialState but listener has no default-specific cb",function(){
+                assert.equal(listenables.bar.getInitialState.callCount,1);
+                assert.equal(def.bar.firstCall.args[0],initialbarstate);
             });
 
-            it("should call default callback if exist and listenable has getDefaultData",function(){
-                assert.equal(listenables.baz.getDefaultData.callCount,1);
+            it("should call default callback if exist and listenable has getInitialState",function(){
+                assert.equal(listenables.baz.getInitialState.callCount,1);
                 assert.equal(def.onBaz.callCount,0);
-                assert.equal(def.onBazDefault.firstCall.args[0],defaultbazdata);
+                assert.equal(def.onBazDefault.firstCall.args[0],initialbazstate);
             });
         });
 

@@ -46,7 +46,7 @@ describe("using the ListenerMethods",function(){
                 defaultcallback = "DEFCALL",
                 context = {
                     validateListening: function(){},
-                    fetchDefaultData: sinon.stub()
+                    fetchInitialState: sinon.stub()
                 },
                 subobj = listenTo.call(context,listenable,callback,defaultcallback);
 
@@ -58,8 +58,8 @@ describe("using the ListenerMethods",function(){
                 assert.deepEqual(listenable.listen.firstCall.args,[callback,context]);
             });
 
-            it("tries to get default data correctly",function(){
-                assert.deepEqual(context.fetchDefaultData.firstCall.args,[listenable,defaultcallback]);
+            it("tries to get initial state correctly",function(){
+                assert.deepEqual(context.fetchInitialState.firstCall.args,[listenable,defaultcallback]);
             });
 
             describe("the returned subscription object",function(){
@@ -80,24 +80,24 @@ describe("using the ListenerMethods",function(){
         });
     });
 
-    describe('the fetchDefaultData method',function(){
+    describe('the fetchInitialState method',function(){
 
-        describe('when called with method name and publisher with getDefaultData method',function(){
-            var defaultdata = "DEFAULTDATA",
+        describe('when called with method name and publisher with getInitialState method',function(){
+            var initialstate = "DEFAULTDATA",
                 listenable = {
-                    getDefaultData: sinon.stub().returns(defaultdata)
+                    getInitialState: sinon.stub().returns(initialstate)
                 },
                 context = {
                     defcb: sinon.spy()
                 };
-            ListenerMethods.fetchDefaultData.call(context,listenable,"defcb");
+            ListenerMethods.fetchInitialState.call(context,listenable,"defcb");
 
-            it("calls getDefaultData on the publisher",function(){
-                assert.equal(listenable.getDefaultData.callCount,1);
+            it("calls getInitialState on the publisher",function(){
+                assert.equal(listenable.getInitialState.callCount,1);
             });
 
             it("passes the returned data to the named method",function(){
-                assert.deepEqual(context.defcb.firstCall.args,[defaultdata]);
+                assert.deepEqual(context.defcb.firstCall.args,[initialstate]);
             });
         });
     });
