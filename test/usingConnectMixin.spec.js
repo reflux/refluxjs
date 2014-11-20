@@ -84,7 +84,7 @@ describe('using the connect(...) mixin',function(){
         });
     });
     describe("together with ListenerMixin in a React component",function(){
-        var store = Reflux.createStore({});
+        var store = Reflux.createStore({}),
             def = {setState:function(){}},
             fakecomponent = _.extend(def,Reflux.connect(store),Reflux.ListenerMethods);
         it("should log a warning)",function(){
