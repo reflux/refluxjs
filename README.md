@@ -70,6 +70,10 @@ The following command installs reflux as a bower component that can be used in t
 
     bower install reflux
 
+### ES5
+
+Like React, Reflux depends on an es5-shim for older browsers. The es5-shim.js from [kriskowal's es5-shim](https://github.com/kriskowal/es5-shim) provides everything required.
+
 ## Usage
 
 For a full example check the [`test/index.js`](test/index.js) file.
