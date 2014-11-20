@@ -16,6 +16,14 @@ module.exports = function(definition) {
 
     definition = definition || {};
 
+    for(var a in Reflux.StoreMethods){
+        if (!allowed[a] && (Reflux.PublisherMethods[a] || Reflux.ListenerMethods[a])){
+            throw new Error("Cannot override API method " + a + 
+                " in Reflux.StoreMethods. Use another method name or override it on Reflux.PublisherMethods / Reflux.ListenerMethods instead."
+            );
+        }
+    }
+
     for(var d in definition){
         if (!allowed[d] && (Reflux.PublisherMethods[d] || Reflux.ListenerMethods[d])){
             throw new Error("Cannot override API method " + d + 
@@ -40,7 +48,7 @@ module.exports = function(definition) {
         }
     }
 
-    _.extend(Store.prototype, Reflux.ListenerMethods, Reflux.PublisherMethods, definition);
+    _.extend(Store.prototype, Reflux.ListenerMethods, Reflux.PublisherMethods, Reflux.StoreMethods, definition);
 
     var store = new Store();
     bindMethods(store, definition);

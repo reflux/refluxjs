@@ -14,6 +14,14 @@ module.exports = function(definition) {
 
     definition = definition || {};
 
+    for(var a in Reflux.ActionMethods){
+        if (!allowed[a] && Reflux.PublisherMethods[a]) {
+            throw new Error("Cannot override API method " + a +
+                " in Reflux.ActionMethods. Use another method name or override it on Reflux.PublisherMethods instead."
+            );
+        }
+    }
+
     for(var d in definition){
         if (!allowed[d] && Reflux.PublisherMethods[d]) {
             throw new Error("Cannot override API method " + d +
@@ -26,7 +34,7 @@ module.exports = function(definition) {
         eventLabel: "action",
         emitter: new _.EventEmitter(),
         _isAction: true
-    },Reflux.PublisherMethods,definition);
+    }, Reflux.PublisherMethods, Reflux.ActionMethods, definition);
 
     var functor = function() {
         functor[functor.sync?"trigger":"triggerAsync"].apply(functor, arguments);
