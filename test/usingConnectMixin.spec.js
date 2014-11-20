@@ -2,8 +2,7 @@ var assert = require('chai').assert,
     sinon = require('sinon'),
     connect = require('../src/connect'),
     _ = require('../src/utils'),
-    Reflux = require('../src'),
-    React = require('react');
+    Reflux = require('../src');
 
 describe('using the connect(...) mixin',function(){
 
