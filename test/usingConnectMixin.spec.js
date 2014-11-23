@@ -1,6 +1,6 @@
 var assert = require('chai').assert,
     sinon = require('sinon'),
-    connect = require('../src/connect'),
+    connect = require('../src').connect,
     _ = require('../src/utils'),
     Reflux = require('../src');
 

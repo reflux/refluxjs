@@ -3,30 +3,7 @@
  */
 
 var slice = Array.prototype.slice,
-    _ = require("./utils"),
-    createStore = require("./createStore"),
-    strategyMethodNames = {
-        strict: "joinStrict",
-        first: "joinLeading",
-        last: "joinTrailing",
-        all: "joinConcat"
-    };
-
-/**
- * Used in `index.js` to create the static join methods
- * @param {String} strategy Which strategy to use when tracking listenable trigger arguments
- * @returns {Function} A static function which returns a store with a join listen on the given listenables using the given strategy
- */
-exports.staticJoinCreator = function(strategy){
-    return function(/* listenables... */) {
-        var listenables = slice.call(arguments);
-        return createStore({
-            init: function(){
-                this[strategyMethodNames[strategy]].apply(this,listenables.concat("triggerAsync"));
-            }
-        });
-    };
-};
+    _ = require("./utils");
 
 /**
  * Used in `ListenerMethods.js` to create the instance join methods

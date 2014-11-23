@@ -1,3 +1,26 @@
+var _ = require('./utils'),
+    Reflux = exports,
+    Keep = require('./Keep'),
+    allowed = {preEmit:1,shouldEmit:1},
+    bindMethods = require('./bindMethods'),
+    strategyMethodNames = {
+        strict: "joinStrict",
+        first: "joinLeading",
+        last: "joinTrailing",
+        all: "joinConcat"
+    },
+    slice = Array.prototype.slice,
+    maker = function(strategy){
+        return function(/* listenables... */) {
+            var listenables = slice.call(arguments);
+            return Reflux.createStore({
+                init: function(){
+                    this[strategyMethodNames[strategy]].apply(this,listenables.concat("triggerAsync"));
+                }
+            });
+        };
+    };
+
 exports.ActionMethods = require('./ActionMethods');
 
 exports.ListenerMethods = require('./ListenerMethods');
@@ -6,20 +29,170 @@ exports.PublisherMethods = require('./PublisherMethods');
 
 exports.StoreMethods = require('./StoreMethods');
 
-exports.createAction = require('./createAction');
+exports.createAction = function(definition) {
 
-exports.createStore = require('./createStore');
+    definition = definition || {};
 
-exports.connect = require('./connect');
+    for(var a in Reflux.ActionMethods){
+        if (!allowed[a] && Reflux.PublisherMethods[a]) {
+            throw new Error("Cannot override API method " + a +
+                " in Reflux.ActionMethods. Use another method name or override it on Reflux.PublisherMethods instead."
+            );
+        }
+    }
+
+    for(var d in definition){
+        if (!allowed[d] && Reflux.PublisherMethods[d]) {
+            throw new Error("Cannot override API method " + d +
+                " in action creation. Use another method name or override it on Reflux.PublisherMethods instead."
+            );
+        }
+    }
+
+    var context = _.extend({
+        eventLabel: "action",
+        emitter: new _.EventEmitter(),
+        _isAction: true
+    }, Reflux.PublisherMethods, Reflux.ActionMethods, definition);
+
+    var functor = function() {
+        functor[functor.sync?"trigger":"triggerAsync"].apply(functor, arguments);
+    };
+
+    _.extend(functor,context);
+
+    Keep.createdActions.push(functor);
+
+    return functor;
+
+};
+
+exports.createStore = function(definition) {
+
+    definition = definition || {};
+
+    for(var a in Reflux.StoreMethods){
+        if (!allowed[a] && (Reflux.PublisherMethods[a] || Reflux.ListenerMethods[a])){
+            throw new Error("Cannot override API method " + a +
+                " in Reflux.StoreMethods. Use another method name or override it on Reflux.PublisherMethods / Reflux.ListenerMethods instead."
+            );
+        }
+    }
+
+    for(var d in definition){
+        if (!allowed[d] && (Reflux.PublisherMethods[d] || Reflux.ListenerMethods[d])){
+            throw new Error("Cannot override API method " + d +
+                " in store creation. Use another method name or override it on Reflux.PublisherMethods / Reflux.ListenerMethods instead."
+            );
+        }
+    }
+
+    function Store() {
+        var i=0, arr;
+        this.subscriptions = [];
+        this.emitter = new _.EventEmitter();
+        this.eventLabel = "change";
+        if (this.init && _.isFunction(this.init)) {
+            this.init();
+        }
+        if (this.listenables){
+            arr = [].concat(this.listenables);
+            for(;i < arr.length;i++){
+                this.listenToMany(arr[i]);
+            }
+        }
+    }
+
+    _.extend(Store.prototype, Reflux.ListenerMethods, Reflux.PublisherMethods, Reflux.StoreMethods, definition);
+
+    var store = new Store();
+    bindMethods(store, definition);
+    Keep.createdStores.push(store);
+
+    return store;
+};
+
+exports.connect = function(listenable,key){
+    return {
+        getInitialState: function(){
+            if (!_.isFunction(listenable.getInitialState)) {
+                return {};
+            } else if (key === undefined) {
+                return listenable.getInitialState();
+            } else {
+                return _.object([key],[listenable.getInitialState()]);
+            }
+        },
+        componentDidMount: function(){
+            var warned = false;
+            for(var m in Reflux.ListenerMethods){
+                if (this[m] && typeof console && typeof console.warn === "function" && !warned ){
+                    console.warn(
+                        "Component using Reflux.connect already had property '"+m+"'. "+
+                        "Either you had your own property with that name which was now overridden, "+
+                        "or you combined connect with ListenerMixin which is unnecessary as connect "+
+                        "will include the ListenerMixin methods automatically."
+                    );
+                    warned = true;
+                }
+                this[m] = Reflux.ListenerMethods[m];
+            }
+            var me = this, cb = (key === undefined ? this.setState : function(v){me.setState(_.object([key],[v]));});
+            this.listenTo(listenable,cb);
+        },
+        componentWillUnmount: Reflux.ListenerMixin.componentWillUnmount
+    };
+};
 
 exports.ListenerMixin = require('./ListenerMixin');
 
-exports.listenTo = require('./listenTo');
+exports.listenTo = function(listenable,callback,initial){
+    return {
+        /**
+         * Set up the mixin before the initial rendering occurs. Import methods from `ListenerMethods`
+         * and then make the call to `listenTo` with the arguments provided to the factory function
+         */
+        componentDidMount: function() {
+            for(var m in Reflux.ListenerMethods){
+                if (this[m] !== Reflux.ListenerMethods[m]){
+                    if (this[m]){
+                        throw "Can't have other property '"+m+"' when using Reflux.listenTo!";
+                    }
+                    this[m] = Reflux.ListenerMethods[m];
+                }
+            }
+            this.listenTo(listenable,callback,initial);
+        },
+        /**
+         * Cleans up all listener previously registered.
+         */
+        componentWillUnmount: Reflux.ListenerMethods.stopListeningToAll
+    };
+};
 
-exports.listenToMany = require('./listenToMany');
-
-
-var maker = require('./joins').staticJoinCreator;
+exports.listenToMany = function(listenables){
+    return {
+        /**
+         * Set up the mixin before the initial rendering occurs. Import methods from `ListenerMethods`
+         * and then make the call to `listenTo` with the arguments provided to the factory function
+         */
+        componentDidMount: function() {
+            for(var m in Reflux.ListenerMethods){
+                if (this[m] !== Reflux.ListenerMethods[m]){
+                    if (this[m]){
+                        throw "Can't have other property '"+m+"' when using Reflux.listenToMany!";
+                    }
+                    this[m] = Reflux.ListenerMethods[m];
+                }
+            }
+            this.listenToMany(listenables);
+        },
+        /**
+         * Cleans up all listener previously registered.
+         */
+        componentWillUnmount: Reflux.ListenerMethods.stopListeningToAll
+    };
+};
 
 exports.joinTrailing = exports.all = maker("last"); // Reflux.all alias for backward compatibility
 

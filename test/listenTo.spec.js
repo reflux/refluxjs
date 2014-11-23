@@ -1,6 +1,6 @@
 var assert = require('chai').assert,
     sinon = require('sinon'),
-    listenTo = require('../src/listenTo'),
+    listenTo = require('../src').listenTo,
     _ = require('../src/utils'),
     Reflux = require('../src');
 
