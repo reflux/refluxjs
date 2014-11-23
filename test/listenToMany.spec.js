@@ -1,6 +1,6 @@
 var assert = require('chai').assert,
     sinon = require('sinon'),
-    listenToMany = require('../src/listenToMany'),
+    listenToMany = require('../src').listenToMany,
     _ = require('../src/utils'),
     Reflux = require('../src');
 
