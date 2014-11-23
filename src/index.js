@@ -1,5 +1,25 @@
 var _ = require('./utils'),
-    Reflux = exports;
+    Reflux = exports,
+    Keep = require('./Keep'),
+    allowed = {preEmit:1,shouldEmit:1},
+    bindMethods = require('./bindMethods'),
+    strategyMethodNames = {
+        strict: "joinStrict",
+        first: "joinLeading",
+        last: "joinTrailing",
+        all: "joinConcat"
+    },
+    slice = Array.prototype.slice,
+    maker = function(strategy){
+        return function(/* listenables... */) {
+            var listenables = slice.call(arguments);
+            return Reflux.createStore({
+                init: function(){
+                    this[strategyMethodNames[strategy]].apply(this,listenables.concat("triggerAsync"));
+                }
+            });
+        };
+    };
 
 exports.ActionMethods = require('./ActionMethods');
 
@@ -11,7 +31,50 @@ exports.StoreMethods = require('./StoreMethods');
 
 exports.createAction = require('./createAction');
 
-exports.createStore = require('./createStore');
+exports.createStore = function(definition) {
+
+    definition = definition || {};
+
+    for(var a in Reflux.StoreMethods){
+        if (!allowed[a] && (Reflux.PublisherMethods[a] || Reflux.ListenerMethods[a])){
+            throw new Error("Cannot override API method " + a +
+                " in Reflux.StoreMethods. Use another method name or override it on Reflux.PublisherMethods / Reflux.ListenerMethods instead."
+            );
+        }
+    }
+
+    for(var d in definition){
+        if (!allowed[d] && (Reflux.PublisherMethods[d] || Reflux.ListenerMethods[d])){
+            throw new Error("Cannot override API method " + d +
+                " in store creation. Use another method name or override it on Reflux.PublisherMethods / Reflux.ListenerMethods instead."
+            );
+        }
+    }
+
+    function Store() {
+        var i=0, arr;
+        this.subscriptions = [];
+        this.emitter = new _.EventEmitter();
+        this.eventLabel = "change";
+        if (this.init && _.isFunction(this.init)) {
+            this.init();
+        }
+        if (this.listenables){
+            arr = [].concat(this.listenables);
+            for(;i < arr.length;i++){
+                this.listenToMany(arr[i]);
+            }
+        }
+    }
+
+    _.extend(Store.prototype, Reflux.ListenerMethods, Reflux.PublisherMethods, Reflux.StoreMethods, definition);
+
+    var store = new Store();
+    bindMethods(store, definition);
+    Keep.createdStores.push(store);
+
+    return store;
+};
 
 exports.connect = function(listenable,key){
     return {
@@ -50,9 +113,6 @@ exports.ListenerMixin = require('./ListenerMixin');
 exports.listenTo = require('./listenTo');
 
 exports.listenToMany = require('./listenToMany');
-
-
-var maker = require('./joins').staticJoinCreator;
 
 exports.joinTrailing = exports.all = maker("last"); // Reflux.all alias for backward compatibility
 
