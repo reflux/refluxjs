@@ -7,21 +7,32 @@ describe("using the ListenerMethods",function(){
     var ListenerMethods = Reflux.ListenerMethods;
 
     describe("the listenToMany function",function(){
-        var listenables = { foo: "FOO", bar: "BAR", baz: "BAZ", missing: "MISSING"},
+        var listenables = { foo: "FOO", bar: "BAR", baz: "BAZ", missing: "MISSING", parent: {
+                children: ['foo', 'bar', 'baz', "notThere"], foo: "FOOChild", bar: "BARChild", baz: "BAZChild"
+            }},
             context = {
                 onFoo:"onFoo",
                 bar:"bar",
                 onBaz:"onBaz",
                 onBazDefault:"onBazDefault",
+                onParent: "onParent",
+                onParentFoo: "onParentFoo",
+                parentBar: "parentBar",
+                onParentBaz: "onParentBaz",
+                onParentBazDefault: "onParentBazDefault",
                 listenTo:sinon.spy()
             };
         Reflux.ListenerMixin.listenToMany.call(context,listenables);
 
         it("should call listenTo for all listenables with corresponding callbacks",function(){
-            assert.equal(context.listenTo.callCount,3);
+            assert.equal(context.listenTo.callCount,7);
             assert.deepEqual(context.listenTo.firstCall.args,[listenables.foo,"onFoo","onFoo"]);
             assert.deepEqual(context.listenTo.secondCall.args,[listenables.bar,"bar","bar"]);
             assert.deepEqual(context.listenTo.thirdCall.args,[listenables.baz,"onBaz","onBazDefault"]);
+            assert.deepEqual(context.listenTo.getCall(3).args,[listenables.parent,"onParent","onParent"]);
+            assert.deepEqual(context.listenTo.getCall(4).args,[listenables.parent.foo,"onParentFoo","onParentFoo"]);
+            assert.deepEqual(context.listenTo.getCall(5).args,[listenables.parent.bar,"parentBar","parentBar"]);
+            assert.deepEqual(context.listenTo.getCall(6).args,[listenables.parent.baz,"onParentBaz","onParentBazDefault"]);
         });
     });
 

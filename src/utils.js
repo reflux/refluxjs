@@ -31,8 +31,12 @@ exports.nextTick = function(callback) {
     setTimeout(callback, 0);
 };
 
+exports.capitalize = function(string){
+    return string.charAt(0).toUpperCase()+string.slice(1);
+};
+
 exports.callbackName = function(string){
-    return "on"+string.charAt(0).toUpperCase()+string.slice(1);
+    return "on"+exports.capitalize(string);
 };
 
 exports.object = function(keys,vals){
