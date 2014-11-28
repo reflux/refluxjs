@@ -14,7 +14,8 @@
     "url": "http://github.com/spoike/reflux.git"
   },
   "dependencies": {
-    "eventemitter3": "^0.1.2"
+    "eventemitter3": "^0.1.2",
+    "setimmediate2": "~1.1.4"
   },
   "devDependencies": {
     "benchmark": "^1.0.0",
