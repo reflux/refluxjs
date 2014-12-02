@@ -35,10 +35,10 @@ describe('Creating action', function() {
     });
 
     it("should create completed and failed child actions for async actions",function(){
-        var def = {async: true},
+        var def = {asyncResult: true, sync: true},
             action = Reflux.createAction(def);
 
-        assert.equal(action.async, true);
+        assert.equal(action.asyncResult, true);
         assert.deepEqual(action.children, ["completed", "failed"]);
         assert.equal(action.completed._isAction, true);
         assert.equal(action.failed._isAction, true);
@@ -207,7 +207,7 @@ describe('Creating actions with children to an action definition object', functi
     var actionNames, actions;
 
     beforeEach(function () {
-        actionNames = {'foo': {async: true}, 'bar': {children: ['baz']}};
+        actionNames = {'foo': {asyncResult: true}, 'bar': {children: ['baz']}};
         actions = Reflux.createActions(actionNames);
     });
 

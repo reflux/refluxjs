@@ -34,7 +34,7 @@ var createAction = function(definition) {
     }
 
     definition.children = definition.children || [];
-    if (definition.async){
+    if (definition.asyncResult){
         definition.children = definition.children.concat(["completed","failed"]);
     }
 
