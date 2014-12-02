@@ -18,11 +18,11 @@ module.exports = function mix(def) {
                 composed[composable].push(mixin[composable]);
             }
         });
-        def = _.merge({}, mixin, def);
+        def = _.extend({}, mixin, def);
         return def;
     }(def));
 
-    if (composed.init.length) {
+    if (composed.init.length > 1) {
         updated.init = function () {
             var args = arguments;
             composed.init.forEach(function (init) {
@@ -30,14 +30,14 @@ module.exports = function mix(def) {
             }, this);
         };
     }
-    if (composed.preEmit.length) {
+    if (composed.preEmit.length > 1) {
         updated.preEmit = function () {
             return composed.preEmit.reduce(function (args, preEmit) {
                 return preEmit.apply(this, args) || args;
             }, arguments, this);
         };
     }
-    if (composed.shouldEmit.length) {
+    if (composed.shouldEmit.length > 1) {
         updated.shouldEmit = function () {
             var args = arguments;
             return composed.shouldEmit.some(function (shouldEmit) {
@@ -45,6 +45,11 @@ module.exports = function mix(def) {
             }, this);
         };
     }
+    Object.keys(composed).forEach(function (composable) {
+        if (composed[composable].length === 1) {
+            updated[composable] = composed[composable][0];
+        }
+    });
 
     return updated;
 };
