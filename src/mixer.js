@@ -8,18 +8,19 @@ module.exports = function mix(def) {
     };
 
     var updated = (function mixDef(mixin) {
+        var mixed = {};
         if (mixin.mixins) {
-            mixin.mixins.forEach(function (mixin) {
-                mixDef(mixin);
+            mixin.mixins.forEach(function (subMixin) {
+                _.extend(mixed, mixDef(subMixin));
             });
         }
+        _.extend(mixed, mixin);
         Object.keys(composed).forEach(function (composable) {
             if (mixin.hasOwnProperty(composable)) {
                 composed[composable].push(mixin[composable]);
             }
         });
-        def = _.extend({}, mixin, def);
-        return def;
+        return mixed;
     }(def));
 
     if (composed.init.length > 1) {
@@ -33,15 +34,16 @@ module.exports = function mix(def) {
     if (composed.preEmit.length > 1) {
         updated.preEmit = function () {
             return composed.preEmit.reduce(function (args, preEmit) {
-                return preEmit.apply(this, args) || args;
-            }, arguments, this);
+                var newValue = preEmit.apply(this, args);
+                return newValue === undefined ? args : [newValue];
+            }.bind(this), arguments);
         };
     }
     if (composed.shouldEmit.length > 1) {
         updated.shouldEmit = function () {
             var args = arguments;
-            return composed.shouldEmit.some(function (shouldEmit) {
-                return shouldEmit.apply(this, args);
+            return !composed.shouldEmit.some(function (shouldEmit) {
+                return !shouldEmit.apply(this, args);
             }, this);
         };
     }
