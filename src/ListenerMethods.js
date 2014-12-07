@@ -172,5 +172,5 @@ module.exports = {
      * @param {Function|String} callback The method to call when all publishers have emitted
      * @returns {Object} A subscription obj where `stop` is an unsub function and `listenable` is an array of listenables
      */
-    joinStrict: maker("strict"),
+    joinStrict: maker("strict")
 };
