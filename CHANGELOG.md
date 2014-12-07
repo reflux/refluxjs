@@ -2,6 +2,12 @@
 
 Check for latest changes on the [milestones page](https://github.com/spoike/refluxjs/milestones).
 
+## v0.2.1
+
+* IE8 trailing comma bug fix [#145](https://github.com/spoike/refluxjs/pull/145)
+* Multiple use of Reflux.connect bug fix [#142](https://github.com/spoike/refluxjs/issues/142), [#143](https://github.com/spoike/refluxjs/pull/143)
+* Added .npmignore file, removing non-essential files from `npm install` [#125](https://github.com/spoike/refluxjs/issues/125)
+
 ## v0.2.0
 
 * Breaking change: Set initial state before componentDidMount (in `Reflux.connect`) [#117](https://github.com/spoike/refluxjs/pull/117)
