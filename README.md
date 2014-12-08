@@ -111,6 +111,61 @@ var Actions = Reflux.createActions([
 Actions.statusUpdate();
 ```
 
+#### Asynchronous actions
+
+For actions that represent asynchronous operations (e.g. API calls), a few separate dataflows result from the operation. In the most typical case, we consider completion and failure of the operation. To create related actions for these dataflows, which you can then access as attributes, use `options.children`.
+
+```javascript
+// this creates 'load', 'load.completed' and 'load.failed'
+var Actions = Reflux.createActions({
+    "load": {children: ["completed","failed"]}
+});
+
+// when 'load' is triggered, call async operation and trigger related actions
+Actions.load.listen( function() {
+    // By default, the listener is bound to the action
+    // so we can access child actions using 'this'
+    someAsyncOperation()
+        .then( this.completed )
+        .catch( this.failed );
+});
+```
+
+There is a shorthand to define the `completed` and `failed` actions in the typical case: `options.asyncResult`. The following are equivalent:
+
+```javascript
+createAction({
+    children: ["progressed","completed","failed"]
+});
+
+createAction({
+    asyncResult: true,
+    children: ["progressed"]
+});
+```
+
+There are a couple of helper methods available to trigger the `completed` and `failed` actions:
+
+* `promise` - Expects a promise object and binds the triggers of the `completed` and `failed` child actions to that promise, using `then()` and `catch()`.
+
+* `listenAndPromise` - Expects a function that returns a promise object, which is called when the action is triggered, after which `promise` is called with the returned promise object. Essentially calls the function on trigger of the action, which then triggers the `completed` or `failed` child actions after the promise is fulfilled.
+
+Therefore, the following are all equivalent:
+
+```javascript
+asyncResultAction.listen( function(arguments) {
+    someAsyncOperation(arguments)
+        .then(asyncResultAction.completed)
+        .catch(asyncResultAction.failed);
+});
+
+asyncResultAction.listen( function(arguments) {
+    asyncResultAction.promise( someAsyncOperation(arguments) );
+});
+
+asyncResultAction.listenAndPromise( someAsyncOperation );
+```
+
 #### Action hooks
 
 There are a couple of hooks available for each action.
