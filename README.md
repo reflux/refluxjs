@@ -38,7 +38,7 @@ Some concepts are still in Reflux in comparison with Flux:
 
 ### Differences with Flux
 
-Reflux has refactored Flux to be a bit more dynamic and be more FRP friendly:
+Reflux has refactored Flux to be a bit more dynamic and be more Functional Reactive Programming (FRP) friendly:
 
 * The singleton dispatcher is removed in favor for letting every action act as dispatcher instead.
 * Because actions are listenable, the stores may listen to them. Stores don't need to have a big switch statements that does static type checking (of action types) with strings
