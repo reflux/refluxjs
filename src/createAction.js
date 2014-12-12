@@ -10,7 +10,7 @@ var _ = require('./utils'),
  *
  * @param {Object} definition The action object definition
  */
-module.exports = function(definition) {
+module.exports = function(definition, customFunction) {
 
     definition = definition || {};
 
@@ -36,7 +36,7 @@ module.exports = function(definition) {
         _isAction: true
     }, Reflux.PublisherMethods, Reflux.ActionMethods, definition);
 
-    var functor = function() {
+    var functor = customFunction || function() {
         functor[functor.sync?"trigger":"triggerAsync"].apply(functor, arguments);
     };
 

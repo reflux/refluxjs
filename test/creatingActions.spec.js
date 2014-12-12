@@ -23,6 +23,27 @@ describe('Creating action', function() {
         assert.equal(action.random, def.random);
     });
 
+    it("should use the customFunction if supplied",function(){
+        var benchmark;
+        var fn = function() {
+            action.trigger();
+            benchmark = Date.now();
+        };
+        var action = Reflux.createAction(null, fn);
+        assert.isFunction(action);
+        assert.isFunction(fn);
+        assert.equal(action, fn);
+        //make sure regular properties are still present
+        for(var apimethod in Reflux.PublisherMethods){
+            assert.equal(Reflux.PublisherMethods[apimethod],action[apimethod]);
+        }
+
+        //run the action
+        assert.isUndefined(benchmark);
+        action();
+        assert.isNumber(benchmark);
+    });
+
     it("should throw an error if you overwrite any API other than preEmit and shouldEmit",function(){
         assert.throws(function(){
             Reflux.createAction({listen:"FOO"});
