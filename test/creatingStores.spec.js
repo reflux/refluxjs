@@ -234,9 +234,9 @@ describe('Creating stores', function() {
                 store = Reflux.createStore(def);
 
             it("should listenTo all listenables with the corresponding callbacks",function(){
-                assert.deepEqual(listenables.foo.listen.firstCall.args,[def.onFoo,store]);
-                assert.deepEqual(listenables.bar.listen.firstCall.args,[def.bar,store]);
-                assert.deepEqual(listenables.baz.listen.firstCall.args,[def.onBaz,store]);
+                assert.deepEqual(listenables.foo.listen.firstCall.args,[store.onFoo,store]);
+                assert.deepEqual(listenables.bar.listen.firstCall.args,[store.bar,store]);
+                assert.deepEqual(listenables.baz.listen.firstCall.args,[store.onBaz,store]);
             });
 
             it("should not try to listen to actions without corresponding props in the store",function(){
@@ -320,14 +320,18 @@ describe('Creating stores', function() {
     });
 
     describe('store methods', function() {
-        var store;
-
-        beforeEach(function() {
+        var initReflect,
             store = Reflux.createStore({
+                init: function() {
+                    initReflect = this.reflect;
+                },
                 reflect: function() {
                     return this;
                 }
             });
+
+        it('should be bound to store instance before init', function() {
+            return assert.equal(store, initReflect());
         });
 
         it('should be bound to store instance', function() {

@@ -37,6 +37,7 @@ module.exports = function(definition) {
         this.subscriptions = [];
         this.emitter = new _.EventEmitter();
         this.eventLabel = "change";
+        bindMethods(this, definition);
         if (this.init && _.isFunction(this.init)) {
             this.init();
         }
@@ -51,7 +52,6 @@ module.exports = function(definition) {
     _.extend(Store.prototype, Reflux.ListenerMethods, Reflux.PublisherMethods, Reflux.StoreMethods, definition);
 
     var store = new Store();
-    bindMethods(store, definition);
     Keep.createdStores.push(store);
 
     return store;
