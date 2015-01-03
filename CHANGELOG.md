@@ -2,6 +2,13 @@
 
 Check for latest changes on the [milestones page](https://github.com/spoike/refluxjs/milestones).
 
+## v0.2.2
+
+* Fixed circular dependency issue that caused browserify builds not to work as expected [#129](https://github.com/spoike/refluxjs/issues/129) [#138](https://github.com/spoike/refluxjs/issues/138)
+* Bind store methods before init() method executes. [#168](https://github.com/spoike/refluxjs/issues/168)
+* Clarify the meaning of "FRP". [#161](https://github.com/spoike/refluxjs/issues/161)
+* Child (async) actions and promise handling [#140](https://github.com/spoike/refluxjs/issues/140)
+
 ## v0.2.1
 
 * IE8 trailing comma bug fix [#145](https://github.com/spoike/refluxjs/pull/145)
