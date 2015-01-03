@@ -231,6 +231,49 @@ var _ = _dereq_('./utils'),
     maker = _dereq_('./joins').instanceJoinCreator;
 
 /**
+ * Extract child listenables from a parent from their
+ * children property and return them in a keyed Object
+ *
+ * @param {Object} listenable The parent listenable
+ */
+mapChildListenables = function(listenable) {
+    var i = 0, children = {};
+    for (;i < (listenable.children||[]).length; ++i) {
+        childName = listenable.children[i];
+        if(listenable[childName]){
+            children[childName] = listenable[childName];
+        }
+    }
+    return children;
+};
+
+/**
+ * Make a flat dictionary of all listenables including their
+ * possible children (recursively), concatenating names in camelCase.
+ *
+ * @param {Object} listenables The top-level listenables
+ */
+flattenListenables = function(listenables) {
+    var flattened = {};
+    for(var key in listenables){
+        var listenable = listenables[key];
+        var childMap = mapChildListenables(listenable);
+
+        // recursively flatten children
+        var children = flattenListenables(childMap);
+
+        // add the primary listenable and chilren
+        flattened[key] = listenable;
+        for(var childKey in children){
+            var childListenable = children[childKey];
+            flattened[key + _.capitalize(childKey)] = childListenable;
+        }
+    }
+
+    return flattened;
+};
+
+/**
  * A module of methods related to listening.
  */
 module.exports = {
@@ -261,11 +304,12 @@ module.exports = {
      * @param {Object} listenables An object of listenables. Keys will be used as callback method names.
      */
     listenToMany: function(listenables){
-        for(var key in listenables){
+        var allListenables = flattenListenables(listenables);
+        for(var key in allListenables){
             var cbname = _.callbackName(key),
                 localname = this[cbname] ? cbname : this[key] ? key : undefined;
             if (localname){
-                this.listenTo(listenables[key],localname,this[cbname+"Default"]||this[localname+"Default"]||localname);
+                this.listenTo(allListenables[key],localname,this[cbname+"Default"]||this[localname+"Default"]||localname);
             }
         }
     },
@@ -458,6 +502,7 @@ module.exports = {
      * @returns {Function} Callback that unsubscribes the registered event handler
      */
     listen: function(callback, bindContext) {
+        bindContext = bindContext || this;
         var eventHandler = function(args) {
             callback.apply(bindContext, args);
         }, me = this;
@@ -465,6 +510,47 @@ module.exports = {
         return function() {
             me.emitter.removeListener(me.eventLabel, eventHandler);
         };
+    },
+
+    /**
+     * Attach handlers to promise that trigger the completed and failed
+     * child publishers, if available.
+     *
+     * @param {Object} The promise to attach to
+     */
+    promise: function(promise) {
+        var me = this;
+
+        var canHandlePromise =
+            this.children.indexOf('completed') >= 0 &&
+            this.children.indexOf('failed') >= 0;
+
+        if (!canHandlePromise){
+            throw new Error('Publisher must have "completed" and "failed" child publishers');
+        }
+
+        promise.then(function(response) {
+            return me.completed(response);
+        }).catch(function(error) {
+            return me.failed(error);
+        });
+    },
+
+    /**
+     * Subscribes the given callback for action triggered, which should
+     * return a promise that in turn is passed to `this.promise`
+     *
+     * @param {Function} callback The callback to register as event handler
+     */
+    listenAndPromise: function(callback, bindContext) {
+        var me = this;
+        bindContext = bindContext || this;
+
+        return this.listen(function() {
+            var args = arguments,
+                promise = callback.apply(bindContext, args);
+            return me.promise.call(me, promise);
+        }, bindContext);
     },
 
     /**
@@ -550,9 +636,12 @@ var _ = _dereq_('./utils'),
  *
  * @param {Object} definition The action object definition
  */
-module.exports = function(definition) {
+var createAction = function(definition) {
 
     definition = definition || {};
+    if (!_.isObject(definition)){
+        definition = {name: definition};
+    }
 
     for(var a in Reflux.ActionMethods){
         if (!allowed[a] && Reflux.PublisherMethods[a]) {
@@ -570,6 +659,17 @@ module.exports = function(definition) {
         }
     }
 
+    definition.children = definition.children || [];
+    if (definition.asyncResult){
+        definition.children = definition.children.concat(["completed","failed"]);
+    }
+
+    var i = 0, childActions = {};
+    for (; i < definition.children.length; i++) {
+        var name = definition.children[i];
+        childActions[name] = createAction(name);
+    }
+
     var context = _.extend({
         eventLabel: "action",
         emitter: new _.EventEmitter(),
@@ -580,13 +680,15 @@ module.exports = function(definition) {
         functor[functor.sync?"trigger":"triggerAsync"].apply(functor, arguments);
     };
 
-    _.extend(functor,context);
+    _.extend(functor,childActions,context);
 
     Keep.createdActions.push(functor);
 
     return functor;
 
 };
+
+module.exports = createAction;
 
 },{"./Keep":3,"./index":12,"./utils":16}],11:[function(_dereq_,module,exports){
 var _ = _dereq_('./utils'),
@@ -628,6 +730,7 @@ module.exports = function(definition) {
         this.subscriptions = [];
         this.emitter = new _.EventEmitter();
         this.eventLabel = "change";
+        bindMethods(this, definition);
         if (this.init && _.isFunction(this.init)) {
             this.init();
         }
@@ -642,7 +745,6 @@ module.exports = function(definition) {
     _.extend(Store.prototype, Reflux.ListenerMethods, Reflux.PublisherMethods, Reflux.StoreMethods, definition);
 
     var store = new Store();
-    bindMethods(store, definition);
     Keep.createdStores.push(store);
 
     return store;
@@ -680,17 +782,21 @@ exports.joinStrict = maker("strict");
 
 exports.joinConcat = maker("all");
 
+var _ = _dereq_('./utils');
 
 /**
  * Convenience function for creating a set of actions
  *
- * @param actionNames the names for the actions to be created
+ * @param definitions the definitions for the actions to be created
  * @returns an object with actions of corresponding action names
  */
-exports.createActions = function(actionNames) {
-    var i = 0, actions = {};
-    for (; i < actionNames.length; i++) {
-        actions[actionNames[i]] = exports.createAction();
+exports.createActions = function(definitions) {
+    var actions = {};
+    for (var k in definitions){
+        var val = definitions[k],
+            actionName = _.isObject(val) ? k : val;
+
+        actions[actionName] = exports.createAction(val);
     }
     return actions;
 };
@@ -942,8 +1048,12 @@ exports.nextTick = function(callback) {
     setTimeout(callback, 0);
 };
 
+exports.capitalize = function(string){
+    return string.charAt(0).toUpperCase()+string.slice(1);
+};
+
 exports.callbackName = function(string){
-    return "on"+string.charAt(0).toUpperCase()+string.slice(1);
+    return "on"+exports.capitalize(string);
 };
 
 exports.object = function(keys,vals){
