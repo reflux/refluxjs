@@ -23,6 +23,28 @@ describe('Creating action', function() {
         assert.equal(action.random, def.random);
     });
 
+    it("should create specified child actions",function(){
+        var def = {children: ["foo","BAR"]},
+            action = Reflux.createAction(def);
+
+        assert.deepEqual(action.children, ["foo", "BAR"]);
+        assert.equal(action.foo._isAction, true);
+        assert.deepEqual(action.foo.children, []);
+        assert.equal(action.BAR._isAction, true);
+
+    });
+
+    it("should create completed and failed child actions for async actions",function(){
+        var def = {asyncResult: true, sync: true},
+            action = Reflux.createAction(def);
+
+        assert.equal(action.asyncResult, true);
+        assert.deepEqual(action.children, ["completed", "failed"]);
+        assert.equal(action.completed._isAction, true);
+        assert.equal(action.failed._isAction, true);
+    });
+
+
     it("should throw an error if you overwrite any API other than preEmit and shouldEmit",function(){
         assert.throws(function(){
             Reflux.createAction({listen:"FOO"});
@@ -181,6 +203,79 @@ describe('Creating action', function() {
 
 });
 
+describe('Creating actions with children to an action definition object', function() {
+    var actionNames, actions;
+
+    beforeEach(function () {
+        actionNames = {'foo': {asyncResult: true}, 'bar': {children: ['baz']}};
+        actions = Reflux.createActions(actionNames);
+    });
+
+    it('should contain foo and bar properties', function() {
+        assert.property(actions, 'foo');
+        assert.property(actions, 'bar');
+    });
+
+    it('should contain action functor on foo and bar properties with children', function() {
+        assert.isFunction(actions.foo);
+        assert.isFunction(actions.foo.completed);
+        assert.isFunction(actions.foo.failed);
+        assert.isFunction(actions.bar);
+        assert.isFunction(actions.bar.baz);
+    });
+
+    describe('when listening to the child action created this way', function() {
+        var promise;
+
+        beforeEach(function() {
+            promise = Q.promise(function(resolve) {
+                actions.bar.baz.listen(function() {
+                    resolve(Array.prototype.slice.call(arguments, 0));
+                }, {}); // pass empty context
+            });
+        });
+
+        it('should receive the correct arguments', function() {
+            var testArgs = [1337, 'test'];
+            actions.bar.baz(testArgs[0], testArgs[1]);
+
+            return assert.eventually.deepEqual(promise, testArgs);
+        });
+    });
+
+    describe('when promising an async action created this way', function() {
+        var promise;
+
+        beforeEach(function() {
+            // promise resolves on foo.completed
+            promise = Q.promise(function(resolve) {
+                actions.foo.completed.listen(function(){
+                    resolve.apply(null, arguments);
+                }, {}); // pass empty context
+            });
+
+            // listen for foo and return a promise
+            actions.foo.listenAndPromise(function() {
+                var args = Array.prototype.slice.call(arguments, 0);
+                var deferred = Q.defer();
+
+                setTimeout(function() {
+                    deferred.resolve(args);
+                }, 0);
+
+                return deferred.promise;
+            });
+        });
+
+        it('should invoke the completed action with the correct arguments', function() {
+            var testArgs = [1337, 'test'];
+            actions.foo(testArgs[0], testArgs[1]);
+
+            return assert.eventually.deepEqual(promise, testArgs);
+        });
+    });
+});
+
 describe('Creating multiple actions to an action definition object', function() {
 
     var actionNames, actions;
@@ -207,8 +302,9 @@ describe('Creating multiple actions to an action definition object', function() 
         beforeEach(function() {
             promise = Q.promise(function(resolve) {
                 actions.foo.listen(function() {
+                    assert.equal(this, actions.foo);
                     resolve(Array.prototype.slice.call(arguments, 0));
-                });
+                }); // not passing context, should default to action
             });
         });
 

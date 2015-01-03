@@ -1,10 +1,66 @@
 var chai = require('chai'),
     assert = chai.assert,
     Reflux = require('../src'),
+    Q = require('q'),
     sinon = require('sinon');
 
 describe("using the publisher methods mixin",function(){
     var pub = Reflux.PublisherMethods;
+
+    describe("the promise method",function(){
+
+        describe("when the promise completes",function(){
+            var deferred = Q.defer(),
+                promise = deferred.promise,
+                context = {
+                    children:['completed','failed'],
+                    completed:sinon.spy(),
+                    failed:sinon.spy()
+                },
+                result = pub.promise.call(context,promise);
+
+            deferred.resolve('foo');
+
+            it("should not return a value",function(){
+                assert.equal(result, undefined);
+            });
+
+            it("should call the completed child trigger",function(){
+                var args = context.completed.firstCall.args;
+                assert.deepEqual(args, ["foo"]);
+            });
+
+            it("should not call the failed child trigger",function(){
+                assert.equal(context.failed.callCount, 0);
+            });
+        });
+
+        describe("when the promise fails",function(){
+            var deferred = Q.defer(),
+                promise = deferred.promise,
+                context = {
+                    children:['completed','failed'],
+                    completed:sinon.spy(),
+                    failed:sinon.spy()
+                },
+                result = pub.promise.call(context,promise);
+
+            deferred.reject('bar');
+
+            it("should not return a value",function(){
+                assert.equal(result, undefined);
+            });
+
+            it("should call the failed child trigger",function(){
+                var args = context.failed.firstCall.args;
+                assert.deepEqual(args, ["bar"]);
+            });
+
+            it("should not the completed child trigger",function(){
+                assert.equal(context.completed.callCount, 0);
+            });
+        });
+    });
 
     describe("the listen method",function(){
         var emitter = {

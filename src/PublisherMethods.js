@@ -32,6 +32,7 @@ module.exports = {
      * @returns {Function} Callback that unsubscribes the registered event handler
      */
     listen: function(callback, bindContext) {
+        bindContext = bindContext || this;
         var eventHandler = function(args) {
             callback.apply(bindContext, args);
         }, me = this;
@@ -39,6 +40,47 @@ module.exports = {
         return function() {
             me.emitter.removeListener(me.eventLabel, eventHandler);
         };
+    },
+
+    /**
+     * Attach handlers to promise that trigger the completed and failed
+     * child publishers, if available.
+     *
+     * @param {Object} The promise to attach to
+     */
+    promise: function(promise) {
+        var me = this;
+
+        var canHandlePromise =
+            this.children.indexOf('completed') >= 0 &&
+            this.children.indexOf('failed') >= 0;
+
+        if (!canHandlePromise){
+            throw new Error('Publisher must have "completed" and "failed" child publishers');
+        }
+
+        promise.then(function(response) {
+            return me.completed(response);
+        }).catch(function(error) {
+            return me.failed(error);
+        });
+    },
+
+    /**
+     * Subscribes the given callback for action triggered, which should
+     * return a promise that in turn is passed to `this.promise`
+     *
+     * @param {Function} callback The callback to register as event handler
+     */
+    listenAndPromise: function(callback, bindContext) {
+        var me = this;
+        bindContext = bindContext || this;
+
+        return this.listen(function() {
+            var args = arguments,
+                promise = callback.apply(bindContext, args);
+            return me.promise.call(me, promise);
+        }, bindContext);
     },
 
     /**

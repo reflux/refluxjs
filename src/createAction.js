@@ -10,9 +10,12 @@ var _ = require('./utils'),
  *
  * @param {Object} definition The action object definition
  */
-module.exports = function(definition) {
+var createAction = function(definition) {
 
     definition = definition || {};
+    if (!_.isObject(definition)){
+        definition = {name: definition};
+    }
 
     for(var a in Reflux.ActionMethods){
         if (!allowed[a] && Reflux.PublisherMethods[a]) {
@@ -30,6 +33,17 @@ module.exports = function(definition) {
         }
     }
 
+    definition.children = definition.children || [];
+    if (definition.asyncResult){
+        definition.children = definition.children.concat(["completed","failed"]);
+    }
+
+    var i = 0, childActions = {};
+    for (; i < definition.children.length; i++) {
+        var name = definition.children[i];
+        childActions[name] = createAction(name);
+    }
+
     var context = _.extend({
         eventLabel: "action",
         emitter: new _.EventEmitter(),
@@ -40,10 +54,12 @@ module.exports = function(definition) {
         functor[functor.sync?"trigger":"triggerAsync"].apply(functor, arguments);
     };
 
-    _.extend(functor,context);
+    _.extend(functor,childActions,context);
 
     Keep.createdActions.push(functor);
 
     return functor;
 
 };
+
+module.exports = createAction;
