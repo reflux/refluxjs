@@ -1,5 +1,5 @@
 var _ = require('./utils'),
-    Reflux = require('../src'),
+    Reflux = require('./index'),
     Keep = require('./Keep'),
     allowed = {preEmit:1,shouldEmit:1},
     bindMethods = require('./bindMethods');
@@ -18,7 +18,7 @@ module.exports = function(definition) {
 
     for(var a in Reflux.StoreMethods){
         if (!allowed[a] && (Reflux.PublisherMethods[a] || Reflux.ListenerMethods[a])){
-            throw new Error("Cannot override API method " + a + 
+            throw new Error("Cannot override API method " + a +
                 " in Reflux.StoreMethods. Use another method name or override it on Reflux.PublisherMethods / Reflux.ListenerMethods instead."
             );
         }
@@ -26,7 +26,7 @@ module.exports = function(definition) {
 
     for(var d in definition){
         if (!allowed[d] && (Reflux.PublisherMethods[d] || Reflux.ListenerMethods[d])){
-            throw new Error("Cannot override API method " + d + 
+            throw new Error("Cannot override API method " + d +
                 " in store creation. Use another method name or override it on Reflux.PublisherMethods / Reflux.ListenerMethods instead."
             );
         }

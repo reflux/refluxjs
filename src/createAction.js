@@ -1,5 +1,5 @@
 var _ = require('./utils'),
-    Reflux = require('../src'),
+    Reflux = require('./index'),
     Keep = require('./Keep'),
     allowed = {preEmit:1,shouldEmit:1};
 

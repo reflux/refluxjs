@@ -514,7 +514,7 @@ module.exports = function(store, definition) {
 };
 
 },{}],9:[function(_dereq_,module,exports){
-var Reflux = _dereq_('../src'),
+var Reflux = _dereq_('./index'),
     _ = _dereq_('./utils');
 
 module.exports = function(listenable,key){
@@ -537,9 +537,9 @@ module.exports = function(listenable,key){
     };
 };
 
-},{"../src":12,"./utils":16}],10:[function(_dereq_,module,exports){
+},{"./index":12,"./utils":16}],10:[function(_dereq_,module,exports){
 var _ = _dereq_('./utils'),
-    Reflux = _dereq_('../src'),
+    Reflux = _dereq_('./index'),
     Keep = _dereq_('./Keep'),
     allowed = {preEmit:1,shouldEmit:1};
 
@@ -588,9 +588,9 @@ module.exports = function(definition) {
 
 };
 
-},{"../src":12,"./Keep":3,"./utils":16}],11:[function(_dereq_,module,exports){
+},{"./Keep":3,"./index":12,"./utils":16}],11:[function(_dereq_,module,exports){
 var _ = _dereq_('./utils'),
-    Reflux = _dereq_('../src'),
+    Reflux = _dereq_('./index'),
     Keep = _dereq_('./Keep'),
     allowed = {preEmit:1,shouldEmit:1},
     bindMethods = _dereq_('./bindMethods');
@@ -609,7 +609,7 @@ module.exports = function(definition) {
 
     for(var a in Reflux.StoreMethods){
         if (!allowed[a] && (Reflux.PublisherMethods[a] || Reflux.ListenerMethods[a])){
-            throw new Error("Cannot override API method " + a + 
+            throw new Error("Cannot override API method " + a +
                 " in Reflux.StoreMethods. Use another method name or override it on Reflux.PublisherMethods / Reflux.ListenerMethods instead."
             );
         }
@@ -617,7 +617,7 @@ module.exports = function(definition) {
 
     for(var d in definition){
         if (!allowed[d] && (Reflux.PublisherMethods[d] || Reflux.ListenerMethods[d])){
-            throw new Error("Cannot override API method " + d + 
+            throw new Error("Cannot override API method " + d +
                 " in store creation. Use another method name or override it on Reflux.PublisherMethods / Reflux.ListenerMethods instead."
             );
         }
@@ -648,7 +648,7 @@ module.exports = function(definition) {
     return store;
 };
 
-},{"../src":12,"./Keep":3,"./bindMethods":8,"./utils":16}],12:[function(_dereq_,module,exports){
+},{"./Keep":3,"./bindMethods":8,"./index":12,"./utils":16}],12:[function(_dereq_,module,exports){
 exports.ActionMethods = _dereq_('./ActionMethods');
 
 exports.ListenerMethods = _dereq_('./ListenerMethods');
@@ -836,7 +836,7 @@ function emitIfAllListenablesEmitted(join) {
 }
 
 },{"./createStore":11,"./utils":16}],14:[function(_dereq_,module,exports){
-var Reflux = _dereq_('../src');
+var Reflux = _dereq_('./index');
 
 
 /**
@@ -873,8 +873,8 @@ module.exports = function(listenable,callback,initial){
     };
 };
 
-},{"../src":12}],15:[function(_dereq_,module,exports){
-var Reflux = _dereq_('../src');
+},{"./index":12}],15:[function(_dereq_,module,exports){
+var Reflux = _dereq_('./index');
 
 /**
  * A mixin factory for a React component. Meant as a more convenient way of using the `listenerMixin`,
@@ -908,7 +908,7 @@ module.exports = function(listenables){
     };
 };
 
-},{"../src":12}],16:[function(_dereq_,module,exports){
+},{"./index":12}],16:[function(_dereq_,module,exports){
 /*
  * isObject, extend, isFunction, isArguments are taken from undescore/lodash in
  * order to remove the dependency

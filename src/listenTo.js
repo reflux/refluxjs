@@ -1,4 +1,4 @@
-var Reflux = require('../src');
+var Reflux = require('./index');
 
 
 /**
