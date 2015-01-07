@@ -7,8 +7,8 @@ var _ = require('./utils'),
  *
  * @param {Object} listenable The parent listenable
  */
-mapChildListenables = function(listenable) {
-    var i = 0, children = {};
+var mapChildListenables = function(listenable) {
+    var i = 0, children = {}, childName;
     for (;i < (listenable.children||[]).length; ++i) {
         childName = listenable.children[i];
         if(listenable[childName]){
@@ -24,7 +24,7 @@ mapChildListenables = function(listenable) {
  *
  * @param {Object} listenables The top-level listenables
  */
-flattenListenables = function(listenables) {
+var flattenListenables = function(listenables) {
     var flattened = {};
     for(var key in listenables){
         var listenable = listenables[key];
@@ -171,7 +171,7 @@ module.exports = {
         defaultCallback = (defaultCallback && this[defaultCallback]) || defaultCallback;
         var me = this;
         if (_.isFunction(defaultCallback) && _.isFunction(listenable.getInitialState)) {
-            data = listenable.getInitialState();
+            var data = listenable.getInitialState();
             if (data && _.isFunction(data.then)) {
                 data.then(function() {
                     defaultCallback.apply(me, arguments);

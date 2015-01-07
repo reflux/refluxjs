@@ -63,7 +63,7 @@ exports.instanceJoinCreator = function(strategy){
 
 function makeStopper(subobj,cancels,context){
     return function() {
-        var i, subs = context.subscriptions;
+        var i, subs = context.subscriptions,
             index = (subs ? subs.indexOf(subobj) : -1);
         _.throwIf(index === -1,'Tried to remove join already gone from subscriptions list!');
         for(i=0;i < cancels.length; i++){

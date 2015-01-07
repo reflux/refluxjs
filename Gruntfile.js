@@ -5,7 +5,7 @@ module.exports = function(grunt) {
     jshint: {
       files: ['Gruntfile.js', 'src/**/*.js', 'test/**/*.js'],
       options: {
-        jshintrc: '.jshintrc'
+        jshintrc: true
       }
     },
     mochaTest: {
