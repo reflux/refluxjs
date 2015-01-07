@@ -1,6 +1,7 @@
 var _ = require('./utils'),
     Reflux = require('./index'),
     Keep = require('./Keep'),
+    mixer = require('./mixer'),
     allowed = {preEmit:1,shouldEmit:1},
     bindMethods = require('./bindMethods');
 
@@ -31,6 +32,8 @@ module.exports = function(definition) {
             );
         }
     }
+
+    definition = mixer(definition);
 
     function Store() {
         var i=0, arr;
