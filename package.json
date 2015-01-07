@@ -13,6 +13,10 @@
     "type": "git",
     "url": "http://github.com/spoike/reflux.git"
   },
+  "keywords": [
+    "react",
+    "flux"
+  ],
   "dependencies": {
     "eventemitter3": "^0.1.2"
   },
