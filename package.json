@@ -5,7 +5,8 @@
   "main": "index.js",
   "scripts": {
     "test": "grunt test",
-    "benchmark": "node test/benchmarks"
+    "benchmark": "node test/benchmarks",
+    "build": "grunt build"
   },
   "author": "Mikael Brassman",
   "license": "BSD-3-Clause",
