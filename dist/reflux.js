@@ -448,7 +448,7 @@ module.exports = {
     joinStrict: maker("strict")
 };
 
-},{"./joins":13,"./utils":16}],5:[function(_dereq_,module,exports){
+},{"./joins":13,"./utils":17}],5:[function(_dereq_,module,exports){
 var _ = _dereq_('./utils'),
     ListenerMethods = _dereq_('./ListenerMethods');
 
@@ -467,7 +467,7 @@ module.exports = _.extend({
 
 }, ListenerMethods);
 
-},{"./ListenerMethods":4,"./utils":16}],6:[function(_dereq_,module,exports){
+},{"./ListenerMethods":4,"./utils":17}],6:[function(_dereq_,module,exports){
 var _ = _dereq_('./utils');
 
 /**
@@ -576,7 +576,7 @@ module.exports = {
     }
 };
 
-},{"./utils":16}],7:[function(_dereq_,module,exports){
+},{"./utils":17}],7:[function(_dereq_,module,exports){
 /**
  * A module of methods that you want to include in all stores.
  * This module is consumed by `createStore`.
@@ -623,7 +623,7 @@ module.exports = function(listenable,key){
     };
 };
 
-},{"./index":12,"./utils":16}],10:[function(_dereq_,module,exports){
+},{"./index":12,"./utils":17}],10:[function(_dereq_,module,exports){
 var _ = _dereq_('./utils'),
     Reflux = _dereq_('./index'),
     Keep = _dereq_('./Keep'),
@@ -690,10 +690,11 @@ var createAction = function(definition) {
 
 module.exports = createAction;
 
-},{"./Keep":3,"./index":12,"./utils":16}],11:[function(_dereq_,module,exports){
+},{"./Keep":3,"./index":12,"./utils":17}],11:[function(_dereq_,module,exports){
 var _ = _dereq_('./utils'),
     Reflux = _dereq_('./index'),
     Keep = _dereq_('./Keep'),
+    mixer = _dereq_('./mixer'),
     allowed = {preEmit:1,shouldEmit:1},
     bindMethods = _dereq_('./bindMethods');
 
@@ -725,6 +726,8 @@ module.exports = function(definition) {
         }
     }
 
+    definition = mixer(definition);
+
     function Store() {
         var i=0, arr;
         this.subscriptions = [];
@@ -750,7 +753,7 @@ module.exports = function(definition) {
     return store;
 };
 
-},{"./Keep":3,"./bindMethods":8,"./index":12,"./utils":16}],12:[function(_dereq_,module,exports){
+},{"./Keep":3,"./bindMethods":8,"./index":12,"./mixer":16,"./utils":17}],12:[function(_dereq_,module,exports){
 exports.ActionMethods = _dereq_('./ActionMethods');
 
 exports.ListenerMethods = _dereq_('./ListenerMethods');
@@ -833,7 +836,7 @@ if (!Function.prototype.bind) {
   );
 }
 
-},{"./ActionMethods":2,"./Keep":3,"./ListenerMethods":4,"./ListenerMixin":5,"./PublisherMethods":6,"./StoreMethods":7,"./connect":9,"./createAction":10,"./createStore":11,"./joins":13,"./listenTo":14,"./listenToMany":15,"./utils":16}],13:[function(_dereq_,module,exports){
+},{"./ActionMethods":2,"./Keep":3,"./ListenerMethods":4,"./ListenerMixin":5,"./PublisherMethods":6,"./StoreMethods":7,"./connect":9,"./createAction":10,"./createStore":11,"./joins":13,"./listenTo":14,"./listenToMany":15,"./utils":17}],13:[function(_dereq_,module,exports){
 /**
  * Internal module used to create static and instance join methods
  */
@@ -941,7 +944,7 @@ function emitIfAllListenablesEmitted(join) {
     reset(join);
 }
 
-},{"./createStore":11,"./utils":16}],14:[function(_dereq_,module,exports){
+},{"./createStore":11,"./utils":17}],14:[function(_dereq_,module,exports){
 var Reflux = _dereq_('./index');
 
 
@@ -1015,6 +1018,65 @@ module.exports = function(listenables){
 };
 
 },{"./index":12}],16:[function(_dereq_,module,exports){
+var _ = _dereq_('./utils');
+
+module.exports = function mix(def) {
+    var composed = {
+        init: [],
+        preEmit: [],
+        shouldEmit: []
+    };
+
+    var updated = (function mixDef(mixin) {
+        var mixed = {};
+        if (mixin.mixins) {
+            mixin.mixins.forEach(function (subMixin) {
+                _.extend(mixed, mixDef(subMixin));
+            });
+        }
+        _.extend(mixed, mixin);
+        Object.keys(composed).forEach(function (composable) {
+            if (mixin.hasOwnProperty(composable)) {
+                composed[composable].push(mixin[composable]);
+            }
+        });
+        return mixed;
+    }(def));
+
+    if (composed.init.length > 1) {
+        updated.init = function () {
+            var args = arguments;
+            composed.init.forEach(function (init) {
+                init.apply(this, args);
+            }, this);
+        };
+    }
+    if (composed.preEmit.length > 1) {
+        updated.preEmit = function () {
+            return composed.preEmit.reduce(function (args, preEmit) {
+                var newValue = preEmit.apply(this, args);
+                return newValue === undefined ? args : [newValue];
+            }.bind(this), arguments);
+        };
+    }
+    if (composed.shouldEmit.length > 1) {
+        updated.shouldEmit = function () {
+            var args = arguments;
+            return !composed.shouldEmit.some(function (shouldEmit) {
+                return !shouldEmit.apply(this, args);
+            }, this);
+        };
+    }
+    Object.keys(composed).forEach(function (composable) {
+        if (composed[composable].length === 1) {
+            updated[composable] = composed[composable][0];
+        }
+    });
+
+    return updated;
+};
+
+},{"./utils":17}],17:[function(_dereq_,module,exports){
 /*
  * isObject, extend, isFunction, isArguments are taken from undescore/lodash in
  * order to remove the dependency

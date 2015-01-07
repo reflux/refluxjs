@@ -2,6 +2,10 @@
 
 Check for latest changes on the [milestones page](https://github.com/spoike/refluxjs/milestones).
 
+## v0.2.3
+
+* Store mixins [#124](https://github.com/spoike/refluxjs/pull/124)
+
 ## v0.2.2
 
 * Fixed circular dependency issue that caused browserify builds not to work as expected [#129](https://github.com/spoike/refluxjs/issues/129) [#138](https://github.com/spoike/refluxjs/issues/138)
