@@ -252,6 +252,33 @@ statusStore.exampleMethod('arg1');
 // Should output: 'arg1'
 ```
 
+#### Mixins in stores
+
+Just as you can add mixins to React components, so it is possible to add your mixins to Store.
+
+```javascript
+var MyMixin = { foo: function() { console.log('bar!'); } }
+var Store = Reflux.createStore({
+    mixins: [MyMixin]
+});
+Store.foo(); // outputs "bar!" to console
+```
+
+Methods from mixins is available as well as the methods declared in the Store. So it's possible to access store's `this` from mixin, or methods of mixin from methods of store:
+
+```javascript
+var MyMixin = { mixinMethod: function() { console.log(this.foo); } }
+var Store = Reflux.createStore({
+    mixins: [MyMixin],
+    foo: 'bar!',
+    storeMethod: function() {
+        this.mixinMethod(); // outputs "bar!" to console
+    }
+});
+```
+
+A nice feature of mixins is that if a store is using multiple mixins and several mixins define the same lifecycle method (e.g. `init`, `preEmit`, `shouldEmit`), all of the lifecycle methods are guaranteed to be called.
+
 #### Listening to many actions at once
 
 Since it is a very common pattern to listen to all actions from a `createActions` call in a store `init` call, the store has a `listenToMany` function that takes an object of listenables. Instead of doing this:
