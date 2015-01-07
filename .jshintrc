@@ -3,6 +3,7 @@
 
     "curly": true,
     "unused": true,
+    "undef": true,
 
     "browser": true,
     "devel": true,

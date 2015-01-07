@@ -48,8 +48,7 @@ exports.object = function(keys,vals){
 };
 
 exports.isArguments = function(value) {
-    return value && typeof value == 'object' && typeof value.length == 'number' &&
-      (toString.call(value) === '[object Arguments]' || (hasOwnProperty.call(value, 'callee' && !propertyIsEnumerable.call(value, 'callee')))) || false;
+    return typeof value === 'object' && ('callee' in value) && typeof value.length === 'number';
 };
 
 exports.throwIf = function(val,msg){
