@@ -19,7 +19,8 @@
     "flux"
   ],
   "dependencies": {
-    "eventemitter3": "^0.1.2"
+    "eventemitter3": "^0.1.2",
+    "native-promise-only": "^0.7.6-a"
   },
   "devDependencies": {
     "benchmark": "^1.0.0",

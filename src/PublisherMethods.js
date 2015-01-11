@@ -1,3 +1,5 @@
+require("native-promise-only");
+
 var _ = require('./utils');
 
 /**
