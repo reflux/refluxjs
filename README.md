@@ -166,6 +166,44 @@ asyncResultAction.listen( function(arguments) {
 asyncResultAction.listenAndPromise( someAsyncOperation );
 ```
 
+##### Asynchronous actions as Promises
+
+Asynchronous actions can used as promises, which is particularly useful for server-side rendering when you must away the successful (or failed) completion of an aciton before rendering.
+
+Suppose you had an action + store to make an API request:
+
+```javascript
+// Create async action with `completed` & `failed` children
+var makeRequest = Reflux.createAction({ asyncResult: true });
+
+var RequestStore = Reflux.createStore({
+    init: function() {
+        this.listenTo(makeRequest, 'onMakeRequest');
+    },
+
+    onMakeRequest: function(url) {
+        // Assume `request` is some HTTP library (e.g. superagent)
+        request(url, function(response) {
+            if (response.ok) {
+                makeRequest.completed(response.body);
+            } else {
+                makeRequest.failed(response.error);
+            }
+        }
+    }
+});
+```
+
+Then, on the server, you could use promises to make the request and either render or serve an error:
+
+```javascript
+makeRequest('/api/somethign').then(function(body) {
+    // Render the response body
+}).catch(function(err) {
+    // Handle the API error object
+});
+```
+
 #### Action hooks
 
 There are a couple of hooks available for each action.
