@@ -548,6 +548,20 @@ Don't like to use the Promise library provided? You can switch to another one, s
 Reflux.setPromise(require('bluebird'));
 ```
 
+*Note that promises are constructed with `new Promise(...)`.  If your Promise library uses factories (e.g. `Q`), then use `Reflux.setPromiseFactory` instead.*
+
+### Switching Promise factory
+
+Since most Promise libraries use constructors (e.g. `new Promise(...)`), this is the default behavior.
+
+However, if you use `Q` or another library that uses a factory method, you can use `Reflux.setPromiseFactory` for it.
+
+```javascript
+// Do this before triggering actions
+
+Reflux.setPromiseFactory(require('Q').Promise);
+```
+
 ### Switching nextTick
 
 Whenever action functors are called, they return immediately through the use of `setTimeout` (`nextTick` function) internally.

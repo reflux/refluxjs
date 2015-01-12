@@ -3,11 +3,13 @@ var chai = require('chai'),
     Reflux = require('../src'),
     utils = require('../src/utils');
 
-var MockPromise = function(callback) {
+var MockPromise = function(resolver) {
     this.catches = [];
     this.thens = [];
 
-    callback(function resolve() {}, function reject() {});
+    resolver(function resolve() {}, function reject() {});
+
+    return this;
 };
 
 MockPromise.prototype.catch = function(callback) {
@@ -22,13 +24,22 @@ MockPromise.prototype.then = function(callback) {
     return this;
 };
 
-describe('Switching Promise APIs', function() {
+
+var MockFactory = function(resolver) {
+    return new MockPromise(resolver);
+};
+
+describe('Switching Promise constructor', function() {
     var original;
 
     beforeEach(function() {
         original = utils.Promise;
 
         Reflux.setPromise(MockPromise);
+    });
+
+    afterEach(function() {
+        Reflux.setPromise(original);
     });
 
     it('should not be the original', function() {
@@ -41,5 +52,28 @@ describe('Switching Promise APIs', function() {
         assert.property(promise, 'catch');
         assert.property(promise, 'then');
     });
+});
 
+describe('Switching Promise factory', function() {
+    var original;
+
+    beforeEach(function() {
+        original = utils.createPromise;
+
+        Reflux.setPromiseFactory(MockFactory);
+    });
+
+    afterEach(function() {
+        Reflux.setPromiseFactory(original);
+    });
+
+    it('should not be the original', function() {
+        assert.notEqual(original, utils.createPromise);
+    });
+
+    it('should create a mock promise', function() {
+        var promise = utils.createPromise(function() {});
+
+        assert(promise instanceof MockPromise);
+    });
 });
