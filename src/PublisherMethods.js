@@ -1,5 +1,3 @@
-require("native-promise-only");
-
 var _ = require('./utils');
 
 /**
@@ -122,7 +120,7 @@ module.exports = {
             throw new Error('Publisher must have "completed" and "failed" child publishers');
         }
 
-        var promise = new Promise(function(resolve, reject) {
+        var promise = _.createPromise(function(resolve, reject) {
             var removeSuccess = me.completed.listen(function(args) {
                 removeSuccess();
                 resolve(args);

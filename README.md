@@ -538,6 +538,16 @@ Don't like to use the EventEmitter provided? You can switch to another one, such
 Reflux.setEventEmitter(require('events').EventEmitter);
 ```
 
+### Switching Promise library
+
+Don't like to use the Promise library provided? You can switch to another one, such as [Bluebird](https://github.com/petkaantonov/bluebird/) like this:
+
+```javascript
+// Do this before triggering actions
+
+Reflux.setPromise(require('bluebird'));
+```
+
 ### Switching nextTick
 
 Whenever action functors are called, they return immediately through the use of `setTimeout` (`nextTick` function) internally.

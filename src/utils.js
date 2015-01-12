@@ -39,6 +39,10 @@ exports.callbackName = function(string){
     return "on"+exports.capitalize(string);
 };
 
+exports.createPromise = function(resolve, reject) {
+    return new exports.Promise(resolve, reject);
+};
+
 exports.object = function(keys,vals){
     var o={}, i=0;
     for(;i<keys.length;i++){
@@ -46,6 +50,8 @@ exports.object = function(keys,vals){
     }
     return o;
 };
+
+exports.Promise = require("native-promise-only");
 
 exports.isArguments = function(value) {
     return typeof value === 'object' && ('callee' in value) && typeof value.length === 'number';
