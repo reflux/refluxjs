@@ -123,10 +123,12 @@ module.exports = {
         var promise = _.createPromise(function(resolve, reject) {
             var removeSuccess = me.completed.listen(function(args) {
                 removeSuccess();
+                removeFailed();
                 resolve(args);
             });
 
             var removeFailed = me.failed.listen(function(args) {
+                removeSuccess();
                 removeFailed();
                 reject(args);
             });
