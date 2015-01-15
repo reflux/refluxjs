@@ -168,7 +168,7 @@ asyncResultAction.listenAndPromise( someAsyncOperation );
 
 ##### Asynchronous actions as Promises
 
-Asynchronous actions can used as promises, which is particularly useful for server-side rendering when you must away the successful (or failed) completion of an action before rendering.
+Asynchronous actions can used as promises, which is particularly useful for server-side rendering when you must await the successful (or failed) completion of an action before rendering.
 
 Suppose you had an action + store to make an API request:
 
