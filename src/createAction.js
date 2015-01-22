@@ -14,7 +14,7 @@ var createAction = function(definition) {
 
     definition = definition || {};
     if (!_.isObject(definition)){
-        definition = {name: definition};
+        definition = {actionName: definition};
     }
 
     for(var a in Reflux.ActionMethods){
