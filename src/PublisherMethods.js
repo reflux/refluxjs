@@ -61,7 +61,7 @@ module.exports = {
 
         promise.then(function(response) {
             return me.completed(response);
-        }).catch(function(error) {
+        })['catch'](function(error) {
             return me.failed(error);
         });
     },
