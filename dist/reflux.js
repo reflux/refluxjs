@@ -205,6 +205,15 @@ if ('object' === typeof module && module.exports) {
 }
 
 },{}],2:[function(_dereq_,module,exports){
+(function (global){
+/*! Native Promise Only
+    v0.7.6-a (c) Kyle Simpson
+    MIT License: http://getify.mit-license.org
+*/
+!function(t,n,e){n[t]=n[t]||e(),"undefined"!=typeof module&&module.exports?module.exports=n[t]:"function"==typeof define&&define.amd&&define(function(){return n[t]})}("Promise","undefined"!=typeof global?global:this,function(){"use strict";function t(t,n){l.add(t,n),h||(h=y(l.drain))}function n(t){var n,e=typeof t;return null==t||"object"!=e&&"function"!=e||(n=t.then),"function"==typeof n?n:!1}function e(){for(var t=0;t<this.chain.length;t++)o(this,1===this.state?this.chain[t].success:this.chain[t].failure,this.chain[t]);this.chain.length=0}function o(t,e,o){var r,i;try{e===!1?o.reject(t.msg):(r=e===!0?t.msg:e.call(void 0,t.msg),r===o.promise?o.reject(TypeError("Promise-chain cycle")):(i=n(r))?i.call(r,o.resolve,o.reject):o.resolve(r))}catch(c){o.reject(c)}}function r(o){var c,u,a=this;if(!a.triggered){a.triggered=!0,a.def&&(a=a.def);try{(c=n(o))?(u=new f(a),c.call(o,function(){r.apply(u,arguments)},function(){i.apply(u,arguments)})):(a.msg=o,a.state=1,a.chain.length>0&&t(e,a))}catch(s){i.call(u||new f(a),s)}}}function i(n){var o=this;o.triggered||(o.triggered=!0,o.def&&(o=o.def),o.msg=n,o.state=2,o.chain.length>0&&t(e,o))}function c(t,n,e,o){for(var r=0;r<n.length;r++)!function(r){t.resolve(n[r]).then(function(t){e(r,t)},o)}(r)}function f(t){this.def=t,this.triggered=!1}function u(t){this.promise=t,this.state=0,this.triggered=!1,this.chain=[],this.msg=void 0}function a(n){if("function"!=typeof n)throw TypeError("Not a function");if(0!==this.__NPO__)throw TypeError("Not a promise");this.__NPO__=1;var o=new u(this);this.then=function(n,r){var i={success:"function"==typeof n?n:!0,failure:"function"==typeof r?r:!1};return i.promise=new this.constructor(function(t,n){if("function"!=typeof t||"function"!=typeof n)throw TypeError("Not a function");i.resolve=t,i.reject=n}),o.chain.push(i),0!==o.state&&t(e,o),i.promise},this["catch"]=function(t){return this.then(void 0,t)};try{n.call(void 0,function(t){r.call(o,t)},function(t){i.call(o,t)})}catch(c){i.call(o,c)}}var s,h,l,p=Object.prototype.toString,y="undefined"!=typeof setImmediate?function(t){return setImmediate(t)}:setTimeout;try{Object.defineProperty({},"x",{}),s=function(t,n,e,o){return Object.defineProperty(t,n,{value:e,writable:!0,configurable:o!==!1})}}catch(d){s=function(t,n,e){return t[n]=e,t}}l=function(){function t(t,n){this.fn=t,this.self=n,this.next=void 0}var n,e,o;return{add:function(r,i){o=new t(r,i),e?e.next=o:n=o,e=o,o=void 0},drain:function(){var t=n;for(n=e=h=void 0;t;)t.fn.call(t.self),t=t.next}}}();var g=s({},"constructor",a,!1);return s(a,"prototype",g,!1),s(g,"__NPO__",0,!1),s(a,"resolve",function(t){var n=this;return t&&"object"==typeof t&&1===t.__NPO__?t:new n(function(n,e){if("function"!=typeof n||"function"!=typeof e)throw TypeError("Not a function");n(t)})}),s(a,"reject",function(t){return new this(function(n,e){if("function"!=typeof n||"function"!=typeof e)throw TypeError("Not a function");e(t)})}),s(a,"all",function(t){var n=this;return"[object Array]"!=p.call(t)?n.reject(TypeError("Not an array")):0===t.length?n.resolve([]):new n(function(e,o){if("function"!=typeof e||"function"!=typeof o)throw TypeError("Not a function");var r=t.length,i=Array(r),f=0;c(n,t,function(t,n){i[t]=n,++f===r&&e(i)},o)})}),s(a,"race",function(t){var n=this;return"[object Array]"!=p.call(t)?n.reject(TypeError("Not an array")):new n(function(e,o){if("function"!=typeof e||"function"!=typeof o)throw TypeError("Not a function");c(n,t,function(t,n){e(n)},o)})}),a});
+
+}).call(this,typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
+},{}],3:[function(_dereq_,module,exports){
 /**
  * A module of methods that you want to include in all actions.
  * This module is consumed by `createAction`.
@@ -212,7 +221,7 @@ if ('object' === typeof module && module.exports) {
 module.exports = {
 };
 
-},{}],3:[function(_dereq_,module,exports){
+},{}],4:[function(_dereq_,module,exports){
 exports.createdStores = [];
 
 exports.createdActions = [];
@@ -226,7 +235,7 @@ exports.reset = function() {
     }
 };
 
-},{}],4:[function(_dereq_,module,exports){
+},{}],5:[function(_dereq_,module,exports){
 var _ = _dereq_('./utils'),
     maker = _dereq_('./joins').instanceJoinCreator;
 
@@ -236,8 +245,8 @@ var _ = _dereq_('./utils'),
  *
  * @param {Object} listenable The parent listenable
  */
-mapChildListenables = function(listenable) {
-    var i = 0, children = {};
+var mapChildListenables = function(listenable) {
+    var i = 0, children = {}, childName;
     for (;i < (listenable.children||[]).length; ++i) {
         childName = listenable.children[i];
         if(listenable[childName]){
@@ -253,7 +262,7 @@ mapChildListenables = function(listenable) {
  *
  * @param {Object} listenables The top-level listenables
  */
-flattenListenables = function(listenables) {
+var flattenListenables = function(listenables) {
     var flattened = {};
     for(var key in listenables){
         var listenable = listenables[key];
@@ -400,7 +409,7 @@ module.exports = {
         defaultCallback = (defaultCallback && this[defaultCallback]) || defaultCallback;
         var me = this;
         if (_.isFunction(defaultCallback) && _.isFunction(listenable.getInitialState)) {
-            data = listenable.getInitialState();
+            var data = listenable.getInitialState();
             if (data && _.isFunction(data.then)) {
                 data.then(function() {
                     defaultCallback.apply(me, arguments);
@@ -448,7 +457,7 @@ module.exports = {
     joinStrict: maker("strict")
 };
 
-},{"./joins":13,"./utils":17}],5:[function(_dereq_,module,exports){
+},{"./joins":14,"./utils":18}],6:[function(_dereq_,module,exports){
 var _ = _dereq_('./utils'),
     ListenerMethods = _dereq_('./ListenerMethods');
 
@@ -467,7 +476,7 @@ module.exports = _.extend({
 
 }, ListenerMethods);
 
-},{"./ListenerMethods":4,"./utils":17}],6:[function(_dereq_,module,exports){
+},{"./ListenerMethods":5,"./utils":18}],7:[function(_dereq_,module,exports){
 var _ = _dereq_('./utils');
 
 /**
@@ -531,7 +540,9 @@ module.exports = {
 
         promise.then(function(response) {
             return me.completed(response);
-        }).catch(function(error) {
+        });
+        // IE compatibility - catch is a reserved word - without bracket notation source compilation will fail under IE
+        promise["catch"](function(error) {
             return me.failed(error);
         });
     },
@@ -547,6 +558,11 @@ module.exports = {
         bindContext = bindContext || this;
 
         return this.listen(function() {
+
+            if (!callback) {
+                throw new Error('Expected a function returning a promise but got ' + callback);
+            }
+
             var args = arguments,
                 promise = callback.apply(bindContext, args);
             return me.promise.call(me, promise);
@@ -573,10 +589,44 @@ module.exports = {
         _.nextTick(function() {
             me.trigger.apply(me, args);
         });
-    }
+    },
+
+    /**
+     * Returns a Promise for the triggered action
+     */
+    triggerPromise: function(){
+        var me = this;
+        var args = arguments;
+
+        var canHandlePromise =
+            this.children.indexOf('completed') >= 0 &&
+            this.children.indexOf('failed') >= 0;
+
+        if (!canHandlePromise){
+            throw new Error('Publisher must have "completed" and "failed" child publishers');
+        }
+
+        var promise = _.createPromise(function(resolve, reject) {
+            var removeSuccess = me.completed.listen(function(args) {
+                removeSuccess();
+                removeFailed();
+                resolve(args);
+            });
+
+            var removeFailed = me.failed.listen(function(args) {
+                removeSuccess();
+                removeFailed();
+                reject(args);
+            });
+
+            me.triggerAsync.apply(me, args);
+        });
+
+        return promise;
+    },
 };
 
-},{"./utils":17}],7:[function(_dereq_,module,exports){
+},{"./utils":18}],8:[function(_dereq_,module,exports){
 /**
  * A module of methods that you want to include in all stores.
  * This module is consumed by `createStore`.
@@ -584,7 +634,7 @@ module.exports = {
 module.exports = {
 };
 
-},{}],8:[function(_dereq_,module,exports){
+},{}],9:[function(_dereq_,module,exports){
 module.exports = function(store, definition) {
   for (var name in definition) {
     var property = definition[name];
@@ -599,7 +649,7 @@ module.exports = function(store, definition) {
   return store;
 };
 
-},{}],9:[function(_dereq_,module,exports){
+},{}],10:[function(_dereq_,module,exports){
 var Reflux = _dereq_('./index'),
     _ = _dereq_('./utils');
 
@@ -623,7 +673,7 @@ module.exports = function(listenable,key){
     };
 };
 
-},{"./index":12,"./utils":17}],10:[function(_dereq_,module,exports){
+},{"./index":13,"./utils":18}],11:[function(_dereq_,module,exports){
 var _ = _dereq_('./utils'),
     Reflux = _dereq_('./index'),
     Keep = _dereq_('./Keep'),
@@ -640,7 +690,7 @@ var createAction = function(definition) {
 
     definition = definition || {};
     if (!_.isObject(definition)){
-        definition = {name: definition};
+        definition = {actionName: definition};
     }
 
     for(var a in Reflux.ActionMethods){
@@ -690,7 +740,7 @@ var createAction = function(definition) {
 
 module.exports = createAction;
 
-},{"./Keep":3,"./index":12,"./utils":17}],11:[function(_dereq_,module,exports){
+},{"./Keep":4,"./index":13,"./utils":18}],12:[function(_dereq_,module,exports){
 var _ = _dereq_('./utils'),
     Reflux = _dereq_('./index'),
     Keep = _dereq_('./Keep'),
@@ -753,7 +803,7 @@ module.exports = function(definition) {
     return store;
 };
 
-},{"./Keep":3,"./bindMethods":8,"./index":12,"./mixer":16,"./utils":17}],12:[function(_dereq_,module,exports){
+},{"./Keep":4,"./bindMethods":9,"./index":13,"./mixer":17,"./utils":18}],13:[function(_dereq_,module,exports){
 exports.ActionMethods = _dereq_('./ActionMethods');
 
 exports.ListenerMethods = _dereq_('./ListenerMethods');
@@ -812,6 +862,25 @@ exports.setEventEmitter = function(ctx) {
     _.EventEmitter = ctx;
 };
 
+
+/**
+ * Sets the Promise library that Reflux uses
+ */
+exports.setPromise = function(ctx) {
+    var _ = _dereq_('./utils');
+    _.Promise = ctx;
+};
+
+/**
+ * Sets the Promise factory that creates new promises
+ * @param {Function} factory has the signature `function(resolver) { return [new Promise]; }`
+ */
+exports.setPromiseFactory = function(factory) {
+    var _ = _dereq_('./utils');
+    _.createPromise = factory;
+};
+
+
 /**
  * Sets the method used for deferring actions and stores
  */
@@ -836,7 +905,7 @@ if (!Function.prototype.bind) {
   );
 }
 
-},{"./ActionMethods":2,"./Keep":3,"./ListenerMethods":4,"./ListenerMixin":5,"./PublisherMethods":6,"./StoreMethods":7,"./connect":9,"./createAction":10,"./createStore":11,"./joins":13,"./listenTo":14,"./listenToMany":15,"./utils":17}],13:[function(_dereq_,module,exports){
+},{"./ActionMethods":3,"./Keep":4,"./ListenerMethods":5,"./ListenerMixin":6,"./PublisherMethods":7,"./StoreMethods":8,"./connect":10,"./createAction":11,"./createStore":12,"./joins":14,"./listenTo":15,"./listenToMany":16,"./utils":18}],14:[function(_dereq_,module,exports){
 /**
  * Internal module used to create static and instance join methods
  */
@@ -902,7 +971,7 @@ exports.instanceJoinCreator = function(strategy){
 
 function makeStopper(subobj,cancels,context){
     return function() {
-        var i, subs = context.subscriptions;
+        var i, subs = context.subscriptions,
             index = (subs ? subs.indexOf(subobj) : -1);
         _.throwIf(index === -1,'Tried to remove join already gone from subscriptions list!');
         for(i=0;i < cancels.length; i++){
@@ -944,7 +1013,7 @@ function emitIfAllListenablesEmitted(join) {
     reset(join);
 }
 
-},{"./createStore":11,"./utils":17}],14:[function(_dereq_,module,exports){
+},{"./createStore":12,"./utils":18}],15:[function(_dereq_,module,exports){
 var Reflux = _dereq_('./index');
 
 
@@ -982,7 +1051,7 @@ module.exports = function(listenable,callback,initial){
     };
 };
 
-},{"./index":12}],15:[function(_dereq_,module,exports){
+},{"./index":13}],16:[function(_dereq_,module,exports){
 var Reflux = _dereq_('./index');
 
 /**
@@ -1017,7 +1086,7 @@ module.exports = function(listenables){
     };
 };
 
-},{"./index":12}],16:[function(_dereq_,module,exports){
+},{"./index":13}],17:[function(_dereq_,module,exports){
 var _ = _dereq_('./utils');
 
 module.exports = function mix(def) {
@@ -1076,7 +1145,7 @@ module.exports = function mix(def) {
     return updated;
 };
 
-},{"./utils":17}],17:[function(_dereq_,module,exports){
+},{"./utils":18}],18:[function(_dereq_,module,exports){
 /*
  * isObject, extend, isFunction, isArguments are taken from undescore/lodash in
  * order to remove the dependency
@@ -1126,9 +1195,14 @@ exports.object = function(keys,vals){
     return o;
 };
 
+exports.Promise = _dereq_("native-promise-only");
+
+exports.createPromise = function(resolver) {
+    return new exports.Promise(resolver);
+};
+
 exports.isArguments = function(value) {
-    return value && typeof value == 'object' && typeof value.length == 'number' &&
-      (toString.call(value) === '[object Arguments]' || (hasOwnProperty.call(value, 'callee' && !propertyIsEnumerable.call(value, 'callee')))) || false;
+    return typeof value === 'object' && ('callee' in value) && typeof value.length === 'number';
 };
 
 exports.throwIf = function(val,msg){
@@ -1137,6 +1211,6 @@ exports.throwIf = function(val,msg){
     }
 };
 
-},{"eventemitter3":1}]},{},[12])
-(12)
+},{"eventemitter3":1,"native-promise-only":2}]},{},[13])
+(13)
 });
