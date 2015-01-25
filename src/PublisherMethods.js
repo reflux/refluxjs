@@ -79,6 +79,11 @@ module.exports = {
         bindContext = bindContext || this;
 
         return this.listen(function() {
+
+            if (!callback) {
+                throw new Error('Expected a function returning a promise but got ' + callback);
+            }
+
             var args = arguments,
                 promise = callback.apply(bindContext, args);
             return me.promise.call(me, promise);
