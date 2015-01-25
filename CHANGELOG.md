@@ -2,6 +2,12 @@
 
 Check for latest changes on the [milestones page](https://github.com/spoike/refluxjs/milestones).
 
+## v0.2.4
+
+* Promisable actions [#186](https://github.com/spoike/refluxjs/issues/186)
+* Fixed IE8 bug [#202](https://github.com/spoike/refluxjs/issues/202), [#187](https://github.com/spoike/refluxjs/issues/187)
+* Plus other various fixes: [#201](https://github.com/spoike/refluxjs/issues/201), [#200](https://github.com/spoike/refluxjs/issues/202), [#183](https://github.com/spoike/refluxjs/issues/183), and [#182](https://github.com/spoike/refluxjs/issues/182)
+
 ## v0.2.3
 
 * Store mixins [#124](https://github.com/spoike/refluxjs/pull/124)
