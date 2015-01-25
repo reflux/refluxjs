@@ -56,6 +56,25 @@ exports.setEventEmitter = function(ctx) {
     _.EventEmitter = ctx;
 };
 
+
+/**
+ * Sets the Promise library that Reflux uses
+ */
+exports.setPromise = function(ctx) {
+    var _ = require('./utils');
+    _.Promise = ctx;
+};
+
+/**
+ * Sets the Promise factory that creates new promises
+ * @param {Function} factory has the signature `function(resolver) { return [new Promise]; }`
+ */
+exports.setPromiseFactory = function(factory) {
+    var _ = require('./utils');
+    _.createPromise = factory;
+};
+
+
 /**
  * Sets the method used for deferring actions and stores
  */

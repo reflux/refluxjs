@@ -166,6 +166,44 @@ asyncResultAction.listen( function(arguments) {
 asyncResultAction.listenAndPromise( someAsyncOperation );
 ```
 
+##### Asynchronous actions as Promises
+
+Asynchronous actions can used as promises, which is particularly useful for server-side rendering when you must await the successful (or failed) completion of an action before rendering.
+
+Suppose you had an action + store to make an API request:
+
+```javascript
+// Create async action with `completed` & `failed` children
+var makeRequest = Reflux.createAction({ asyncResult: true });
+
+var RequestStore = Reflux.createStore({
+    init: function() {
+        this.listenTo(makeRequest, 'onMakeRequest');
+    },
+
+    onMakeRequest: function(url) {
+        // Assume `request` is some HTTP library (e.g. superagent)
+        request(url, function(response) {
+            if (response.ok) {
+                makeRequest.completed(response.body);
+            } else {
+                makeRequest.failed(response.error);
+            }
+        }
+    }
+});
+```
+
+Then, on the server, you could use promises to make the request and either render or serve an error:
+
+```javascript
+makeRequest('/api/somethign').then(function(body) {
+    // Render the response body
+}).catch(function(err) {
+    // Handle the API error object
+});
+```
+
 #### Action hooks
 
 There are a couple of hooks available for each action.
@@ -498,6 +536,30 @@ Don't like to use the EventEmitter provided? You can switch to another one, such
 // Do this before creating actions or stores
 
 Reflux.setEventEmitter(require('events').EventEmitter);
+```
+
+### Switching Promise library
+
+Don't like to use the Promise library provided? You can switch to another one, such as [Bluebird](https://github.com/petkaantonov/bluebird/) like this:
+
+```javascript
+// Do this before triggering actions
+
+Reflux.setPromise(require('bluebird'));
+```
+
+*Note that promises are constructed with `new Promise(...)`.  If your Promise library uses factories (e.g. `Q`), then use `Reflux.setPromiseFactory` instead.*
+
+### Switching Promise factory
+
+Since most Promise libraries use constructors (e.g. `new Promise(...)`), this is the default behavior.
+
+However, if you use `Q` or another library that uses a factory method, you can use `Reflux.setPromiseFactory` for it.
+
+```javascript
+// Do this before triggering actions
+
+Reflux.setPromiseFactory(require('Q').Promise);
 ```
 
 ### Switching nextTick

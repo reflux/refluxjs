@@ -47,6 +47,12 @@ exports.object = function(keys,vals){
     return o;
 };
 
+exports.Promise = require("native-promise-only");
+
+exports.createPromise = function(resolver) {
+    return new exports.Promise(resolver);
+};
+
 exports.isArguments = function(value) {
     return typeof value === 'object' && ('callee' in value) && typeof value.length === 'number';
 };

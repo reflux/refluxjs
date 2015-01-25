@@ -110,5 +110,39 @@ module.exports = {
         _.nextTick(function() {
             me.trigger.apply(me, args);
         });
-    }
+    },
+
+    /**
+     * Returns a Promise for the triggered action
+     */
+    triggerPromise: function(){
+        var me = this;
+        var args = arguments;
+
+        var canHandlePromise =
+            this.children.indexOf('completed') >= 0 &&
+            this.children.indexOf('failed') >= 0;
+
+        if (!canHandlePromise){
+            throw new Error('Publisher must have "completed" and "failed" child publishers');
+        }
+
+        var promise = _.createPromise(function(resolve, reject) {
+            var removeSuccess = me.completed.listen(function(args) {
+                removeSuccess();
+                removeFailed();
+                resolve(args);
+            });
+
+            var removeFailed = me.failed.listen(function(args) {
+                removeSuccess();
+                removeFailed();
+                reject(args);
+            });
+
+            me.triggerAsync.apply(me, args);
+        });
+
+        return promise;
+    },
 };
