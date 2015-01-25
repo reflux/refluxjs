@@ -264,7 +264,7 @@ var Store = Reflux.createStore({
 Store.foo(); // outputs "bar!" to console
 ```
 
-Methods from mixins is available as well as the methods declared in the Store. So it's possible to access store's `this` from mixin, or methods of mixin from methods of store:
+Methods from mixins are available as well as the methods declared in the Store. So it's possible to access store's `this` from mixin, or methods of mixin from methods of store:
 
 ```javascript
 var MyMixin = { mixinMethod: function() { console.log(this.foo); } }
