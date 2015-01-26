@@ -197,7 +197,7 @@ var RequestStore = Reflux.createStore({
 Then, on the server, you could use promises to make the request and either render or serve an error:
 
 ```javascript
-makeRequest('/api/somethign').then(function(body) {
+makeRequest('/api/something').then(function(body) {
     // Render the response body
 }).catch(function(err) {
     // Handle the API error object
