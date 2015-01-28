@@ -189,7 +189,7 @@ var RequestStore = Reflux.createStore({
             } else {
                 makeRequest.failed(response.error);
             }
-        }
+        })
     }
 });
 ```
