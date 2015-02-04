@@ -501,6 +501,27 @@ var Status = React.createClass({
 });
 ```
 
+#### Using Reflux.connectFilter
+
+`Reflux.connectFilter` is used in a similar manner to `Reflux.connect`. Use the
+`connectFilter` mixin when you want only a subset of the items in a store. A
+blog written using Reflux would probably have a store with all posts in
+it. For an individual post page, you could use `Reflux.connectFilter` to
+filter the posts to the post that's being viewed.
+
+```javascript
+var PostView = React.createClass({
+    mixins: [Reflux.connectFilter(postStore,"post", function(posts) {
+        posts.filter(function(post) {
+           post.id === this.props.id;
+        });
+    }],
+    render: function() {
+        // render using `this.state.post`
+    }
+});
+```
+
 ### Listening to changes in other data stores (aggregate data stores)
 
 A store may listen to another store's change, making it possible to safely chain stores for aggregated data without affecting other parts of the application. A store may listen to other stores using the same `listenTo` function as with actions:
