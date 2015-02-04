@@ -2,6 +2,11 @@
 
 Check for latest changes on the [milestones page](https://github.com/spoike/refluxjs/milestones).
 
+## v0.2.5
+
+* Added `connectFilter` [#222](https://github.com/spoike/refluxjs/pull/222)
+* A lot of clarifications and typo fixes in documentation. [#147](https://github.com/spoike/refluxjs/pull/147), [#207](https://github.com/spoike/refluxjs/pull/207), [#208](https://github.com/spoike/refluxjs/pull/208), [#209](https://github.com/spoike/refluxjs/pull/209), [#211](https://github.com/spoike/refluxjs/pull/211), and [#214](https://github.com/spoike/refluxjs/pull/214)
+
 ## v0.2.4
 
 * Promisable actions [#185](https://github.com/spoike/refluxjs/issues/185)
