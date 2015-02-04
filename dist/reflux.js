@@ -457,7 +457,7 @@ module.exports = {
     joinStrict: maker("strict")
 };
 
-},{"./joins":14,"./utils":18}],6:[function(_dereq_,module,exports){
+},{"./joins":15,"./utils":19}],6:[function(_dereq_,module,exports){
 var _ = _dereq_('./utils'),
     ListenerMethods = _dereq_('./ListenerMethods');
 
@@ -476,7 +476,7 @@ module.exports = _.extend({
 
 }, ListenerMethods);
 
-},{"./ListenerMethods":5,"./utils":18}],7:[function(_dereq_,module,exports){
+},{"./ListenerMethods":5,"./utils":19}],7:[function(_dereq_,module,exports){
 var _ = _dereq_('./utils');
 
 /**
@@ -626,7 +626,7 @@ module.exports = {
     },
 };
 
-},{"./utils":18}],8:[function(_dereq_,module,exports){
+},{"./utils":19}],8:[function(_dereq_,module,exports){
 /**
  * A module of methods that you want to include in all stores.
  * This module is consumed by `createStore`.
@@ -673,7 +673,48 @@ module.exports = function(listenable,key){
     };
 };
 
-},{"./index":13,"./utils":18}],11:[function(_dereq_,module,exports){
+},{"./index":14,"./utils":19}],11:[function(_dereq_,module,exports){
+var Reflux = _dereq_('./index'),
+  _ = _dereq_('./utils');
+
+module.exports = function(listenable, key, filterFunc) {
+    filterFunc = _.isFunction(key) ? key : filterFunc;
+    return {
+        getInitialState: function() {
+            if (!_.isFunction(listenable.getInitialState)) {
+                return {};
+            } else if (_.isFunction(key)) {
+                return filterFunc.call(this, listenable.getInitialState());
+            } else {
+                // Filter initial payload from store.
+                var result = filterFunc.call(this, listenable.getInitialState());
+                if (result) {
+                  return _.object([key], [result]);
+                } else {
+                  return {};
+                }
+            }
+        },
+        componentDidMount: function() {
+            _.extend(this, Reflux.ListenerMethods);
+            var me = this;
+            var cb = function(value) {
+                if (_.isFunction(key)) {
+                    me.setState(filterFunc.call(me, value));
+                } else {
+                    var result = filterFunc.call(me, value);
+                    me.setState(_.object([key], [result]));
+                }
+            };
+
+            this.listenTo(listenable, cb);
+        },
+        componentWillUnmount: Reflux.ListenerMixin.componentWillUnmount
+    };
+};
+
+
+},{"./index":14,"./utils":19}],12:[function(_dereq_,module,exports){
 var _ = _dereq_('./utils'),
     Reflux = _dereq_('./index'),
     Keep = _dereq_('./Keep'),
@@ -740,7 +781,7 @@ var createAction = function(definition) {
 
 module.exports = createAction;
 
-},{"./Keep":4,"./index":13,"./utils":18}],12:[function(_dereq_,module,exports){
+},{"./Keep":4,"./index":14,"./utils":19}],13:[function(_dereq_,module,exports){
 var _ = _dereq_('./utils'),
     Reflux = _dereq_('./index'),
     Keep = _dereq_('./Keep'),
@@ -803,7 +844,7 @@ module.exports = function(definition) {
     return store;
 };
 
-},{"./Keep":4,"./bindMethods":9,"./index":13,"./mixer":17,"./utils":18}],13:[function(_dereq_,module,exports){
+},{"./Keep":4,"./bindMethods":9,"./index":14,"./mixer":18,"./utils":19}],14:[function(_dereq_,module,exports){
 exports.ActionMethods = _dereq_('./ActionMethods');
 
 exports.ListenerMethods = _dereq_('./ListenerMethods');
@@ -817,6 +858,8 @@ exports.createAction = _dereq_('./createAction');
 exports.createStore = _dereq_('./createStore');
 
 exports.connect = _dereq_('./connect');
+
+exports.connectFilter = _dereq_('./connectFilter');
 
 exports.ListenerMixin = _dereq_('./ListenerMixin');
 
@@ -905,7 +948,7 @@ if (!Function.prototype.bind) {
   );
 }
 
-},{"./ActionMethods":3,"./Keep":4,"./ListenerMethods":5,"./ListenerMixin":6,"./PublisherMethods":7,"./StoreMethods":8,"./connect":10,"./createAction":11,"./createStore":12,"./joins":14,"./listenTo":15,"./listenToMany":16,"./utils":18}],14:[function(_dereq_,module,exports){
+},{"./ActionMethods":3,"./Keep":4,"./ListenerMethods":5,"./ListenerMixin":6,"./PublisherMethods":7,"./StoreMethods":8,"./connect":10,"./connectFilter":11,"./createAction":12,"./createStore":13,"./joins":15,"./listenTo":16,"./listenToMany":17,"./utils":19}],15:[function(_dereq_,module,exports){
 /**
  * Internal module used to create static and instance join methods
  */
@@ -1013,7 +1056,7 @@ function emitIfAllListenablesEmitted(join) {
     reset(join);
 }
 
-},{"./createStore":12,"./utils":18}],15:[function(_dereq_,module,exports){
+},{"./createStore":13,"./utils":19}],16:[function(_dereq_,module,exports){
 var Reflux = _dereq_('./index');
 
 
@@ -1051,7 +1094,7 @@ module.exports = function(listenable,callback,initial){
     };
 };
 
-},{"./index":13}],16:[function(_dereq_,module,exports){
+},{"./index":14}],17:[function(_dereq_,module,exports){
 var Reflux = _dereq_('./index');
 
 /**
@@ -1086,7 +1129,7 @@ module.exports = function(listenables){
     };
 };
 
-},{"./index":13}],17:[function(_dereq_,module,exports){
+},{"./index":14}],18:[function(_dereq_,module,exports){
 var _ = _dereq_('./utils');
 
 module.exports = function mix(def) {
@@ -1145,7 +1188,7 @@ module.exports = function mix(def) {
     return updated;
 };
 
-},{"./utils":18}],18:[function(_dereq_,module,exports){
+},{"./utils":19}],19:[function(_dereq_,module,exports){
 /*
  * isObject, extend, isFunction, isArguments are taken from undescore/lodash in
  * order to remove the dependency
@@ -1211,6 +1254,6 @@ exports.throwIf = function(val,msg){
     }
 };
 
-},{"eventemitter3":1,"native-promise-only":2}]},{},[13])
-(13)
+},{"eventemitter3":1,"native-promise-only":2}]},{},[14])
+(14)
 });
