@@ -51,7 +51,7 @@ var createAction = function(definition) {
     }, Reflux.PublisherMethods, Reflux.ActionMethods, definition);
 
     var functor = function() {
-        functor[functor.sync?"trigger":"triggerAsync"].apply(functor, arguments);
+        return functor[functor.sync?"trigger":"triggerPromise"].apply(functor, arguments);
     };
 
     _.extend(functor,childActions,context);

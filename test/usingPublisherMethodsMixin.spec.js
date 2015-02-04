@@ -328,7 +328,7 @@ describe("using the publisher methods mixin",function(){
     });
 
     describe("the triggerPromise method",function(){
-        it("should require completed & failed actions", function() {
+        it("should not require completed & failed actions", function() {
             var contexts = [
                 { children: [] },
                 { children: ['completed'] },
@@ -336,12 +336,8 @@ describe("using the publisher methods mixin",function(){
             ];
 
             contexts.forEach(function(context){
-                try{
-                    pub.triggerPromise.call(context);
-                    assert(false);
-                }catch(e){
-                    assert.equal(e.message, 'Publisher must have "completed" and "failed" child publishers');
-                }
+                pub.triggerPromise.call(context);
+                assert(true);
             });
         });
 
