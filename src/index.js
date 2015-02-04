@@ -12,6 +12,8 @@ exports.createStore = require('./createStore');
 
 exports.connect = require('./connect');
 
+exports.connectFilter = require('./connectFilter');
+
 exports.ListenerMixin = require('./ListenerMixin');
 
 exports.listenTo = require('./listenTo');
