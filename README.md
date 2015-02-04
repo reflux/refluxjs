@@ -576,7 +576,7 @@ You may switch out for your favorite `setTimeout`, `nextTick`, `setImmediate`, e
 Reflux.nextTick(process.nextTick);
 ```
 
-For better alternative to `setTimeout`, you may opt to use the [`setImmediate` polyfill](https://github.com/YuzuJS/setImmediate).
+For better alternative to `setTimeout`, you may opt to use the [`setImmediate` polyfill](https://github.com/YuzuJS/setImmediate), [`setImmediate2`](https://github.com/Katochimoto/setImmediate) or [`macrotask`](https://github.com/calvinmetcalf/macrotask).
 
 
 ### Joining parallel listeners with composed listenables
