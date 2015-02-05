@@ -34,10 +34,14 @@ module.exports = {
     listen: function(callback, bindContext) {
         bindContext = bindContext || this;
         var eventHandler = function(args) {
+            if (aborted){
+                return;
+            }
             callback.apply(bindContext, args);
-        }, me = this;
+        }, me = this, aborted = false;
         this.emitter.addListener(this.eventLabel, eventHandler);
         return function() {
+            aborted = true;
             me.emitter.removeListener(me.eventLabel, eventHandler);
         };
     },
