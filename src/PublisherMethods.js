@@ -118,6 +118,7 @@ module.exports = {
     triggerPromise: function(){
         var me = this;
         var args = arguments;
+        var requestId = getRequestId();
 
         var canHandlePromise =
             this.children.indexOf('completed') >= 0 &&
@@ -127,14 +128,43 @@ module.exports = {
             throw new Error('Publisher must have "completed" and "failed" child publishers');
         }
 
+
+        // action.promise will be executed syncronously
+        // from the listenAndPromise which does ajax fun
+        // so, we'll monkey patch temporarily, and then 
+        // restore previous function.
+        var old_action_promise = me.promise;
+        me.promise = function (promise) {
+            // Inject our secret keys.
+            promise.then(function (response) {
+                response.__request__id = requestId;
+                return response;
+            });
+            promise["catch"](function(error) {
+                error.__request__id = requestId;
+                return error;
+            });
+            // Back to your regularly scheduled programming.
+            me.promise = old_action_promise;
+            return me.promise.apply(this, arguments);
+        };
+
         var promise = _.createPromise(function(resolve, reject) {
             var removeSuccess = me.completed.listen(function(args) {
+                if (args && args.__request__id !== requestId) {
+                    return;
+                }
+                delete args.__request__id;
                 removeSuccess();
                 removeFailed();
                 resolve(args);
             });
 
             var removeFailed = me.failed.listen(function(args) {
+                if (args && args.__request__id !== requestId) {
+                    return;
+                }
+                delete args.__request__id;
                 removeSuccess();
                 removeFailed();
                 reject(args);
@@ -146,3 +176,11 @@ module.exports = {
         return promise;
     },
 };
+
+var requestId = 0;
+function getRequestId () {
+  if (requestId + 1 >= Number.MAX_VALUE) {
+    requestId = 0;
+  }
+  return requestId++;
+}
