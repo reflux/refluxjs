@@ -15,7 +15,12 @@ exports.extend = function(obj) {
     for (var i = 1, length = arguments.length; i < length; i++) {
         source = arguments[i];
         for (prop in source) {
-            obj[prop] = source[prop];
+            if (Object.getOwnPropertyDescriptor && Object.defineProperty) {
+                var propertyDescriptor = Object.getOwnPropertyDescriptor(source, prop);
+                Object.defineProperty(obj, prop, propertyDescriptor);
+            } else {
+                obj[prop] = source[prop];
+            }
         }
     }
     return obj;

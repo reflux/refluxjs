@@ -339,4 +339,18 @@ describe('Creating stores', function() {
             return assert.equal(store, reflect());
         });
     });
+
+    describe('getters', function() {
+        var didRun = false;
+
+        Reflux.createStore({
+            get dontRunMe() {
+                didRun = true;
+            }
+        });
+
+        it('should not be invoked during store creation', function() {
+            return assert.isFalse(didRun);
+        });
+    });
 });
