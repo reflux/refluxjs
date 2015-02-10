@@ -22,6 +22,18 @@ You can read an overview of Flux [here](http://facebook.github.io/react/docs/flu
 
 The pattern is composed of actions and data stores, where actions initiate new data to pass through data stores before coming back to the view components again. If a view component has an event that needs to make a change in the application's data stores, they need to do so by signalling to the stores through the actions available.
 
+## Content
+
+- [Comparing RefluxJS with Facebook Flux](#comparing-refluxjs-with-facebook-flux)
+- [Examples](#examples)
+- [Installation](#installation)
+- [Usage](#usage)
+     - [Actions](#creating-actions)
+     - [Stores](#creating-data-stores)
+     - [Component](#react-component-example)
+- [Advanced Usage](#advanced-usage)
+- [Colophon](#colophon)
+
 ## Comparing RefluxJS with Facebook Flux
 
 The goal of the refluxjs project is to get this architecture easily up and running in your web application, both client-side or server-side. There are some differences between how this project works and how Facebook's proposed Flux architecture works:
