@@ -515,7 +515,7 @@ var PostView = React.createClass({
         posts.filter(function(post) {
            post.id === this.props.id;
         });
-    }],
+    })],
     render: function() {
         // render using `this.state.post`
     }
