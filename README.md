@@ -439,6 +439,9 @@ With the setup above this will output the following in the console:
 status:  ONLINE
 status:  OFFLINE
 ```
+
+[Back to top](#content)
+
 ### React component example
 
 Register your component to listen for changes in your data stores, preferably in the `componentDidMount` [lifecycle method](http://facebook.github.io/react/docs/component-specs.html) and unregister in the `componentWillUnmount`, like this:
