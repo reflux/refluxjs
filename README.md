@@ -60,6 +60,8 @@ Reflux has refactored Flux to be a bit more dynamic and be more Functional React
  * **Joins** for joining listeners in *parallel*
 * *Action creators* are not needed because RefluxJS actions are functions that will pass on the payload they receive to anyone listening to them
 
+[Back to top](#content)
+
 ## Examples
 
 You can find some example projects at these locations:
@@ -67,6 +69,8 @@ You can find some example projects at these locations:
 * [Todo Example Project](https://github.com/spoike/refluxjs-todo) - [http://spoike.github.io/refluxjs-todo/](http://spoike.github.io/refluxjs-todo/)
 * [Hacker News Clone](https://github.com/echenley/react-news) by echenley
 * [Another Todo Project with a Python backend](https://github.com/limelights/todo-reflux) by limelights
+
+[Back to top](#content)
 
 ## Installation
 
@@ -88,9 +92,13 @@ The following command installs reflux as a bower component that can be used in t
 
 Like React, Reflux depends on an es5-shim for older browsers. The es5-shim.js from [kriskowal's es5-shim](https://github.com/kriskowal/es5-shim) provides everything required.
 
+[Back to top](#content)
+
 ## Usage
 
 For a full example check the [`test/index.js`](test/index.js) file.
+
+[Back to top](#content)
 
 ### Creating actions
 
@@ -261,6 +269,8 @@ Actions.statusUpdate.exampleMethod('arg1');
 // Should output: 'arg1'
 ```
 
+[Back to top](#content)
+
 ### Creating data stores
 
 Create a data store much like ReactJS's own `React.createClass` by passing a definition object to `Reflux.createStore`. You may set up all action listeners in the `init` function and register them by calling the store's own `listenTo` function.
@@ -429,6 +439,9 @@ With the setup above this will output the following in the console:
 status:  ONLINE
 status:  OFFLINE
 ```
+
+[Back to top](#content)
+
 ### React component example
 
 Register your component to listen for changes in your data stores, preferably in the `componentDidMount` [lifecycle method](http://facebook.github.io/react/docs/component-specs.html) and unregister in the `componentWillUnmount`, like this:
@@ -561,6 +574,9 @@ var statusHistoryStore = Reflux.createStore({
 
 });
 ```
+
+[Back to top](#content)
+
 ## Advanced usage
 
 ### Switching EventEmitter
@@ -680,6 +696,8 @@ this.listenTo(exampleStore, onChangeCallback, initialCallback)
 ```
 
 Remember the `listenToMany` method? In case you use that with other stores, it supports `getInitialState`. That data is sent to the normal listening callback, or a `this.on<Listenablename>Default` method if that exists.
+
+[Back to top](#content)
 
 ## Colophon
 
