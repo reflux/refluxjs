@@ -537,9 +537,9 @@ filter the posts to the post that's being viewed.
 ```javascript
 var PostView = React.createClass({
     mixins: [Reflux.connectFilter(postStore,"post", function(posts) {
-        posts.filter(function(post) {
-           post.id === this.props.id;
-        });
+        return posts.filter(function(post) {
+           return post.id === this.props.id;
+        }.bind(this));
     })],
     render: function() {
         // render using `this.state.post`
