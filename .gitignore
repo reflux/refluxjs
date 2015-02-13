@@ -19,6 +19,9 @@ node_modules
 # MacOSX specifics
 .DS_Store
 
+# Additional tools
+.idea
+
 # Build artifacts
 tmp
 bower_components
