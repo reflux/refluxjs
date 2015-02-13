@@ -77,8 +77,9 @@ module.exports = {
     listenAndPromise: function(callback, bindContext) {
         var me = this;
         bindContext = bindContext || this;
+        this.willCallPromise = (this.willCallPromise || 0) + 1;
 
-        return this.listen(function() {
+        var removeListen = this.listen(function() {
 
             if (!callback) {
                 throw new Error('Expected a function returning a promise but got ' + callback);
@@ -88,6 +89,12 @@ module.exports = {
                 promise = callback.apply(bindContext, args);
             return me.promise.call(me, promise);
         }, bindContext);
+
+        return function () {
+          me.willCallPromise--;
+          removeListen.call(me);
+        };
+
     },
 
     /**
@@ -114,11 +121,16 @@ module.exports = {
 
     /**
      * Returns a Promise for the triggered action
+     *
+     * @return {Promise}
+     *   Resolved by completed child action.
+     *   Rejected by failed child action.
+     *   If listenAndPromise'd, then promise associated to this trigger.
+     *   Otherwise, the promise is for next child action completion.
      */
     triggerPromise: function(){
         var me = this;
         var args = arguments;
-        var requestId = getRequestId();
 
         var canHandlePromise =
             this.children.indexOf('completed') >= 0 &&
@@ -128,59 +140,37 @@ module.exports = {
             throw new Error('Publisher must have "completed" and "failed" child publishers');
         }
 
-
-        // action.promise will be executed syncronously
-        // from the listenAndPromise which does ajax fun
-        // so, we'll monkey patch temporarily, and then 
-        // restore previous function.
-        var old_action_promise = me.promise;
-        me.promise = function (promise) {
-            // Inject our secret keys.
-            promise.then(function (response) {
-                response.__request__id = requestId;
-                return response;
-            });
-            promise["catch"](function(error) {
-                error.__request__id = requestId;
-                return error;
-            });
-            // Back to your regularly scheduled programming.
-            me.promise = old_action_promise;
-            return me.promise.apply(this, arguments);
-        };
-
         var promise = _.createPromise(function(resolve, reject) {
+            // If `listenAndPromise` is listening
+            // patch `promise` w/ context-loaded resolve/reject
+            if (me.willCallPromise) {
+                _.nextTick(function() {
+                    var old_promise_method = me.promise;
+                    me.promise = function (promise) {
+                        promise.then(resolve, reject);
+                        // Back to your regularly schedule programming.
+                        me.promise = old_promise_method;
+                        return me.promise.apply(me, arguments);
+                    };
+                    me.trigger.apply(me, args);
+                });
+                return;
+            }
+
             var removeSuccess = me.completed.listen(function(args) {
-                if (args && args.__request__id !== requestId) {
-                    return;
-                }
-                delete args.__request__id;
                 removeSuccess();
                 removeFailed();
                 resolve(args);
             });
 
             var removeFailed = me.failed.listen(function(args) {
-                if (args && args.__request__id !== requestId) {
-                    return;
-                }
-                delete args.__request__id;
                 removeSuccess();
                 removeFailed();
                 reject(args);
             });
-
             me.triggerAsync.apply(me, args);
         });
 
         return promise;
     },
 };
-
-var requestId = 0;
-function getRequestId () {
-  if (requestId + 1 >= Number.MAX_VALUE) {
-    requestId = 0;
-  }
-  return requestId++;
-}
