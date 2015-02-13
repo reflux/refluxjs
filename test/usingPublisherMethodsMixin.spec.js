@@ -394,5 +394,22 @@ describe("using the publisher methods mixin",function(){
 
             return assert.isRejected(promise, 'do something failed');
         });
+
+        it("should resolve with the promised result",function(){
+            var makePancakes = Reflux.createAction({ asyncResult: true });
+            makePancakes.listenAndPromise(function (flour, milk, egg) {
+              return Q.promise(function(resolve) {
+                setTimeout(function(){
+                  resolve(flour + milk + egg);
+                }, 200);
+              });
+            });
+
+            makePancakes.triggerPromise(2,1,1);
+
+            var morePancakes = makePancakes.triggerPromise(4,2,1);
+
+            return assert.becomes(morePancakes, 7, 'became a different result');
+        });
     });
 });
