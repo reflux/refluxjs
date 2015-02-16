@@ -319,7 +319,6 @@ describe('Creating multiple actions to an action definition object', function() 
 
 });
 
-
 describe('Creating multiple actions to an action definition with mixed types', function() {
     var actionNames, actions;
 

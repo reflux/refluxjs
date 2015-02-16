@@ -45,6 +45,14 @@ exports.createActions = function(definitions) {
         var val = definitions[k],
             actionName = _.isObject(val) ? k : val;
 
+        if (!isNaN(parseFloat(actionName))) {
+            var keys = Object.keys(val);
+            if (keys.length === 1) {
+                actionName = keys[0];
+                val = val[actionName];
+            }
+        }
+
         actions[actionName] = exports.createAction(val);
     }
     return actions;
