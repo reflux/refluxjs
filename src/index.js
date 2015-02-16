@@ -39,11 +39,18 @@ var _ = require('./utils');
  * @param definitions the definitions for the actions to be created
  * @returns an object with actions of corresponding action names
  */
-exports.createActions = function(definitions) {
+exports.createActions = function(definitions, options) {
     var actions = {};
     for (var k in definitions){
         var val = definitions[k],
             actionName = _.isObject(val) ? k : val;
+
+        if (_.isObject(options)) {
+            if (!_.isObject(val)){
+                val = { actionName: val };
+            }
+            val = _.extend({}, options, val);
+        }
 
         actions[actionName] = exports.createAction(val);
     }
