@@ -318,3 +318,30 @@ describe('Creating multiple actions to an action definition object', function() 
     });
 
 });
+
+
+describe('Creating multiple actions to an action definition with mixed types', function() {
+    var actionNames, actions;
+
+    beforeEach(function () {
+        actionNames = ['foo', { 'bar' : {asyncResult: true}}];
+        actions = Reflux.createActions(actionNames);
+    });
+
+    it('should contain foo and bar properties', function () {
+        assert.property(actions, 'foo');
+        assert.property(actions, 'bar');
+    });
+
+    describe('foo action', function () {
+        it('should be sync', function () {
+            assert.equal(actions.foo.asyncResult, undefined);
+        });
+    });
+
+    describe('bar action', function () {
+        it('should be async', function () {
+            assert.equal(actions.bar.asyncResult, true);
+        });
+    });
+});
