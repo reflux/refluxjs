@@ -15,7 +15,7 @@ module.exports = function(listenable,key){
         componentDidMount: function(){
             _.extend(this,Reflux.ListenerMethods);
             var me = this, cb = (key === undefined ? this.setState : function(v){
-                if (me.isMounted()) {
+                if (typeof me.isMounted === "undefined" || me.isMounted() === true) {
                     me.setState(_.object([key],[v]));    
                 }
             });
