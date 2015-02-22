@@ -33,6 +33,10 @@ exports.joinConcat = maker("all");
 
 var _ = require('./utils');
 
+exports.EventEmitter = _.EventEmitter;
+
+exports.Promise = _.Promise;
+
 /**
  * Convenience function for creating a set of actions
  *
@@ -55,7 +59,7 @@ exports.createActions = function(definitions) {
  */
 exports.setEventEmitter = function(ctx) {
     var _ = require('./utils');
-    _.EventEmitter = ctx;
+    exports.EventEmitter = _.EventEmitter = ctx;
 };
 
 
@@ -64,7 +68,14 @@ exports.setEventEmitter = function(ctx) {
  */
 exports.setPromise = function(ctx) {
     var _ = require('./utils');
-    _.Promise = ctx;
+    exports.Promise = _.Promise = ctx;
+};
+
+/**
+ * Gets the Promise library that Reflux uses
+ */
+exports.getPromise = function() {
+    return require('./utils').Promise;
 };
 
 /**
