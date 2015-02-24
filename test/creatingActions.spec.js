@@ -318,3 +318,37 @@ describe('Creating multiple actions to an action definition object', function() 
     });
 
 });
+
+describe('Creating multiple actions to an action definition object with common properties', function() {
+
+    var actionNames, actions;
+
+    beforeEach(function () {
+        actionNames = ['foo', 'bar'];
+        actions = Reflux.createActions(actionNames, { sync: true });
+    });
+
+    it('should contain foo and bar properties', function() {
+        assert.property(actions, 'foo');
+        assert.property(actions, 'bar');
+    });
+
+    it('should contain action functor on foo and bar properties', function() {
+        assert.isFunction(actions.foo);
+        assert.isFunction(actions.bar);
+    });
+
+    describe('when listening to any of the actions created this way', function() {
+
+        it('should receive the correct arguments', function() {
+            var testArgs = [1337, 'test'],
+                spy = sinon.spy(actions, 'foo');
+
+            actions.foo(testArgs[0], testArgs[1]);
+
+            assert.deepEqual(spy.args[0], testArgs);
+        });
+
+    });
+
+});
