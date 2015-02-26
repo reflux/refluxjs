@@ -71,12 +71,6 @@ exports.setPromise = function(ctx) {
     exports.Promise = _.Promise = ctx;
 };
 
-/**
- * Gets the Promise library that Reflux uses
- */
-exports.getPromise = function() {
-    return require('./utils').Promise;
-};
 
 /**
  * Sets the Promise factory that creates new promises
