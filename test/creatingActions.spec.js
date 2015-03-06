@@ -276,6 +276,27 @@ describe('Creating actions with children to an action definition object', functi
     });
 });
 
+describe('Creating actions with universal options to an action definition object', function() {
+    var actionNames, actions;
+
+    beforeEach(function () {
+        actionNames = {'foo': {asyncResult: true}, 'bar': {children: ['baz']}, 'baz': {asyncResult: false}};
+        actions = Reflux.createActions(actionNames, { asyncResult: true });
+    });
+
+    it('should contain async foo, bar and baz properties', function () {
+        assert.property(actions, 'foo');
+        assert.property(actions, 'bar');
+        assert.property(actions, 'baz');
+    });
+
+    it('should contain async foo and bar actions', function () {
+        assert.equal(actions.foo.asyncResult, true);
+        assert.equal(actions.bar.asyncResult, true);
+        assert.equal(actions.baz.asyncResult, false);
+    });
+});
+
 describe('Creating multiple actions to an action definition object', function() {
 
     var actionNames, actions;
@@ -317,4 +338,23 @@ describe('Creating multiple actions to an action definition object', function() 
 
     });
 
+});
+
+describe('Creating multiple actions to an action definition object', function() {
+    var actionNames, actions;
+
+    beforeEach(function () {
+        actionNames = ['foo', 'bar'];
+        actions = Reflux.createActions(actionNames, { asyncResult: true });
+    });
+
+    it('should contain foo and bar properties', function() {
+        assert.property(actions, 'foo');
+        assert.property(actions, 'bar');
+    });
+
+    it('should contain async foo and bar actions', function() {
+        assert.equal(actions.foo.asyncResult, true);
+        assert.equal(actions.bar.asyncResult, true);
+    });
 });
