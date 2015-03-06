@@ -29,12 +29,17 @@ var MockFactory = function(resolver) {
     return new MockPromise(resolver);
 };
 
+describe('Export internal Promise', function() {
+    it('should be the original', function() {
+        assert.equal(utils.Promise, Reflux.Promise);
+    });
+});
+
 describe('Switching Promise constructor', function() {
     var original;
 
     beforeEach(function() {
         original = utils.Promise;
-
         Reflux.setPromise(MockPromise);
     });
 
@@ -44,6 +49,7 @@ describe('Switching Promise constructor', function() {
 
     it('should not be the original', function() {
         assert.notEqual(original, utils.Promise);
+        assert.notEqual(original, Reflux.Promise);
     });
 
     it('should have the same interface', function() {
