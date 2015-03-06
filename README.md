@@ -108,7 +108,7 @@ Create an action by calling `Reflux.createAction` with an optional options objec
 var statusUpdate = Reflux.createAction(options);
 ```
 
-An action is a [functor](http://en.wikipedia.org/wiki/Function_object) that can be invoked like any function.
+An action is a [function object](http://en.wikipedia.org/wiki/Function_object) that can be invoked like any function.
 
 ```javascript
 statusUpdate(data); // Invokes the action statusUpdate
