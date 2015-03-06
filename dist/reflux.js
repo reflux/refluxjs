@@ -540,9 +540,7 @@ module.exports = {
 
         promise.then(function(response) {
             return me.completed(response);
-        });
-        // IE compatibility - catch is a reserved word - without bracket notation source compilation will fail under IE
-        promise["catch"](function(error) {
+        }, function(error) {
             return me.failed(error);
         });
     },
@@ -602,24 +600,26 @@ module.exports = {
             this.children.indexOf('completed') >= 0 &&
             this.children.indexOf('failed') >= 0;
 
-        if (!canHandlePromise){
-            throw new Error('Publisher must have "completed" and "failed" child publishers');
-        }
-
         var promise = _.createPromise(function(resolve, reject) {
-            var removeSuccess = me.completed.listen(function(args) {
-                removeSuccess();
-                removeFailed();
-                resolve(args);
-            });
+            if (canHandlePromise) {
+                var removeSuccess = me.completed.listen(function(args) {
+                    removeSuccess();
+                    removeFailed();
+                    resolve(args);
+                });
 
-            var removeFailed = me.failed.listen(function(args) {
-                removeSuccess();
-                removeFailed();
-                reject(args);
-            });
+                var removeFailed = me.failed.listen(function(args) {
+                    removeSuccess();
+                    removeFailed();
+                    reject(args);
+                });
+            }
 
             me.triggerAsync.apply(me, args);
+
+            if (!canHandlePromise) {
+                resolve();
+            }
         });
 
         return promise;
@@ -637,13 +637,23 @@ module.exports = {
 },{}],9:[function(_dereq_,module,exports){
 module.exports = function(store, definition) {
   for (var name in definition) {
-    var property = definition[name];
+    if (Object.getOwnPropertyDescriptor && Object.defineProperty) {
+        var propertyDescriptor = Object.getOwnPropertyDescriptor(definition, name);
 
-    if (typeof property !== 'function' || !definition.hasOwnProperty(name)) {
-      continue;
+        if (!propertyDescriptor.value || typeof propertyDescriptor.value !== 'function' || !definition.hasOwnProperty(name)) {
+            continue;
+        }
+
+        store[name] = definition[name].bind(store);
+    } else {
+        var property = definition[name];
+
+        if (typeof property !== 'function' || !definition.hasOwnProperty(name)) {
+            continue;
+        }
+
+        store[name] = property.bind(store);
     }
-
-    store[name] = property.bind(store);
   }
 
   return store;
@@ -768,7 +778,7 @@ var createAction = function(definition) {
     }, Reflux.PublisherMethods, Reflux.ActionMethods, definition);
 
     var functor = function() {
-        functor[functor.sync?"trigger":"triggerAsync"].apply(functor, arguments);
+        return functor[functor.sync?"trigger":"triggerPromise"].apply(functor, arguments);
     };
 
     _.extend(functor,childActions,context);
@@ -880,6 +890,10 @@ exports.joinConcat = maker("all");
 
 var _ = _dereq_('./utils');
 
+exports.EventEmitter = _.EventEmitter;
+
+exports.Promise = _.Promise;
+
 /**
  * Convenience function for creating a set of actions
  *
@@ -902,7 +916,7 @@ exports.createActions = function(definitions) {
  */
 exports.setEventEmitter = function(ctx) {
     var _ = _dereq_('./utils');
-    _.EventEmitter = ctx;
+    exports.EventEmitter = _.EventEmitter = ctx;
 };
 
 
@@ -911,8 +925,9 @@ exports.setEventEmitter = function(ctx) {
  */
 exports.setPromise = function(ctx) {
     var _ = _dereq_('./utils');
-    _.Promise = ctx;
+    exports.Promise = _.Promise = ctx;
 };
+
 
 /**
  * Sets the Promise factory that creates new promises
@@ -1206,7 +1221,12 @@ exports.extend = function(obj) {
     for (var i = 1, length = arguments.length; i < length; i++) {
         source = arguments[i];
         for (prop in source) {
-            obj[prop] = source[prop];
+            if (Object.getOwnPropertyDescriptor && Object.defineProperty) {
+                var propertyDescriptor = Object.getOwnPropertyDescriptor(source, prop);
+                Object.defineProperty(obj, prop, propertyDescriptor);
+            } else {
+                obj[prop] = source[prop];
+            }
         }
     }
     return obj;

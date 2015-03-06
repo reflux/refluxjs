@@ -2,6 +2,15 @@
 
 Check for latest changes on the [milestones page](https://github.com/spoike/refluxjs/milestones).
 
+## v0.2.6
+
+* Fixed catch call in Promises [#267](https://github.com/spoike/refluxjs/pull/267)
+* Promise and EventEmitter is now properly exported [#258](https://github.com/spoike/refluxjs/pull/258), [#253](https://github.com/spoike/refluxjs/pull/253)
+* Getters in stores were accidentally invoked [#231](https://github.com/spoike/refluxjs/pull/231), [#230](https://github.com/spoike/refluxjs/pull/230)
+* Asynchronous actions will now return promises [#223](https://github.com/spoike/refluxjs/pull/223), [#216](https://github.com/spoike/refluxjs/issues/216), [#259](https://github.com/spoike/refluxjs/issues/259)
+* `dist` folder is now available again in npm package [#266](https://github.com/spoike/refluxjs/pull/266)
+* Fixes to README file [#260](https://github.com/spoike/refluxjs/pull/260), [#247](https://github.com/spoike/refluxjs/pull/247), [#244](https://github.com/spoike/refluxjs/pull/244), [#240](https://github.com/spoike/refluxjs/pull/240), [#236](https://github.com/spoike/refluxjs/pull/236), [#235](https://github.com/spoike/refluxjs/pull/235), [#234](https://github.com/spoike/refluxjs/pull/234)
+
 ## v0.2.5
 
 * Added `connectFilter` [#222](https://github.com/spoike/refluxjs/pull/222)
