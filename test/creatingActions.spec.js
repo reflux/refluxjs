@@ -318,3 +318,25 @@ describe('Creating multiple actions to an action definition object', function() 
     });
 
 });
+
+describe('Creating actions with common definition object', function() {
+
+    var actionNames, actions;
+
+    beforeEach(function () {
+        actionNames = ['foo', 'bar'];
+        actions = Reflux.createActions(actionNames, {sync:true});
+    });
+
+    it('should contain foo and bar properties', function() {
+        assert.property(actions, 'foo');
+        assert.property(actions, 'bar');
+    });
+
+    it('should contain actions with right common definitions', function(){
+        assert.equal(actions.foo.sync, true);
+        assert.equal(actions.bar.sync, true);
+    });
+
+});
+
