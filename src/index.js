@@ -43,13 +43,20 @@ exports.Promise = _.Promise;
  * @param definitions the definitions for the actions to be created
  * @returns an object with actions of corresponding action names
  */
-exports.createActions = function(definitions) {
+exports.createActions = function(definitions, commonDefinitions) {
     var actions = {};
-    for (var k in definitions){
-        var val = definitions[k],
-            actionName = _.isObject(val) ? k : val;
+    for (var k in definitions) {
+        var val = definitions[k], actionName, definition = commonDefinitions || {};
 
-        actions[actionName] = exports.createAction(val);
+        if (_.isObject(val)) {
+            actionName = k;
+            definition = _.extend(definition, val);
+        } else {
+            actionName = val;
+            definition = _.extend(definition, {actionName: val});
+        }
+
+        actions[actionName] = exports.createAction(definition);
     }
     return actions;
 };
