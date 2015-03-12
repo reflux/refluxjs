@@ -22,6 +22,18 @@ You can read an overview of Flux [here](http://facebook.github.io/react/docs/flu
 
 The pattern is composed of actions and data stores, where actions initiate new data to pass through data stores before coming back to the view components again. If a view component has an event that needs to make a change in the application's data stores, they need to do so by signalling to the stores through the actions available.
 
+## Content
+
+- [Comparing RefluxJS with Facebook Flux](#comparing-refluxjs-with-facebook-flux)
+- [Examples](#examples)
+- [Installation](#installation)
+- [Usage](#usage)
+     - [Actions](#creating-actions)
+     - [Stores](#creating-data-stores)
+     - [Component](#react-component-example)
+- [Advanced Usage](#advanced-usage)
+- [Colophon](#colophon)
+
 ## Comparing RefluxJS with Facebook Flux
 
 The goal of the refluxjs project is to get this architecture easily up and running in your web application, both client-side or server-side. There are some differences between how this project works and how Facebook's proposed Flux architecture works:
@@ -48,6 +60,8 @@ Reflux has refactored Flux to be a bit more dynamic and be more Functional React
  * **Joins** for joining listeners in *parallel*
 * *Action creators* are not needed because RefluxJS actions are functions that will pass on the payload they receive to anyone listening to them
 
+[Back to top](#content)
+
 ## Examples
 
 You can find some example projects at these locations:
@@ -55,6 +69,8 @@ You can find some example projects at these locations:
 * [Todo Example Project](https://github.com/spoike/refluxjs-todo) - [http://spoike.github.io/refluxjs-todo/](http://spoike.github.io/refluxjs-todo/)
 * [Hacker News Clone](https://github.com/echenley/react-news) by echenley
 * [Another Todo Project with a Python backend](https://github.com/limelights/todo-reflux) by limelights
+
+[Back to top](#content)
 
 ## Installation
 
@@ -76,9 +92,13 @@ The following command installs reflux as a bower component that can be used in t
 
 Like React, Reflux depends on an es5-shim for older browsers. The es5-shim.js from [kriskowal's es5-shim](https://github.com/kriskowal/es5-shim) provides everything required.
 
+[Back to top](#content)
+
 ## Usage
 
 For a full example check the [`test/index.js`](test/index.js) file.
+
+[Back to top](#content)
 
 ### Creating actions
 
@@ -88,7 +108,7 @@ Create an action by calling `Reflux.createAction` with an optional options objec
 var statusUpdate = Reflux.createAction(options);
 ```
 
-An action is a functor that can be invoked like any function.
+An action is a [function object](http://en.wikipedia.org/wiki/Function_object) that can be invoked like any function.
 
 ```javascript
 statusUpdate(data); // Invokes the action statusUpdate
@@ -170,7 +190,7 @@ asyncResultAction.listenAndPromise( someAsyncOperation );
 
 ##### Asynchronous actions as Promises
 
-Asynchronous actions can used as promises, which is particularly useful for server-side rendering when you must await the successful (or failed) completion of an action before rendering.
+Asynchronous actions can be used as promises, which is particularly useful for server-side rendering when you must await the successful (or failed) completion of an action before rendering.
 
 Suppose you had an action + store to make an API request:
 
@@ -199,7 +219,7 @@ var RequestStore = Reflux.createStore({
 Then, on the server, you could use promises to make the request and either render or serve an error:
 
 ```javascript
-makeRequest('/api/something').then(function(body) {
+makeRequest.triggerPromise('/api/something').then(function(body) {
     // Render the response body
 }).catch(function(err) {
     // Handle the API error object
@@ -248,6 +268,8 @@ Reflux.ActionMethods.exampleMethod = function() { console.log(arguments); };
 Actions.statusUpdate.exampleMethod('arg1');
 // Should output: 'arg1'
 ```
+
+[Back to top](#content)
 
 ### Creating data stores
 
@@ -417,6 +439,9 @@ With the setup above this will output the following in the console:
 status:  ONLINE
 status:  OFFLINE
 ```
+
+[Back to top](#content)
+
 ### React component example
 
 Register your component to listen for changes in your data stores, preferably in the `componentDidMount` [lifecycle method](http://facebook.github.io/react/docs/component-specs.html) and unregister in the `componentWillUnmount`, like this:
@@ -511,11 +536,11 @@ filter the posts to the post that's being viewed.
 
 ```javascript
 var PostView = React.createClass({
-    mixins: [Reflux.connectFilter(postStore,"post", function(posts) {
-        posts.filter(function(post) {
-           post.id === this.props.id;
-        });
-    }],
+    mixins: [Reflux.connectFilter(postStore, "post", function(posts) {
+        return posts.filter(function(post) {
+           return post.id === this.props.id;
+        }.bind(this))[0];
+    })],
     render: function() {
         // render using `this.state.post`
     }
@@ -549,6 +574,9 @@ var statusHistoryStore = Reflux.createStore({
 
 });
 ```
+
+[Back to top](#content)
+
 ## Advanced usage
 
 ### Switching EventEmitter
@@ -668,6 +696,8 @@ this.listenTo(exampleStore, onChangeCallback, initialCallback)
 ```
 
 Remember the `listenToMany` method? In case you use that with other stores, it supports `getInitialState`. That data is sent to the normal listening callback, or a `this.on<Listenablename>Default` method if that exists.
+
+[Back to top](#content)
 
 ## Colophon
 

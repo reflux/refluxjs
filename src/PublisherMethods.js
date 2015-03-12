@@ -61,9 +61,7 @@ module.exports = {
 
         promise.then(function(response) {
             return me.completed(response);
-        });
-        // IE compatibility - catch is a reserved word - without bracket notation source compilation will fail under IE
-        promise["catch"](function(error) {
+        }, function(error) {
             return me.failed(error);
         });
     },
@@ -136,10 +134,6 @@ module.exports = {
             this.children.indexOf('completed') >= 0 &&
             this.children.indexOf('failed') >= 0;
 
-        if (!canHandlePromise){
-            throw new Error('Publisher must have "completed" and "failed" child publishers');
-        }
-
         var promise = _.createPromise(function(resolve, reject) {
             // If `listenAndPromise` is listening
             // patch `promise` w/ context-loaded resolve/reject
@@ -157,18 +151,25 @@ module.exports = {
                 return;
             }
 
-            var removeSuccess = me.completed.listen(function(args) {
-                removeSuccess();
-                removeFailed();
-                resolve(args);
-            });
+            if (canHandlePromise) {
+                var removeSuccess = me.completed.listen(function(args) {
+                    removeSuccess();
+                    removeFailed();
+                    resolve(args);
+                });
 
-            var removeFailed = me.failed.listen(function(args) {
-                removeSuccess();
-                removeFailed();
-                reject(args);
-            });
+                var removeFailed = me.failed.listen(function(args) {
+                    removeSuccess();
+                    removeFailed();
+                    reject(args);
+                });
+            }
+
             me.triggerAsync.apply(me, args);
+
+            if (!canHandlePromise) {
+                resolve();
+            }
         });
 
         return promise;
