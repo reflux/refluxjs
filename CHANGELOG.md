@@ -2,6 +2,12 @@
 
 Check for latest changes on the [milestones page](https://github.com/spoike/refluxjs/milestones).
 
+## v0.2.7
+
+* Fixed IE8 errors and warnings [#286](https://github.com/spoike/refluxjs/pull/286), [#270](https://github.com/spoike/refluxjs/pull/270)
+* Ensure triggerPromise original promise [#229](https://github.com/spoike/refluxjs/pull/229)
+* Fixed aborted callbacks [#227](https://github.com/spoike/refluxjs/pull/227)
+
 ## v0.2.6
 
 * Fixed catch call in Promises [#267](https://github.com/spoike/refluxjs/pull/267)
