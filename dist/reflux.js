@@ -623,7 +623,7 @@ module.exports = {
         });
 
         return promise;
-    },
+    }
 };
 
 },{"./utils":19}],8:[function(_dereq_,module,exports){

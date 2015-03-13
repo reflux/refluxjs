@@ -144,5 +144,5 @@ module.exports = {
         });
 
         return promise;
-    },
+    }
 };
