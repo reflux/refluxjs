@@ -75,8 +75,9 @@ module.exports = {
     listenAndPromise: function(callback, bindContext) {
         var me = this;
         bindContext = bindContext || this;
+        this.willCallPromise = (this.willCallPromise || 0) + 1;
 
-        return this.listen(function() {
+        var removeListen = this.listen(function() {
 
             if (!callback) {
                 throw new Error('Expected a function returning a promise but got ' + callback);
@@ -86,6 +87,12 @@ module.exports = {
                 promise = callback.apply(bindContext, args);
             return me.promise.call(me, promise);
         }, bindContext);
+
+        return function () {
+          me.willCallPromise--;
+          removeListen.call(me);
+        };
+
     },
 
     /**
@@ -112,6 +119,12 @@ module.exports = {
 
     /**
      * Returns a Promise for the triggered action
+     *
+     * @return {Promise}
+     *   Resolved by completed child action.
+     *   Rejected by failed child action.
+     *   If listenAndPromise'd, then promise associated to this trigger.
+     *   Otherwise, the promise is for next child action completion.
      */
     triggerPromise: function(){
         var me = this;
@@ -122,6 +135,22 @@ module.exports = {
             this.children.indexOf('failed') >= 0;
 
         var promise = _.createPromise(function(resolve, reject) {
+            // If `listenAndPromise` is listening
+            // patch `promise` w/ context-loaded resolve/reject
+            if (me.willCallPromise) {
+                _.nextTick(function() {
+                    var old_promise_method = me.promise;
+                    me.promise = function (promise) {
+                        promise.then(resolve, reject);
+                        // Back to your regularly schedule programming.
+                        me.promise = old_promise_method;
+                        return me.promise.apply(me, arguments);
+                    };
+                    me.trigger.apply(me, args);
+                });
+                return;
+            }
+
             if (canHandlePromise) {
                 var removeSuccess = me.completed.listen(function(args) {
                     removeSuccess();
