@@ -22,6 +22,12 @@ You can read an overview of Flux [here](http://facebook.github.io/react/docs/flu
 
 The pattern is composed of actions and data stores, where actions initiate new data to pass through data stores before coming back to the view components again. If a view component has an event that needs to make a change in the application's data stores, they need to do so by signalling to the stores through the actions available.
 
+For questions please use the following communication channels:
+
+* [StackOverflow with the *refluxjs* tag](http://stackoverflow.com/questions/tagged/refluxjs)
+* [Github Issue Tracker](https://github.com/spoike/refluxjs/issues)
+* [`#reflux` channel on Reactiflux Slack group](https://reactiflux.slack.com/messages/reflux/)
+
 ## Content
 
 - [Comparing RefluxJS with Facebook Flux](#comparing-refluxjs-with-facebook-flux)
