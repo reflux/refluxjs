@@ -415,6 +415,30 @@ var Store = Reflux.createStore({
 });
 ```
 
+#### Listenables and asynchronous actions
+
+If `options.children` is set, as in the example below, you can use `onActionSubaction` to add a listener to the child action. For example:
+
+```javascript
+var Actions = Reflux.createActions({
+    "load": {children: ["completed", "failed"]}
+});
+
+var Store = Reflux.createStore({
+    listenables: Actions,
+    onLoad: function() {
+        console.log("Load");
+    },
+    onLoadCompleted: function() {
+        console.log("Completed load");
+    },
+    onLoadFailed: function() {
+        console.log("Error during load");
+    }
+});
+```
+
+
 ### Listening to changes in data store
 
 In your component, register to listen to changes in your data store like this:
