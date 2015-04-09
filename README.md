@@ -24,8 +24,11 @@ The pattern is composed of actions and data stores, where actions initiate new d
 
 For questions please use the following communication channels:
 
-* [StackOverflow with the *refluxjs* tag](http://stackoverflow.com/questions/tagged/refluxjs)
-* [`#reflux` channel](https://reactiflux.slack.com/messages/reflux/) on Reactiflux Slack group. [Sign up here](http://reactiflux.com/) for an account.
+1. [StackOverflow with the `refluxjs` tag](http://stackoverflow.com/questions/tagged/refluxjs)
+2. [`#reflux` channel](https://reactiflux.slack.com/messages/reflux/) on Reactiflux Slack group. [Sign up here](http://reactiflux.com/) for an account.
+3. [![Gitter](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/spoike/refluxjs?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge)
+
+Please only use the [issue tracker](https://github.com/spoike/refluxjs/issues) for bugs and feature requests only.
 
 ## Content
 
