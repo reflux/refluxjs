@@ -480,7 +480,7 @@ Register your component to listen for changes in your data stores, preferably in
 
 ```javascript
 var Status = React.createClass({
-    initialize: function() { },
+    getInitialState: function() { },
     onStatusChange: function(status) {
         this.setState({
             currentStatus: status
@@ -554,6 +554,23 @@ var Status = React.createClass({
     mixins: [Reflux.connect(statusStore,"currentStatus")],
     render: function() {
         // render using `this.state.currentStatus`
+    }
+});
+```
+
+The `Reflux.connect()` mixin will check the store for a `getInitialState` method. If found it will set the components `getInitialState`
+
+```javascript
+var statusStore Reflux.createStore({
+	getInitialState = function(){
+		return "open"
+	}
+});
+var Status = React.createClass({
+    mixins: [Reflux.connect(statusStore,"currentStatus")],
+    render: function() {
+        // render using `this.state.currentStatus`
+        // this.state.currentStatus === open
     }
 });
 ```
