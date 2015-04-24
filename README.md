@@ -429,7 +429,7 @@ var Actions = Reflux.createActions({
 var Store = Reflux.createStore({
     listenables: Actions,
     onLoad: function() {
-        console.log("Load");
+        Actions.load.promise(someAsyncOperation());
     },
     onLoadCompleted: function() {
         console.log("Completed load");
