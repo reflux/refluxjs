@@ -9,7 +9,7 @@ A simple library for unidirectional dataflow architecture inspired by ReactJS [F
 [![Build Status][travis-image]][travis-url]
 [![Gratipay][gratipay-image]][gratipay-url]
 
-You can read an overview of Flux [here](http://facebook.github.io/react/docs/flux-overview.html), however the gist of it is to introduce a more functional programming style architecture by eschewing MVC like pattern and adopting a single data flow pattern.
+You can read an overview of Flux [here](https://facebook.github.io/flux/docs/overview.html), however the gist of it is to introduce a more functional programming style architecture by eschewing MVC like pattern and adopting a single data flow pattern.
 
 ```
 ╔═════════╗       ╔════════╗       ╔═════════════════╗
