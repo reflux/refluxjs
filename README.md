@@ -512,7 +512,7 @@ var Status = React.createClass({
         });
     },
     componentDidMount: function() {
-        this.listenTo(statusStore, this.onStatusChange);
+        this.listenTo(statusUpdate, this.onStatusChange);
     },
     render: function() {
         // render specifics
