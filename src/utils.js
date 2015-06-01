@@ -46,7 +46,7 @@ exports.callbackName = function(string){
 
 exports.object = function(keys,vals){
     var o={}, i=0;
-    for(;i<keys.length;i++){
+    for(;i < keys.length; i++){
         o[keys[i]] = vals[i];
     }
     return o;
