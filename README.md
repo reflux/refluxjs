@@ -565,7 +565,7 @@ var Status = React.createClass({
 The `Reflux.connect()` mixin will check the store for a `getInitialState` method. If found it will set the components `getInitialState`
 
 ```javascript
-var statusStore Reflux.createStore({
+var statusStore = Reflux.createStore({
 	getInitialState = function(){
 		return "open"
 	}
