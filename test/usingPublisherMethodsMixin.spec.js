@@ -350,7 +350,7 @@ describe("using the publisher methods mixin",function(){
 
             var promise = pub.triggerPromise.call(context);
 
-            assert(promise instanceof Promise);
+            assert.isFulfilled(promise);
         });
 
         it("should resolve when completed",function(){
