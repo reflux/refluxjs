@@ -566,15 +566,16 @@ The `Reflux.connect()` mixin will check the store for a `getInitialState` method
 
 ```javascript
 var statusStore = Reflux.createStore({
-	getInitialState: function(){
-		return "open";
-	}
+    getInitialState: function() {
+        return {currentStatus: "open"}
+    }
 });
+
 var Status = React.createClass({
     mixins: [Reflux.connect(statusStore,"currentStatus")],
     render: function() {
         // render using `this.state.currentStatus`
-        // this.state.currentStatus === open
+        // this.state.currentStatus === "open"
     }
 });
 ```
