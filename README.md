@@ -426,16 +426,20 @@ var Actions = Reflux.createActions({
     "load": {children: ["completed", "failed"]}
 });
 
+function handleLoad(){
+	console.log("The  on" + Action + Subaction + " handler was called");
+};
+
 var Store = Reflux.createStore({
     listenables: Actions,
     onLoad: function() {
-        console.log("Load");
+		handleLoad("Load");
     },
     onLoadCompleted: function() {
-        console.log("Completed load");
+        handleLoad("Load", "Completed");
     },
     onLoadFailed: function() {
-        console.log("Error during load");
+		handleLoad("Load", "Failed");
     }
 });
 ```
