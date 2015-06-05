@@ -18,7 +18,7 @@ module.exports = function(grunt) {
         src: ['src/index.js'],
         dest: 'dist/<%= pkg.name %>.js',
         options: {
-          bundleOptions: {
+          browserifyOptions: {
             standalone: 'Reflux'
           }
         },
