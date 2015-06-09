@@ -20,6 +20,7 @@
   ],
   "dependencies": {
     "eventemitter3": "^0.1.2",
+    "immutable": "^3.7.3",
     "native-promise-only": "^0.7.6-a"
   },
   "devDependencies": {
