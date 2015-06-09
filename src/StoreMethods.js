@@ -1,4 +1,5 @@
-var Immutable = require('immutable');
+var Immutable = require('immutable'),
+    _ = require('./utils');
 
 /**
  * A module of methods that you want to include in all stores.
@@ -6,8 +7,8 @@ var Immutable = require('immutable');
  */
 module.exports = {
     init: function() {
-        var initialState = null;
-        if (this.getInitialState) {
+        var initialState = {};
+        if (_.isFunction(this.getInitialState)) {
             initialState = this.getInitialState();
         }
         this.state = Immutable.Map(initialState);
