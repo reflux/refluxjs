@@ -2,6 +2,17 @@
 
 Check for latest changes on the [milestones page](https://github.com/spoike/refluxjs/milestones).
 
+## v0.2.8
+
+See [#345](https://github.com/spoike/refluxjs/pull/345).
+
+* Fixes [#239](https://github.com/spoike/refluxjs/pull/239), checks for component mounted state before trying to mount component
+* Adds more example apps to README
+* Fixes some typo's in the readme
+* Improves documentation on action handlers in stores
+* Updates dependencies
+* Specifies react compatibility via peerDependencies
+
 ## v0.2.7
 
 * Fixed IE8 errors and warnings [#286](https://github.com/spoike/refluxjs/pull/286), [#270](https://github.com/spoike/refluxjs/pull/270)
