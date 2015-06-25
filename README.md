@@ -8,6 +8,7 @@ A simple library for unidirectional dataflow architecture inspired by ReactJS [F
 [![Dependencies][dependencies-image]][npm-url]
 [![Build Status][travis-image]][travis-url]
 [![Gratipay][gratipay-image]][gratipay-url]
+[![Thinkful][thinkful-image]][thinkful-url]
 
 You can read an overview of Flux [here](https://facebook.github.io/flux/docs/overview.html), however the gist of it is to introduce a more functional programming style architecture by eschewing MVC like pattern and adopting a single data flow pattern.
 
@@ -774,3 +775,5 @@ This project uses [eventemitter3](https://github.com/3rd-Eden/EventEmitter3), is
 [travis-url]: https://travis-ci.org/spoike/refluxjs
 [gratipay-image]: http://img.shields.io/gratipay/spoike.svg
 [gratipay-url]: https://gratipay.com/spoike/
+[thinkful-image]: https://tf-assets-staging.s3.amazonaws.com/badges/thinkful_repo_badge.svg
+[thinkful-url]: http://start.thinkful.com/react/?utm_source=github&utm_medium=badge&utm_campaign=reflux
