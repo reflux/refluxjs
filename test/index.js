@@ -20,7 +20,7 @@ var textStore = Reflux.createStore({
     }
 });
 
-// Creating a DataStore
+// Creating a Data Store - Listening to statusUpdate action
 var statusStore = Reflux.createStore({
     init: function() {
         this.listenTo(statusUpdate, this.output);
