@@ -8,7 +8,6 @@ A simple library for unidirectional dataflow architecture inspired by ReactJS [F
 [![Dependencies][dependencies-image]][npm-url]
 [![Build Status][travis-image]][travis-url]
 [![Gratipay][gratipay-image]][gratipay-url]
-[![Thinkful][thinkful-image]][thinkful-url]
 
 You can read an overview of Flux [here](https://facebook.github.io/flux/docs/overview.html), however the gist of it is to introduce a more functional programming style architecture by eschewing MVC like pattern and adopting a single data flow pattern.
 
@@ -28,6 +27,7 @@ For questions please use the following communication channels:
 1. [StackOverflow with the `refluxjs` tag](http://stackoverflow.com/questions/tagged/refluxjs)
 2. [`#reflux` channel](https://reactiflux.slack.com/messages/reflux/) on Reactiflux Slack group. [Sign up here](http://reactiflux.com/) for an account.
 3. [![Gitter](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/spoike/refluxjs?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge)
+4. [![Thinkful][thinkful-image]][thinkful-url]
 
 Please only use the [issue tracker](https://github.com/spoike/refluxjs/issues) for bugs and feature requests only.
 
