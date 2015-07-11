@@ -2,6 +2,11 @@
 
 Check for latest changes on the [milestones page](https://github.com/spoike/refluxjs/milestones).
 
+## v0.2.9
+
+* Fixes issue with a join check [#272](https://github.com/spoike/refluxjs/pull/272).
+* Added links to README. See [#341](https://github.com/spoike/refluxjs/pull/341), [#361](https://github.com/spoike/refluxjs/pull/361)
+
 ## v0.2.8
 
 See [#345](https://github.com/spoike/refluxjs/pull/345).
