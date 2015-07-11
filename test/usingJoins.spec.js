@@ -226,11 +226,15 @@ describe('using joins',function(){
                 });
             });
         });
+        describe('with more than 1 participant in the join', function() {
+            it('should not throw', function() {
+                assert.doesNotThrow(function(){
+                    Reflux.createStore().joinConcat(Reflux.createAction(), function(){});
+                });
+            });
+        });
         describe('with less than 2 participants in the join',function(){
             it('should fail',function(){
-                assert.throws(function(){
-                    Reflux.createStore().joinConcat(Reflux.createAction(),function(){});
-                });
                 assert.throws(function(){
                     Reflux.createStore().joinConcat(function(){});
                 });
