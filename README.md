@@ -27,6 +27,7 @@ For questions please use the following communication channels:
 1. [StackOverflow with the `refluxjs` tag](http://stackoverflow.com/questions/tagged/refluxjs)
 2. [`#reflux` channel](https://reactiflux.slack.com/messages/reflux/) on Reactiflux Slack group. [Sign up here](http://reactiflux.com/) for an account.
 3. [![Gitter](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/spoike/refluxjs?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge)
+4. [![Thinkful][thinkful-image]][thinkful-url]
 
 Please only use the [issue tracker](https://github.com/spoike/refluxjs/issues) for bugs and feature requests only.
 
@@ -778,3 +779,5 @@ This project uses [eventemitter3](https://github.com/3rd-Eden/EventEmitter3), is
 [travis-url]: https://travis-ci.org/spoike/refluxjs
 [gratipay-image]: http://img.shields.io/gratipay/spoike.svg
 [gratipay-url]: https://gratipay.com/spoike/
+[thinkful-image]: https://tf-assets-staging.s3.amazonaws.com/badges/thinkful_repo_badge.svg
+[thinkful-url]: http://start.thinkful.com/react/?utm_source=github&utm_medium=badge&utm_campaign=reflux
