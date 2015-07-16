@@ -18,6 +18,7 @@ module.exports = function(config) {
         ],
 
         preprocessors: {
+            'test/shims/phantomjs-shims.js': ['browserify'],
             'test/*.spec.js': ['browserify']
         },
 

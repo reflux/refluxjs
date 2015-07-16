@@ -52,7 +52,7 @@ exports.object = function(keys,vals){
     return o;
 };
 
-exports.Promise = require("native-promise-only");
+exports.Promise = Promise;
 
 exports.createPromise = function(resolver) {
     return new exports.Promise(resolver);
