@@ -5,28 +5,36 @@ module.exports = function(listenable, key, filterFunc) {
     filterFunc = _.isFunction(key) ? key : filterFunc;
     return {
         getInitialState: function() {
+	    var result;
             if (!_.isFunction(listenable.getInitialState)) {
                 return {};
             } else if (_.isFunction(key)) {
-                return filterFunc.call(this, listenable.getInitialState());
+                result = filterFunc.call(this, listenable.getInitialState());
+                if (result === undefined) {
+                    return {};
+		}
+                return result;
             } else {
                 // Filter initial payload from store.
-                var result = filterFunc.call(this, listenable.getInitialState());
-                if (result) {
-                  return _.object([key], [result]);
-                } else {
-                  return {};
-                }
+                result = filterFunc.call(this, listenable.getInitialState());
+                if (result === undefined) {
+                    return {};
+		}
+		return _.object([key], [result]);
             }
         },
         componentDidMount: function() {
             _.extend(this, Reflux.ListenerMethods);
             var me = this;
+	    var result;
             var cb = function(value) {
                 if (_.isFunction(key)) {
-                    me.setState(filterFunc.call(me, value));
+                    result = filterFunc.call(me, value);
+                    if (result) {
+                        me.setState(result);
+		    }
                 } else {
-                    var result = filterFunc.call(me, value);
+                    result = filterFunc.call(me, value);
                     me.setState(_.object([key], [result]));
                 }
             };
@@ -36,4 +44,3 @@ module.exports = function(listenable, key, filterFunc) {
         componentWillUnmount: Reflux.ListenerMixin.componentWillUnmount
     };
 };
-
