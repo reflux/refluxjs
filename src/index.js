@@ -31,7 +31,7 @@ exports.joinStrict = maker("strict");
 
 exports.joinConcat = maker("all");
 
-var _ = require('./utils');
+var _ = exports.utils = require('./utils');
 
 exports.EventEmitter = _.EventEmitter;
 
@@ -60,7 +60,6 @@ exports.createActions = function(definitions) {
  * Sets the eventmitter that Reflux uses
  */
 exports.setEventEmitter = function(ctx) {
-    var _ = require('./utils');
     exports.EventEmitter = _.EventEmitter = ctx;
 };
 
@@ -69,7 +68,6 @@ exports.setEventEmitter = function(ctx) {
  * Sets the Promise library that Reflux uses
  */
 exports.setPromise = function(ctx) {
-    var _ = require('./utils');
     exports.Promise = _.Promise = ctx;
 };
 
@@ -79,7 +77,6 @@ exports.setPromise = function(ctx) {
  * @param {Function} factory has the signature `function(resolver) { return [new Promise]; }`
  */
 exports.setPromiseFactory = function(factory) {
-    var _ = require('./utils');
     _.createPromise = factory;
 };
 
@@ -88,7 +85,6 @@ exports.setPromiseFactory = function(factory) {
  * Sets the method used for deferring actions and stores
  */
 exports.nextTick = function(nextTick) {
-    var _ = require('./utils');
     _.nextTick = nextTick;
 };
 
