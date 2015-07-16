@@ -1,5 +1,6 @@
-var Reflux = require('./index'),
-  _ = require('./utils');
+var ListenerMethods = require('./ListenerMethods'),
+    ListenerMixin = require('./ListenerMixin'),
+    _ = require('./utils');
 
 module.exports = function(listenable, key, filterFunc) {
     filterFunc = _.isFunction(key) ? key : filterFunc;
@@ -20,7 +21,7 @@ module.exports = function(listenable, key, filterFunc) {
             }
         },
         componentDidMount: function() {
-            _.extend(this, Reflux.ListenerMethods);
+            _.extend(this, ListenerMethods);
             var me = this;
             var cb = function(value) {
                 if (_.isFunction(key)) {
@@ -33,7 +34,7 @@ module.exports = function(listenable, key, filterFunc) {
 
             this.listenTo(listenable, cb);
         },
-        componentWillUnmount: Reflux.ListenerMixin.componentWillUnmount
+        componentWillUnmount: ListenerMixin.componentWillUnmount
     };
 };
 

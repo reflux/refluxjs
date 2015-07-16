@@ -1,4 +1,5 @@
-var Reflux = require('./index'),
+var ListenerMethods = require('./ListenerMethods'),
+    ListenerMixin = require('./ListenerMixin'),
     _ = require('./utils');
 
 module.exports = function(listenable,key){
@@ -13,14 +14,14 @@ module.exports = function(listenable,key){
             }
         },
         componentDidMount: function(){
-            _.extend(this,Reflux.ListenerMethods);
+            _.extend(this,ListenerMethods);
             var me = this, cb = (key === undefined ? this.setState : function(v){
                 if (typeof me.isMounted === "undefined" || me.isMounted() === true) {
-                    me.setState(_.object([key],[v]));    
+                    me.setState(_.object([key],[v]));
                 }
             });
             this.listenTo(listenable,cb);
         },
-        componentWillUnmount: Reflux.ListenerMixin.componentWillUnmount
+        componentWillUnmount: ListenerMixin.componentWillUnmount
     };
 };

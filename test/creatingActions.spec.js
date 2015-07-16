@@ -53,23 +53,28 @@ describe('Creating action', function() {
 
     describe('Reflux.ActionMethods', function() {
 
-      afterEach(function(){
-          Reflux.ActionMethods = {};
-      });
+        afterEach(function(){
+            for (var prop in Reflux.ActionMethods) {
+                if (Reflux.ActionMethods.hasOwnProperty(prop)) {
+                    delete Reflux.ActionMethods[prop];
+                }
+            }
+        });
 
-      it("should copy properties from Reflux.ActionMethods into the action",function(){
-          Reflux.ActionMethods = {preEmit: function() {}, exampleFn: function() {}};
-          var action = Reflux.createAction();
-          assert.equal(action.preEmit, Reflux.ActionMethods.preEmit);
-          assert.equal(action.exampleFn, Reflux.ActionMethods.exampleFn);
-      });
+        it("should copy properties from Reflux.ActionMethods into the action",function(){
+            Reflux.ActionMethods.preEmit = function() {};
+            Reflux.ActionMethods.exampleFn = function() {};
+            var action = Reflux.createAction();
+            assert.equal(action.preEmit, Reflux.ActionMethods.preEmit);
+            assert.equal(action.exampleFn, Reflux.ActionMethods.exampleFn);
+        });
 
-      it("should throw an error if you overwrite any API other than preEmit and shouldEmit in Reflux.ActionMethods",function(){
-        Reflux.ActionMethods.listen = "FOO";
-          assert.throws(function(){
-              Reflux.createAction({});
-          });
-      });
+        it("should throw an error if you overwrite any API other than preEmit and shouldEmit in Reflux.ActionMethods",function(){
+            Reflux.ActionMethods.listen = "FOO";
+            assert.throws(function(){
+                Reflux.createAction({});
+            });
+        });
 
     });
 

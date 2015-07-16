@@ -1,5 +1,4 @@
 var _ = require('./utils'),
-    Reflux = require('./index'),
     Keep = require('./Keep'),
     mixer = require('./mixer'),
     allowed = {preEmit:1,shouldEmit:1},
@@ -15,10 +14,14 @@ var _ = require('./utils'),
  */
 module.exports = function(definition) {
 
+    var StoreMethods = require('./StoreMethods'),
+        PublisherMethods = require('./PublisherMethods'),
+        ListenerMethods = require('./ListenerMethods');
+
     definition = definition || {};
 
-    for(var a in Reflux.StoreMethods){
-        if (!allowed[a] && (Reflux.PublisherMethods[a] || Reflux.ListenerMethods[a])){
+    for(var a in StoreMethods){
+        if (!allowed[a] && (PublisherMethods[a] || ListenerMethods[a])){
             throw new Error("Cannot override API method " + a +
                 " in Reflux.StoreMethods. Use another method name or override it on Reflux.PublisherMethods / Reflux.ListenerMethods instead."
             );
@@ -26,7 +29,7 @@ module.exports = function(definition) {
     }
 
     for(var d in definition){
-        if (!allowed[d] && (Reflux.PublisherMethods[d] || Reflux.ListenerMethods[d])){
+        if (!allowed[d] && (PublisherMethods[d] || ListenerMethods[d])){
             throw new Error("Cannot override API method " + d +
                 " in store creation. Use another method name or override it on Reflux.PublisherMethods / Reflux.ListenerMethods instead."
             );
@@ -52,7 +55,7 @@ module.exports = function(definition) {
         }
     }
 
-    _.extend(Store.prototype, Reflux.ListenerMethods, Reflux.PublisherMethods, Reflux.StoreMethods, definition);
+    _.extend(Store.prototype, ListenerMethods, PublisherMethods, StoreMethods, definition);
 
     var store = new Store();
     Keep.createdStores.push(store);

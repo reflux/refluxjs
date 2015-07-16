@@ -16,8 +16,6 @@ describe('Creating stores', function() {
             unsubCallback;
 
         beforeEach(function() {
-            Reflux.StoreMethods = {};
-
             promise = Q.Promise(function(resolve) {
                 action = Reflux.createAction();
                 store = Reflux.createStore({
@@ -300,18 +298,32 @@ describe('Creating stores', function() {
         }
     });
 
-    it("should copy properties from Reflux.StoreMethods into the store",function(){
-        Reflux.StoreMethods = {preEmit: function() {}, exampleFn: function() {}};
-        var store = Reflux.createStore();
-        assert.equal(store.preEmit, Reflux.StoreMethods.preEmit);
-        assert.equal(store.exampleFn, Reflux.StoreMethods.exampleFn);
-    });
+    describe("changing Reflux.StoreMethods", function() {
 
-    it("should fail when trying to override API methods in Reflux.StoreMethods",function(){
-        Reflux.StoreMethods = { listen: "BAR" };
-        assert.throws(function(){
-            Reflux.createStore({});
+        afterEach(function () {
+            for (var prop in Reflux.StoreMethods) {
+                if (Reflux.StoreMethods.hasOwnProperty(prop)) {
+                    delete Reflux.StoreMethods[prop];
+                }
+            }
         });
+
+        it("should copy properties from Reflux.StoreMethods into the store",function(){
+            Reflux.StoreMethods.preEmit = function() {};
+            Reflux.StoreMethods.exampleFn = function() {};
+            var store = Reflux.createStore({});
+            assert.equal(store.preEmit, Reflux.StoreMethods.preEmit);
+            assert.equal(store.exampleFn, Reflux.StoreMethods.exampleFn);
+        });
+
+        it("should fail when trying to override API methods in Reflux.StoreMethods",function(){
+            Reflux.StoreMethods.listen = "BAR";
+            assert.throws(function(){
+                Reflux.createStore({});
+            });
+        });
+
+
     });
 
     it("should not mix in its own methods into ListenerMethods",function(){
