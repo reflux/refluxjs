@@ -20,7 +20,7 @@ You can read an overview of Flux [here](https://facebook.github.io/flux/docs/ove
 
 ```
 
-The pattern is composed of actions and data stores, where actions initiate new data to pass through data stores before coming back to the view components again. If a view component has an event that needs to make a change in the application's data stores, they need to do so by signalling to the stores through the actions available.
+The pattern is composed of actions and data stores, where actions initiate new data to pass through data stores before coming back to the view components again. If a view component has an event that needs to make a change in the application's data stores, they need to do so by signaling to the stores through the actions available.
 
 For questions please use the following communication channels:
 
@@ -91,11 +91,11 @@ You can find some example projects at these locations:
 
 ## Installation
 
-You can currently install the package as a npm package or bower.
+You can currently install the package as a npm package or bower component.
 
 ### NPM
 
-The following command installs reflux as an npm package:
+The following command installs reflux as a npm package:
 
     npm install reflux
 
@@ -318,7 +318,7 @@ var statusStore = Reflux.createStore({
 });
 ```
 
-In the above example, whenever the action is called, the store's `output` callback will be called with whatever parameters was sent in the action. E.g. if the action is called as `statusUpdate(true)` then the flag argument in `output` function is `true`.
+In the above example, whenever the action is called, the store's `output` callback will be called with whatever parameters were sent in the action. E.g. if the action is called as `statusUpdate(true)` then the flag argument in `output` function is `true`.
 
 A data store is a publisher much like the actions, so they too have the `preEmit` and `shouldEmit` hooks.
 
@@ -440,19 +440,19 @@ var Actions = Reflux.createActions({
 });
 
 function handleLoad(){
-	console.log("The  on" + Action + Subaction + " handler was called");
+    console.log("The on" + Action + Subaction + " handler was called");
 };
 
 var Store = Reflux.createStore({
     listenables: Actions,
     onLoad: function() {
-		handleLoad("Load");
+        handleLoad("Load");
     },
     onLoadCompleted: function() {
         handleLoad("Load", "Completed");
     },
     onLoadFailed: function() {
-		handleLoad("Load", "Failed");
+        handleLoad("Load", "Failed");
     }
 });
 ```
@@ -666,7 +666,7 @@ Don't like to use the Promise library provided? You can switch to another one, s
 Reflux.setPromise(require('bluebird'));
 ```
 
-*Note that promises are constructed with `new Promise(...)`.  If your Promise library uses factories (e.g. `Q`), then use `Reflux.setPromiseFactory` instead.*
+*Note that promises are constructed with `new Promise(...)`. If your Promise library uses factories (e.g. `Q`), then use `Reflux.setPromiseFactory` instead.*
 
 ### Switching Promise factory
 
@@ -733,7 +733,7 @@ actions.disarmBomb("warehouse");
 actions.recoverData("seedyletter");
 actions.disarmBomb("docks");
 actions.saveHostage("offices",3);
-// `gainHeroBadgeStore` will now asyncronously trigger `[["docks"],["offices",3],["seedyletter"]]`.
+// `gainHeroBadgeStore` will now asynchronously trigger `[["docks"],["offices",3],["seedyletter"]]`.
 ```
 
 #### Using the static methods
