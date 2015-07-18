@@ -2,6 +2,18 @@
 
 Check for latest changes on the [milestones page](https://github.com/spoike/refluxjs/milestones).
 
+## v0.2.10
+
+* Exposing Reflux.utils [#253](https://github.com/spoike/refluxjs/issues/253)
+* Fixing connectFilter [#371](https://github.com/spoike/refluxjs/pull/371)
+* Added links in README to extensions and plugins
+
+### Breaking changes to undocumented features
+
+* Fixed circular referencing to the index js file. Should fix issues building with bower package. This means you can't replace the ActionMethods and StoreMethods objects (as the previous unit tests did), you have to add properties to them.
+
+* Removed `native-promise-only` dependency. Reflux does an initial check for Promises and will instead create async actions using `triggerAsync` instead of `triggerPromise` if `Promise` is missing from the environment. Do use a Promise polyfill or your own Promise library if you plan to use this behavior. [#302](https://github.com/spoike/refluxjs/issues/302)
+
 ## v0.2.9
 
 * Fixes issue with a join check [#272](https://github.com/spoike/refluxjs/pull/272).
