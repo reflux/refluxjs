@@ -1,3 +1,5 @@
+exports.environment = {};
+
 /*
  * isObject, extend, isFunction, isArguments are taken from undescore/lodash in
  * order to remove the dependency
@@ -52,11 +54,17 @@ exports.object = function(keys,vals){
     return o;
 };
 
-exports.Promise = Promise;
-
-exports.createPromise = function(resolver) {
-    return new exports.Promise(resolver);
-};
+try {
+    exports.Promise = Promise;
+    exports.createPromise = function(resolver) {
+        return new exports.Promise(resolver);
+    };
+} catch (err) {
+    // ReferenceError, Promise is not defined
+    exports.Promise = null;
+    exports.createPromise = function() {};
+}
+exports.environment.hasPromises = !!exports.Promise;
 
 exports.isArguments = function(value) {
     return typeof value === 'object' && ('callee' in value) && typeof value.length === 'number';
