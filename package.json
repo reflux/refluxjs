@@ -19,7 +19,7 @@
     "flux"
   ],
   "dependencies": {
-    "eventemitter3": "^0.1.2"
+    "eventemitter3": "^1.1.1"
   },
   "devDependencies": {
     "benchmark": "^1.0.0",
