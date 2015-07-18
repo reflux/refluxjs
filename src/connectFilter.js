@@ -13,10 +13,10 @@ module.exports = function(listenable, key, filterFunc) {
             } else {
                 // Filter initial payload from store.
                 var result = filterFunc.call(this, listenable.getInitialState());
-                if (result) {
-                  return _.object([key], [result]);
+                if (typeof(result) !== "undefined") {
+                    return _.object([key], [result]);
                 } else {
-                  return {};
+                    return {};
                 }
             }
         },

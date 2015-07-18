@@ -24,6 +24,53 @@ describe('using the connectFilter(...) mixin',function(){
         });
     });
 
+    describe("when filter func returns", function() {
+        var listenable, context, expectedResult;
+        function withFilterReturning(val) {
+            var key = "KEY";
+            listenable = {
+                listen: sinon.spy(),
+                getInitialState: sinon.stub().returns("DOES NOT MATTER")
+            };
+            context = {setState: sinon.spy()};
+            expectedResult = {};
+            expectedResult[key] = val;
+            _.extend(context,connectFilter(listenable, key, function() {return val;}));
+        }
+        describe("0", function() {
+            beforeEach(function () {
+                withFilterReturning(0);
+            });
+            it("should return that value", function() {
+                assert.deepEqual(expectedResult, context.getInitialState());
+            });
+        });
+        describe("empty string", function() {
+            beforeEach(function () {
+                withFilterReturning("");
+            });
+            it("should return that value", function() {
+                assert.deepEqual(expectedResult, context.getInitialState());
+            });
+        });
+        describe("false", function() {
+            beforeEach(function () {
+                withFilterReturning(false);
+            });
+            it("should return that value", function() {
+                assert.deepEqual(expectedResult, context.getInitialState());
+            });
+        });
+        describe("undefined", function() {
+            beforeEach(function () {
+                withFilterReturning();
+            });
+            it("should return empty object", function() {
+                assert.deepEqual({}, context.getInitialState());
+            });
+        });
+    });
+
     describe("when calling without key",function(){
         var initialstate = "DEFAULTDATA",
             listenable = {
