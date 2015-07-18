@@ -35,6 +35,7 @@ Please only use the [issue tracker](https://github.com/spoike/refluxjs/issues) f
 
 - [Comparing RefluxJS with Facebook Flux](#comparing-refluxjs-with-facebook-flux)
 - [Examples](#examples)
+- [Extensions and Plugins](#extensions-and-plugins)
 - [Installation](#installation)
 - [Usage](#usage)
      - [Actions](#creating-actions)
@@ -82,6 +83,11 @@ You can find some example projects at these locations:
 * [TodoMVC demonstrating Reflux + Angular](https://github.com/javamonn/Angular-TodoMVC-Redux)
 
 [Back to top](#content)
+
+## Extensions and Plugins
+
+* [reflux-triggerable-mixin](https://github.com/jesstelford/reflux-triggerable-mixin) - Stores mixin adding `triggerable` syntas similar to `listenable`
+* [reflux-state-mixin](https://github.com/yonatanmn/reflux-state-mixin) - Stores mixin adding `state` syntax similar to React components.
 
 ## Installation
 
