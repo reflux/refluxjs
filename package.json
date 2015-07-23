@@ -12,7 +12,7 @@
   "license": "BSD-3-Clause",
   "repository": {
     "type": "git",
-    "url": "http://github.com/spoike/reflux.git"
+    "url": "http://github.com/spoike/refluxjs.git"
   },
   "keywords": [
     "react",
