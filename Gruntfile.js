@@ -51,7 +51,9 @@ module.exports = function(grunt) {
           reporters: ['dots', 'saucelabs'],
           sauceLabs: {
             public: 'public',
-            testName: 'RefluxJS Karma Tests'
+            testName: 'RefluxJS Karma Tests',
+            recordVideo: false,
+            recordScreenshot: false
           },
           customLaunchers: sauceLaunchers,
           browsers: Object.keys(sauceLaunchers)
