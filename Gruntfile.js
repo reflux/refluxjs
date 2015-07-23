@@ -48,17 +48,18 @@ module.exports = function(grunt) {
       sauce: {
         configFile: 'karma.conf.js',
         options: {
-          reporters: ['dots', 'saucelabs'],
+          reporters: ['saucelabs', 'dots'],
           sauceLabs: {
-            public: 'public',
+            "public": "public",
             testName: 'RefluxJS Karma Tests',
             recordVideo: false,
-            recordScreenshot: false
+            recordScreenshot: false,
+            tunnelIdentifier: process.env.TRAVIS_JOB_NUMBER
           },
           customLaunchers: sauceLaunchers,
           browsers: Object.keys(sauceLaunchers),
           captureTimeout: 120000
-        }
+        },
       }
     }
   });
@@ -67,7 +68,7 @@ module.exports = function(grunt) {
 
   grunt.registerTask('test', ['jshint', 'mochaTest', 'karma:local']);
 
-  grunt.registerTask('travis', ['test', 'karma:sauce']);
+  grunt.registerTask('travis', ['jshint', 'karma:sauce']);
 
   grunt.registerTask('build', ['test', 'browserify', 'uglify']);
 
