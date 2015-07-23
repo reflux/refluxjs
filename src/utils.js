@@ -1,4 +1,4 @@
-exports.environment = {};
+var env = exports.environment = {};
 
 /*
  * isObject, extend, isFunction, isArguments are taken from undescore/lodash in
@@ -34,9 +34,23 @@ exports.isFunction = function(value) {
 
 exports.EventEmitter = require('eventemitter3');
 
-exports.nextTick = function(callback) {
-    setTimeout(callback, 0);
-};
+try {
+    env.hasImmediate = false;
+    if (window.setImmediate) {
+        env.hasImmediate = true;
+    }
+} catch (e) {
+} finally {
+    if (env.hasImmediate) {
+        exports.nextTick = function(callback) {
+            setImmediate(callback);
+        };
+    } else {
+        exports.nextTick = function(callback) {
+            setTimeout(callback, 0);
+        };
+    }
+}
 
 exports.capitalize = function(string){
     return string.charAt(0).toUpperCase()+string.slice(1);
@@ -64,7 +78,7 @@ try {
     exports.Promise = null;
     exports.createPromise = function() {};
 }
-exports.environment.hasPromises = !!exports.Promise;
+env.hasPromises = !!exports.Promise;
 
 exports.isArguments = function(value) {
     return typeof value === 'object' && ('callee' in value) && typeof value.length === 'number';
