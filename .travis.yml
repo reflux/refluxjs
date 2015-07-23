@@ -9,6 +9,9 @@ before_install:
   - "sh -e /etc/init.d/xvfb start"
   - npm install -g grunt-cli
 
+script:
+  - grunt travis
+
 env:
   global:
     - secure: SSkMWT8NymHCgYRkTdUR+6dXtf4hG5rPwjWHLuXKK8MgLMXdyI9yyf8r9jiJj4GMI/ZSbXMXKCqgHmwXW7zxKoWiyqht44xOG5HVaLKlLHJQpShwLNJC8EL7rtUJhaC9Qbjfch2PwHb9TqeTIqqbsns/TxPDK5PUwABaTScCDEI=

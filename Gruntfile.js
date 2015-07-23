@@ -2,6 +2,8 @@ require('es6-promise').polyfill();
 
 module.exports = function(grunt) {
 
+  var sauceLaunchers = require('./test/sauceLaunchers');
+
   grunt.initConfig({
     pkg: grunt.file.readJSON('package.json'),
     jshint: {
@@ -37,10 +39,21 @@ module.exports = function(grunt) {
       tasks: ['build']
     },
     karma: {
-      integration: {
+      local: {
         configFile: 'karma.conf.js',
         options: {
             browsers: ['PhantomJS']
+        }
+      },
+      sauce: {
+        configFile: 'karma.conf.js',
+        options: {
+          reporters: ['saucelabs', 'spec'],
+          saucelabs: {
+            public: 'public'
+          },
+          customLaunchers: sauceLaunchers,
+          browsers: Object.keys(sauceLaunchers)
         }
       }
     }
@@ -48,7 +61,9 @@ module.exports = function(grunt) {
 
   require('matchdep').filterDev('grunt-*').forEach(grunt.loadNpmTasks);
 
-  grunt.registerTask('test', ['jshint', 'mochaTest', 'karma']);
+  grunt.registerTask('test', ['jshint', 'mochaTest', 'karma:local']);
+
+  grunt.registerTask('travis', ['test', 'karma:sauce']);
 
   grunt.registerTask('build', ['test', 'browserify', 'uglify']);
 
