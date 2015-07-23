@@ -48,9 +48,10 @@ module.exports = function(grunt) {
       sauce: {
         configFile: 'karma.conf.js',
         options: {
-          reporters: ['saucelabs', 'spec'],
-          saucelabs: {
-            public: 'public'
+          reporters: ['dots', 'saucelabs'],
+          sauceLabs: {
+            public: 'public',
+            testName: 'RefluxJS Karma Tests'
           },
           customLaunchers: sauceLaunchers,
           browsers: Object.keys(sauceLaunchers)
