@@ -1,4 +1,28 @@
+exports.capitalize = function(string){
+    return string.charAt(0).toUpperCase()+string.slice(1);
+};
+
+exports.callbackName = function(string, prefix){
+    prefix = prefix || "on";
+    return prefix + exports.capitalize(string);
+};
+
 var env = exports.environment = {};
+
+function checkEnv(target) {
+    var flag = false;
+    try {
+        if (eval(target)) { // jshint ignore:line
+            flag = true;
+        }
+    }
+    catch (e) {
+        /* no-op */
+    }
+    env[exports.callbackName(target, "has")] = flag;
+}
+checkEnv("setImmediate");
+checkEnv("Promise");
 
 /*
  * isObject, extend, isFunction, isArguments are taken from undescore/lodash in
@@ -34,31 +58,15 @@ exports.isFunction = function(value) {
 
 exports.EventEmitter = require('eventemitter3');
 
-try {
-    env.hasImmediate = false;
-    if (window.setImmediate) {
-        env.hasImmediate = true;
-    }
-} catch (e) {
-} finally {
-    if (env.hasImmediate) {
-        exports.nextTick = function(callback) {
-            setImmediate(callback);
-        };
-    } else {
-        exports.nextTick = function(callback) {
-            setTimeout(callback, 0);
-        };
-    }
+if (env.hasSetImmediate) {
+    exports.nextTick = function(callback) {
+        setImmediate(callback);
+    };
+} else {
+    exports.nextTick = function(callback) {
+        setTimeout(callback, 0);
+    };
 }
-
-exports.capitalize = function(string){
-    return string.charAt(0).toUpperCase()+string.slice(1);
-};
-
-exports.callbackName = function(string){
-    return "on"+exports.capitalize(string);
-};
 
 exports.object = function(keys,vals){
     var o={}, i=0;
@@ -68,17 +76,15 @@ exports.object = function(keys,vals){
     return o;
 };
 
-try {
+if (env.hasPromise) {
     exports.Promise = Promise;
     exports.createPromise = function(resolver) {
         return new exports.Promise(resolver);
     };
-} catch (err) {
-    // ReferenceError, Promise is not defined
+} else {
     exports.Promise = null;
     exports.createPromise = function() {};
 }
-env.hasPromises = !!exports.Promise;
 
 exports.isArguments = function(value) {
     return typeof value === 'object' && ('callee' in value) && typeof value.length === 'number';

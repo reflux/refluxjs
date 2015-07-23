@@ -53,7 +53,7 @@ var createAction = function(definition) {
 
     var functor = function() {
         var triggerType = functor.sync ? "trigger" :
-            ( _.environment.hasPromises ? "triggerPromise" : "triggerAsync" );
+            ( _.environment.hasPromise ? "triggerPromise" : "triggerAsync" );
         return functor[triggerType].apply(functor, arguments);
     };
 

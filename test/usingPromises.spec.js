@@ -24,7 +24,7 @@ describe("when Promise exists in environment", function() {
 describe("when Promise is missing in environment", function() {
     beforeEach(function () {
         _.environment = {
-            hasPromises: false,
+            hasPromise: false,
             Promise: null,
             createPromise: function() {}
         };
