@@ -56,7 +56,8 @@ module.exports = function(grunt) {
             recordScreenshot: false
           },
           customLaunchers: sauceLaunchers,
-          browsers: Object.keys(sauceLaunchers)
+          browsers: Object.keys(sauceLaunchers),
+          captureTimeout: 120000
         }
       }
     }
