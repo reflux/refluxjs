@@ -2,6 +2,10 @@
 
 Check for latest changes on the [milestones page](https://github.com/spoike/refluxjs/milestones).
 
+## v0.2.11
+
+* Using setImmediate if available. Fixes issue with IE10+, see [#374](https://github.com/spoike/refluxjs/issues/374).
+
 ## v0.2.10
 
 * Exposing Reflux.utils [#253](https://github.com/spoike/refluxjs/issues/253)
