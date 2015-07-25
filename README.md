@@ -86,7 +86,7 @@ You can find some example projects at these locations:
 
 ## Extensions and Plugins
 
-* [reflux-triggerable-mixin](https://github.com/jesstelford/reflux-triggerable-mixin) - Stores mixin adding `triggerable` syntas similar to `listenable`
+* [reflux-triggerable-mixin](https://github.com/jesstelford/reflux-triggerable-mixin) - Stores mixin adding `triggerable` syntax similar to `listenable`
 * [reflux-state-mixin](https://github.com/yonatanmn/reflux-state-mixin) - Stores mixin adding `state` syntax similar to React components.
 
 ## Installation
