@@ -54,11 +54,17 @@ module.exports = function(grunt) {
             testName: 'RefluxJS Karma Tests',
             recordVideo: false,
             recordScreenshot: false,
-            tunnelIdentifier: process.env.TRAVIS_JOB_NUMBER
+            startConnect: false,
+            tunnelIdentifier: process.env.TRAVIS_JOB_NUMBER,
+            connectOptions: {
+              port: 5757,
+              logfile: "sauce_connect.log"
+            }
           },
           customLaunchers: sauceLaunchers,
           browsers: Object.keys(sauceLaunchers),
-          captureTimeout: 120000
+          singleRun: false,
+          captureTimeout: 0
         },
       }
     }
