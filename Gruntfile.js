@@ -45,13 +45,29 @@ module.exports = function(grunt) {
             browsers: ['PhantomJS']
         }
       },
+      devsauce: {
+        configFile: 'karma.conf.js',
+        options: {
+          reporters: ['saucelabs', 'dots'],
+          sauceLabs: {
+            "public": "team",
+            testName: 'RefluxJS Karma Tests (Dev)',
+            recordVideo: false,
+            recordScreenshot: false,
+            tunnelIdentifier: process.env.TRAVIS_JOB_NUMBER,
+          },
+          customLaunchers: sauceLaunchers,
+          browsers: Object.keys(sauceLaunchers),
+          captureTimeout: 0
+        },
+      },
       sauce: {
         configFile: 'karma.conf.js',
         options: {
           reporters: ['saucelabs', 'dots'],
           sauceLabs: {
             "public": "public",
-            testName: 'RefluxJS Karma Tests',
+            testName: 'RefluxJS Karma Tests (Travis)',
             recordVideo: false,
             recordScreenshot: false,
             startConnect: false,
