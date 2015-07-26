@@ -2,6 +2,8 @@ require('es6-promise').polyfill();
 
 module.exports = function(grunt) {
 
+  var sauceLaunchers = require('./test/sauceLaunchers');
+
   grunt.initConfig({
     pkg: grunt.file.readJSON('package.json'),
     jshint: {
@@ -37,18 +39,58 @@ module.exports = function(grunt) {
       tasks: ['build']
     },
     karma: {
-      integration: {
+      local: {
         configFile: 'karma.conf.js',
         options: {
             browsers: ['PhantomJS']
         }
+      },
+      devsauce: {
+        configFile: 'karma.conf.js',
+        options: {
+          reporters: ['saucelabs', 'dots'],
+          sauceLabs: {
+            "public": "team",
+            testName: 'RefluxJS Karma Tests (Dev)',
+            recordVideo: false,
+            recordScreenshot: false,
+            tunnelIdentifier: process.env.TRAVIS_JOB_NUMBER,
+          },
+          customLaunchers: sauceLaunchers,
+          browsers: Object.keys(sauceLaunchers),
+          captureTimeout: 0
+        },
+      },
+      sauce: {
+        configFile: 'karma.conf.js',
+        options: {
+          reporters: ['saucelabs', 'dots'],
+          sauceLabs: {
+            "public": "public",
+            testName: 'RefluxJS Karma Tests (Travis)',
+            recordVideo: false,
+            recordScreenshot: false,
+            startConnect: false,
+            tunnelIdentifier: process.env.TRAVIS_JOB_NUMBER,
+            connectOptions: {
+              port: 5757,
+              logfile: "sauce_connect.log"
+            }
+          },
+          customLaunchers: sauceLaunchers,
+          browsers: Object.keys(sauceLaunchers),
+          singleRun: true,
+          captureTimeout: 0
+        },
       }
     }
   });
 
   require('matchdep').filterDev('grunt-*').forEach(grunt.loadNpmTasks);
 
-  grunt.registerTask('test', ['jshint', 'mochaTest', 'karma']);
+  grunt.registerTask('test', ['jshint', 'mochaTest', 'karma:local']);
+
+  grunt.registerTask('travis', ['jshint', 'karma:sauce']);
 
   grunt.registerTask('build', ['test', 'browserify', 'uglify']);
 

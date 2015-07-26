@@ -2,17 +2,21 @@ language: node_js
 
 node_js:
   - "0.11.13"
-  - "0.10"
 
 before_install:
   - "export DISPLAY=:99.0"
   - "sh -e /etc/init.d/xvfb start"
   - npm install -g grunt-cli
 
+script:
+  - grunt travis
+
 env:
   global:
-    - secure: SSkMWT8NymHCgYRkTdUR+6dXtf4hG5rPwjWHLuXKK8MgLMXdyI9yyf8r9jiJj4GMI/ZSbXMXKCqgHmwXW7zxKoWiyqht44xOG5HVaLKlLHJQpShwLNJC8EL7rtUJhaC9Qbjfch2PwHb9TqeTIqqbsns/TxPDK5PUwABaTScCDEI=
-    - secure: gfYIkx0XD8zFJEu1vTWairTpafE/3pSvBW2K9jwrQFhpHsyXXGPTRw8YafBf01B/HJ/1B+SIM7QG3yYs6CY1wBVs1GAs/f1aqSZDDoQvi6lYN747LkM2M2dcORX2GpybA3hGaRajs4Xkfu4Poi9kXMyleh/Yzbd3n+vv61c0dnM=
+    - secure: B0emLHNPO7BVpq2lT/KAPW1miUOhgODa/qoVqYbFspcdoBVfJmO1FpcgEppE8fuEecaOv9QfSI3hwGOUkzm9kp8HFde8ZenR5beauhfploXMQB/bbNjd0cBz0ORRMwzsTFg9GeWcnStr+9H05833W84K3N1oy3ShT68kYRWObh4=
+    - secure: LZNuke26p3RYq5jbSB1oDlG8AeCY1fm8uBoVWmCdKKmmgV/+nKXDgdYygE/yeAPm39XnZ8jGH64ctHVixpgc8TQDa9ZCwOr1q3SWVL+dVAwhKm7WQ9/v2yW/c/zOEuYzvGqr1ylAC8PfwqYA6ShGUnSWAua7TIOeYqdtAjGbU1k=
 
 addons:
   sauce_connect: true
+
+sudo: false
