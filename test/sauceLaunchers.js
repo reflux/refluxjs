@@ -34,5 +34,15 @@ module.exports = {
     browserName: 'internet explorer',
     platform: 'Windows 8.1',
     version: '11'
+  },
+  sl_opera_12: {
+    base: 'SauceLabs',
+    browserName: 'opera',
+    version: '12'
+  },
+  sl_opera_11: {
+    base: 'SauceLabs',
+    browserName: 'opera',
+    version: '11'
   }
 };

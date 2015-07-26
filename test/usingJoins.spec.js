@@ -89,7 +89,7 @@ describe('using joins',function(){
                     assert.equal(spy.callCount,1);
                     assert.deepEqual(spy.firstCall.args,[['a'],['b'],['c']]);
                     done();
-                }, 10);
+                }, 50);
             });
 
             it("should throw error if triggered more than once",function(){
