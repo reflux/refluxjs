@@ -63,7 +63,7 @@ module.exports = function(grunt) {
           },
           customLaunchers: sauceLaunchers,
           browsers: Object.keys(sauceLaunchers),
-          singleRun: false,
+          singleRun: true,
           captureTimeout: 0
         },
       }
