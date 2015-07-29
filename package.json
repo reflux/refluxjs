@@ -19,7 +19,10 @@
     "react",
     "flux",
     "architecture",
-    "dataflow"
+    "dataflow",
+    "action",
+    "event",
+    "data"
   ],
   "dependencies": {
     "eventemitter3": "^1.1.1"
