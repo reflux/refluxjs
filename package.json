@@ -14,6 +14,9 @@
     "type": "git",
     "url": "http://github.com/reflux/refluxjs.git"
   },
+  "bugs": {
+    "url": "https://github.com/reflux/refluxjs/issues"
+  },
   "keywords": [
     "reflux",
     "react",
