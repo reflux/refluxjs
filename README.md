@@ -9,6 +9,8 @@ A simple library for unidirectional dataflow architecture inspired by ReactJS [F
 [![Build Status][travis-image]][travis-url]
 [![Gratipay][gratipay-image]][gratipay-url]
 
+[![Sauce Test Status](https://saucelabs.com/browser-matrix/refluxjs.svg)](https://saucelabs.com/u/refluxjs)
+
 You can read an overview of Flux [here](https://facebook.github.io/flux/docs/overview.html), however the gist of it is to introduce a more functional programming style architecture by eschewing MVC like pattern and adopting a single data flow pattern.
 
 ```
@@ -30,6 +32,8 @@ For questions please use the following communication channels:
 4. [![Thinkful][thinkful-image]][thinkful-url]
 
 Please only use the [issue tracker](https://github.com/spoike/refluxjs/issues) for bugs and feature requests only.
+
+If you don't want to use the React specific API, or want to develop Reflux for your view engine framework of choice, have a look at [`reflux-core`](https://github.com/reflux/reflux-core).
 
 ## Content
 
@@ -782,8 +786,8 @@ This project uses [eventemitter3](https://github.com/3rd-Eden/EventEmitter3), is
 [npm-url]: https://www.npmjs.org/package/reflux
 [bower-image]: http://img.shields.io/bower/v/reflux.svg
 [bower-url]: http://bower.io/search/?q=reflux
-[travis-image]: http://img.shields.io/travis/spoike/refluxjs/master.svg
-[travis-url]: https://travis-ci.org/spoike/refluxjs
+[travis-image]: http://img.shields.io/travis/reflux/refluxjs/master.svg
+[travis-url]: https://travis-ci.org/reflux/refluxjs
 [gratipay-image]: http://img.shields.io/gratipay/spoike.svg
 [gratipay-url]: https://gratipay.com/spoike/
 [thinkful-image]: https://tf-assets-staging.s3.amazonaws.com/badges/thinkful_repo_badge.svg
