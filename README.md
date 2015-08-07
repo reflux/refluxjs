@@ -443,7 +443,7 @@ var Actions = Reflux.createActions({
     "load": {children: ["completed", "failed"]}
 });
 
-function handleLoad(){
+function handleLoad(Action, Subaction){
     console.log("The on" + Action + Subaction + " handler was called");
 };
 
