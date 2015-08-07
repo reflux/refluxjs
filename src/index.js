@@ -45,13 +45,19 @@ exports.Promise = _.Promise;
  */
 exports.createActions = function(definitions) {
     var actions = {};
-    for (var k in definitions){
-        if (definitions.hasOwnProperty(k)) {
-            var val = definitions[k],
-                actionName = _.isObject(val) ? k : val;
+    if (definitions instanceof Array) {
+        definitions.forEach(function(val) {
+            var isObj = _.isObject(val),
+                actionName = isObj ? Object.keys(val)[0] : val;
 
+            val = isObj ? val[actionName] : val;
             actions[actionName] = exports.createAction(val);
-        }
+        });
+    } else {
+        Object.keys(definitions).forEach(function(actionName) {
+            var val = definitions[actionName];
+            actions[actionName] = exports.createAction(val);
+        });
     }
     return actions;
 };

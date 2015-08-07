@@ -323,3 +323,82 @@ describe('Creating multiple actions to an action definition object', function() 
     });
 
 });
+
+describe('Creating multiple actions from an mixed array of strings and object definitions', function() {
+
+    var actionNames, actions;
+
+    beforeEach(function () {
+        actionNames = ['foo', 'bar', { baz: { asyncResult: true, children: ['woo'] }}];
+        actions = Reflux.createActions(actionNames);
+    });
+
+    it('should contain foo, bar and baz properties', function() {
+        assert.property(actions, 'foo');
+        assert.property(actions, 'bar');
+        assert.property(actions, 'baz');
+    });
+
+    it('should contain action functor on foo, bar and baz properties with children', function() {
+        assert.isFunction(actions.foo);
+        assert.isFunction(actions.bar);
+        assert.isFunction(actions.baz);
+        assert.isFunction(actions.baz.completed);
+        assert.isFunction(actions.baz.failed);
+        assert.isFunction(actions.baz.woo);
+    });
+
+    describe('when listening to any of the actions created this way', function() {
+
+        var promise;
+
+        beforeEach(function() {
+            promise = Q.promise(function(resolve) {
+                actions.foo.listen(function() {
+                    assert.equal(this, actions.foo);
+                    resolve(Array.prototype.slice.call(arguments, 0));
+                }); // not passing context, should default to action
+            });
+        });
+
+        it('should receive the correct arguments', function() {
+            var testArgs = [1337, 'test'];
+            actions.foo(testArgs[0], testArgs[1]);
+
+            return assert.eventually.deepEqual(promise, testArgs);
+        });
+
+    });
+
+    describe('when promising an async action created this way', function() {
+        var promise;
+
+        beforeEach(function() {
+            // promise resolves on baz.completed
+            promise = Q.promise(function(resolve) {
+                actions.baz.completed.listen(function(){
+                    resolve.apply(null, arguments);
+                }, {}); // pass empty context
+            });
+
+            // listen for baz and return a promise
+            actions.baz.listenAndPromise(function() {
+                var args = Array.prototype.slice.call(arguments, 0);
+                var deferred = Q.defer();
+
+                setTimeout(function() {
+                    deferred.resolve(args);
+                }, 0);
+
+                return deferred.promise;
+            });
+        });
+
+        it('should invoke the completed action with the correct arguments', function() {
+            var testArgs = [1337, 'test'];
+            actions.baz(testArgs[0], testArgs[1]);
+
+            return assert.eventually.deepEqual(promise, testArgs);
+        });
+    });
+});
