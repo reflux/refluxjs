@@ -329,7 +329,14 @@ describe('Creating multiple actions from an mixed array of strings and object de
     var actionNames, actions;
 
     beforeEach(function () {
-        actionNames = ['foo', 'bar', { baz: { asyncResult: true, children: ['woo'] }}];
+        actionNames = [
+            'foo',
+            'bar',
+            { baz: { asyncResult: true, children: ['woo'] }},
+            {
+                anotherFoo: { asyncResult: true },
+                anotherBar: { children: ['wee'] }
+            }];
         actions = Reflux.createActions(actionNames);
     });
 
@@ -337,6 +344,8 @@ describe('Creating multiple actions from an mixed array of strings and object de
         assert.property(actions, 'foo');
         assert.property(actions, 'bar');
         assert.property(actions, 'baz');
+        assert.property(actions, 'anotherFoo');
+        assert.property(actions, 'anotherBar');
     });
 
     it('should contain action functor on foo, bar and baz properties with children', function() {
@@ -346,6 +355,9 @@ describe('Creating multiple actions from an mixed array of strings and object de
         assert.isFunction(actions.baz.completed);
         assert.isFunction(actions.baz.failed);
         assert.isFunction(actions.baz.woo);
+        assert.isFunction(actions.anotherFoo.completed);
+        assert.isFunction(actions.anotherFoo.failed);
+        assert.isFunction(actions.anotherBar.wee);
     });
 
     describe('when listening to any of the actions created this way', function() {
