@@ -267,26 +267,29 @@ if ('undefined' !== typeof module) {
  * A module of methods that you want to include in all actions.
  * This module is consumed by `createAction`.
  */
-module.exports = {
-};
+"use strict";
 
+module.exports = {};
 },{}],3:[function(require,module,exports){
+"use strict";
+
 exports.createdStores = [];
 
 exports.createdActions = [];
 
-exports.reset = function() {
-    while(exports.createdStores.length) {
+exports.reset = function () {
+    while (exports.createdStores.length) {
         exports.createdStores.pop();
     }
-    while(exports.createdActions.length) {
+    while (exports.createdActions.length) {
         exports.createdActions.pop();
     }
 };
-
 },{}],4:[function(require,module,exports){
-var _ = require('./utils'),
-    maker = require('./joins').instanceJoinCreator;
+"use strict";
+
+var _ = require("./utils"),
+    maker = require("./joins").instanceJoinCreator;
 
 /**
  * Extract child listenables from a parent from their
@@ -294,11 +297,13 @@ var _ = require('./utils'),
  *
  * @param {Object} listenable The parent listenable
  */
-var mapChildListenables = function(listenable) {
-    var i = 0, children = {}, childName;
-    for (;i < (listenable.children||[]).length; ++i) {
+var mapChildListenables = function mapChildListenables(listenable) {
+    var i = 0,
+        children = {},
+        childName;
+    for (; i < (listenable.children || []).length; ++i) {
         childName = listenable.children[i];
-        if(listenable[childName]){
+        if (listenable[childName]) {
             children[childName] = listenable[childName];
         }
     }
@@ -311,9 +316,9 @@ var mapChildListenables = function(listenable) {
  *
  * @param {Object} listenables The top-level listenables
  */
-var flattenListenables = function(listenables) {
+var flattenListenables = function flattenListenables(listenables) {
     var flattened = {};
-    for(var key in listenables){
+    for (var key in listenables) {
         var listenable = listenables[key];
         var childMap = mapChildListenables(listenable);
 
@@ -322,7 +327,7 @@ var flattenListenables = function(listenables) {
 
         // add the primary listenable and chilren
         flattened[key] = listenable;
-        for(var childKey in children){
+        for (var childKey in children) {
             var childListenable = children[childKey];
             flattened[key + _.capitalize(childKey)] = childListenable;
         }
@@ -342,11 +347,14 @@ module.exports = {
      * @param {Action|Store} listenable The listenable we want to search for
      * @returns {Boolean} The result of a recursive search among `this.subscriptions`
      */
-    hasListener: function(listenable) {
-        var i = 0, j, listener, listenables;
-        for (;i < (this.subscriptions||[]).length; ++i) {
+    hasListener: function hasListener(listenable) {
+        var i = 0,
+            j,
+            listener,
+            listenables;
+        for (; i < (this.subscriptions || []).length; ++i) {
             listenables = [].concat(this.subscriptions[i].listenable);
-            for (j = 0; j < listenables.length; j++){
+            for (j = 0; j < listenables.length; j++) {
                 listener = listenables[j];
                 if (listener === listenable || listener.hasListener && listener.hasListener(listenable)) {
                     return true;
@@ -361,13 +369,13 @@ module.exports = {
      *
      * @param {Object} listenables An object of listenables. Keys will be used as callback method names.
      */
-    listenToMany: function(listenables){
+    listenToMany: function listenToMany(listenables) {
         var allListenables = flattenListenables(listenables);
-        for(var key in allListenables){
+        for (var key in allListenables) {
             var cbname = _.callbackName(key),
                 localname = this[cbname] ? cbname : this[key] ? key : undefined;
-            if (localname){
-                this.listenTo(allListenables[key],localname,this[cbname+"Default"]||this[localname+"Default"]||localname);
+            if (localname) {
+                this.listenTo(allListenables[key], localname, this[cbname + "Default"] || this[localname + "Default"] || localname);
             }
         }
     },
@@ -379,7 +387,7 @@ module.exports = {
      *  listened to.
      * @returns {String|Undefined} An error message, or undefined if there was no problem.
      */
-    validateListening: function(listenable){
+    validateListening: function validateListening(listenable) {
         if (listenable === this) {
             return "Listener is not able to listen to itself";
         }
@@ -400,14 +408,17 @@ module.exports = {
      * @param {Function|String} defaultCallback The callback to register as default handler
      * @returns {Object} A subscription obj where `stop` is an unsub function and `listenable` is the object being listened to
      */
-    listenTo: function(listenable, callback, defaultCallback) {
-        var desub, unsubscriber, subscriptionobj, subs = this.subscriptions = this.subscriptions || [];
+    listenTo: function listenTo(listenable, callback, defaultCallback) {
+        var desub,
+            unsubscriber,
+            subscriptionobj,
+            subs = this.subscriptions = this.subscriptions || [];
         _.throwIf(this.validateListening(listenable));
         this.fetchInitialState(listenable, defaultCallback);
-        desub = listenable.listen(this[callback]||callback, this);
-        unsubscriber = function() {
+        desub = listenable.listen(this[callback] || callback, this);
+        unsubscriber = function () {
             var index = subs.indexOf(subscriptionobj);
-            _.throwIf(index === -1,'Tried to remove listen already gone from subscriptions list!');
+            _.throwIf(index === -1, "Tried to remove listen already gone from subscriptions list!");
             subs.splice(index, 1);
             desub();
         };
@@ -425,13 +436,15 @@ module.exports = {
      * @param {Action|Store} listenable The action or store we no longer want to listen to
      * @returns {Boolean} True if a subscription was found and removed, otherwise false.
      */
-    stopListeningTo: function(listenable){
-        var sub, i = 0, subs = this.subscriptions || [];
-        for(;i < subs.length; i++){
+    stopListeningTo: function stopListeningTo(listenable) {
+        var sub,
+            i = 0,
+            subs = this.subscriptions || [];
+        for (; i < subs.length; i++) {
             sub = subs[i];
-            if (sub.listenable === listenable){
+            if (sub.listenable === listenable) {
                 sub.stop();
-                _.throwIf(subs.indexOf(sub)!==-1,'Failed to remove listen from subscriptions list!');
+                _.throwIf(subs.indexOf(sub) !== -1, "Failed to remove listen from subscriptions list!");
                 return true;
             }
         }
@@ -441,11 +454,12 @@ module.exports = {
     /**
      * Stops all subscriptions and empties subscriptions array
      */
-    stopListeningToAll: function(){
-        var remaining, subs = this.subscriptions || [];
-        while((remaining=subs.length)){
+    stopListeningToAll: function stopListeningToAll() {
+        var remaining,
+            subs = this.subscriptions || [];
+        while (remaining = subs.length) {
             subs[0].stop();
-            _.throwIf(subs.length!==remaining-1,'Failed to remove listen from subscriptions list!');
+            _.throwIf(subs.length !== remaining - 1, "Failed to remove listen from subscriptions list!");
         }
     },
 
@@ -454,13 +468,13 @@ module.exports = {
      * @param {Action|Store} listenable The publisher we want to get initial state from
      * @param {Function|String} defaultCallback The method to receive the data
      */
-    fetchInitialState: function (listenable, defaultCallback) {
-        defaultCallback = (defaultCallback && this[defaultCallback]) || defaultCallback;
+    fetchInitialState: function fetchInitialState(listenable, defaultCallback) {
+        defaultCallback = defaultCallback && this[defaultCallback] || defaultCallback;
         var me = this;
         if (_.isFunction(defaultCallback) && _.isFunction(listenable.getInitialState)) {
             var data = listenable.getInitialState();
             if (data && _.isFunction(data.then)) {
-                data.then(function() {
+                data.then(function () {
                     defaultCallback.apply(me, arguments);
                 });
             } else {
@@ -505,10 +519,772 @@ module.exports = {
      */
     joinStrict: maker("strict")
 };
+},{"./joins":11,"./utils":13}],5:[function(require,module,exports){
+"use strict";
 
-},{"./joins":14,"./utils":18}],5:[function(require,module,exports){
-var _ = require('./utils'),
-    ListenerMethods = require('./ListenerMethods');
+var _ = require("./utils");
+
+/**
+ * A module of methods for object that you want to be able to listen to.
+ * This module is consumed by `createStore` and `createAction`
+ */
+module.exports = {
+
+    /**
+     * Hook used by the publisher that is invoked before emitting
+     * and before `shouldEmit`. The arguments are the ones that the action
+     * is invoked with. If this function returns something other than
+     * undefined, that will be passed on as arguments for shouldEmit and
+     * emission.
+     */
+    preEmit: function preEmit() {},
+
+    /**
+     * Hook used by the publisher after `preEmit` to determine if the
+     * event should be emitted with given arguments. This may be overridden
+     * in your application, default implementation always returns true.
+     *
+     * @returns {Boolean} true if event should be emitted
+     */
+    shouldEmit: function shouldEmit() {
+        return true;
+    },
+
+    /**
+     * Subscribes the given callback for action triggered
+     *
+     * @param {Function} callback The callback to register as event handler
+     * @param {Mixed} [optional] bindContext The context to bind the callback with
+     * @returns {Function} Callback that unsubscribes the registered event handler
+     */
+    listen: function listen(callback, bindContext) {
+        bindContext = bindContext || this;
+        var eventHandler = function eventHandler(args) {
+            if (aborted) {
+                return;
+            }
+            callback.apply(bindContext, args);
+        },
+            me = this,
+            aborted = false;
+        this.emitter.addListener(this.eventLabel, eventHandler);
+        return function () {
+            aborted = true;
+            me.emitter.removeListener(me.eventLabel, eventHandler);
+        };
+    },
+
+    /**
+     * Attach handlers to promise that trigger the completed and failed
+     * child publishers, if available.
+     *
+     * @param {Object} The promise to attach to
+     */
+    promise: function promise(_promise) {
+        var me = this;
+
+        var canHandlePromise = this.children.indexOf("completed") >= 0 && this.children.indexOf("failed") >= 0;
+
+        if (!canHandlePromise) {
+            throw new Error("Publisher must have \"completed\" and \"failed\" child publishers");
+        }
+
+        _promise.then(function (response) {
+            return me.completed(response);
+        }, function (error) {
+            return me.failed(error);
+        });
+    },
+
+    /**
+     * Subscribes the given callback for action triggered, which should
+     * return a promise that in turn is passed to `this.promise`
+     *
+     * @param {Function} callback The callback to register as event handler
+     */
+    listenAndPromise: function listenAndPromise(callback, bindContext) {
+        var me = this;
+        bindContext = bindContext || this;
+        this.willCallPromise = (this.willCallPromise || 0) + 1;
+
+        var removeListen = this.listen(function () {
+
+            if (!callback) {
+                throw new Error("Expected a function returning a promise but got " + callback);
+            }
+
+            var args = arguments,
+                promise = callback.apply(bindContext, args);
+            return me.promise.call(me, promise);
+        }, bindContext);
+
+        return function () {
+            me.willCallPromise--;
+            removeListen.call(me);
+        };
+    },
+
+    /**
+     * Publishes an event using `this.emitter` (if `shouldEmit` agrees)
+     */
+    trigger: function trigger() {
+        var args = arguments,
+            pre = this.preEmit.apply(this, args);
+        args = pre === undefined ? args : _.isArguments(pre) ? pre : [].concat(pre);
+        if (this.shouldEmit.apply(this, args)) {
+            this.emitter.emit(this.eventLabel, args);
+        }
+    },
+
+    /**
+     * Tries to publish the event on the next tick
+     */
+    triggerAsync: function triggerAsync() {
+        var args = arguments,
+            me = this;
+        _.nextTick(function () {
+            me.trigger.apply(me, args);
+        });
+    },
+
+    /**
+     * Returns a Promise for the triggered action
+     *
+     * @return {Promise}
+     *   Resolved by completed child action.
+     *   Rejected by failed child action.
+     *   If listenAndPromise'd, then promise associated to this trigger.
+     *   Otherwise, the promise is for next child action completion.
+     */
+    triggerPromise: function triggerPromise() {
+        var me = this;
+        var args = arguments;
+
+        var canHandlePromise = this.children.indexOf("completed") >= 0 && this.children.indexOf("failed") >= 0;
+
+        var promise = _.createPromise(function (resolve, reject) {
+            // If `listenAndPromise` is listening
+            // patch `promise` w/ context-loaded resolve/reject
+            if (me.willCallPromise) {
+                _.nextTick(function () {
+                    var previousPromise = me.promise;
+                    me.promise = function (inputPromise) {
+                        inputPromise.then(resolve, reject);
+                        // Back to your regularly schedule programming.
+                        me.promise = previousPromise;
+                        return me.promise.apply(me, arguments);
+                    };
+                    me.trigger.apply(me, args);
+                });
+                return;
+            }
+
+            if (canHandlePromise) {
+                var removeSuccess = me.completed.listen(function (argsArr) {
+                    removeSuccess();
+                    removeFailed();
+                    resolve(argsArr);
+                });
+
+                var removeFailed = me.failed.listen(function (argsArr) {
+                    removeSuccess();
+                    removeFailed();
+                    reject(argsArr);
+                });
+            }
+
+            me.triggerAsync.apply(me, args);
+
+            if (!canHandlePromise) {
+                resolve();
+            }
+        });
+
+        return promise;
+    }
+};
+},{"./utils":13}],6:[function(require,module,exports){
+/**
+ * A module of methods that you want to include in all stores.
+ * This module is consumed by `createStore`.
+ */
+"use strict";
+
+module.exports = {};
+},{}],7:[function(require,module,exports){
+"use strict";
+
+module.exports = function (store, definition) {
+    for (var name in definition) {
+        if (Object.getOwnPropertyDescriptor && Object.defineProperty) {
+            var propertyDescriptor = Object.getOwnPropertyDescriptor(definition, name);
+
+            if (!propertyDescriptor.value || typeof propertyDescriptor.value !== "function" || !definition.hasOwnProperty(name)) {
+                continue;
+            }
+
+            store[name] = definition[name].bind(store);
+        } else {
+            var property = definition[name];
+
+            if (typeof property !== "function" || !definition.hasOwnProperty(name)) {
+                continue;
+            }
+
+            store[name] = property.bind(store);
+        }
+    }
+
+    return store;
+};
+},{}],8:[function(require,module,exports){
+"use strict";
+
+var _ = require("./utils"),
+    ActionMethods = require("./ActionMethods"),
+    PublisherMethods = require("./PublisherMethods"),
+    Keep = require("./Keep");
+
+var allowed = { preEmit: 1, shouldEmit: 1 };
+
+/**
+ * Creates an action functor object. It is mixed in with functions
+ * from the `PublisherMethods` mixin. `preEmit` and `shouldEmit` may
+ * be overridden in the definition object.
+ *
+ * @param {Object} definition The action object definition
+ */
+var createAction = function createAction(definition) {
+
+    definition = definition || {};
+    if (!_.isObject(definition)) {
+        definition = { actionName: definition };
+    }
+
+    for (var a in ActionMethods) {
+        if (!allowed[a] && PublisherMethods[a]) {
+            throw new Error("Cannot override API method " + a + " in Reflux.ActionMethods. Use another method name or override it on Reflux.PublisherMethods instead.");
+        }
+    }
+
+    for (var d in definition) {
+        if (!allowed[d] && PublisherMethods[d]) {
+            throw new Error("Cannot override API method " + d + " in action creation. Use another method name or override it on Reflux.PublisherMethods instead.");
+        }
+    }
+
+    definition.children = definition.children || [];
+    if (definition.asyncResult) {
+        definition.children = definition.children.concat(["completed", "failed"]);
+    }
+
+    var i = 0,
+        childActions = {};
+    for (; i < definition.children.length; i++) {
+        var name = definition.children[i];
+        childActions[name] = createAction(name);
+    }
+
+    var context = _.extend({
+        eventLabel: "action",
+        emitter: new _.EventEmitter(),
+        _isAction: true
+    }, PublisherMethods, ActionMethods, definition);
+
+    var functor = function functor() {
+        var triggerType = functor.sync ? "trigger" : _.environment.hasPromise ? "triggerPromise" : "triggerAsync";
+        return functor[triggerType].apply(functor, arguments);
+    };
+
+    _.extend(functor, childActions, context);
+
+    Keep.createdActions.push(functor);
+
+    return functor;
+};
+
+module.exports = createAction;
+},{"./ActionMethods":2,"./Keep":3,"./PublisherMethods":5,"./utils":13}],9:[function(require,module,exports){
+"use strict";
+
+var _ = require("./utils"),
+    Keep = require("./Keep"),
+    mixer = require("./mixer"),
+    bindMethods = require("./bindMethods");
+
+var allowed = { preEmit: 1, shouldEmit: 1 };
+
+/**
+ * Creates an event emitting Data Store. It is mixed in with functions
+ * from the `ListenerMethods` and `PublisherMethods` mixins. `preEmit`
+ * and `shouldEmit` may be overridden in the definition object.
+ *
+ * @param {Object} definition The data store object definition
+ * @returns {Store} A data store instance
+ */
+module.exports = function (definition) {
+
+    var StoreMethods = require("./StoreMethods"),
+        PublisherMethods = require("./PublisherMethods"),
+        ListenerMethods = require("./ListenerMethods");
+
+    definition = definition || {};
+
+    for (var a in StoreMethods) {
+        if (!allowed[a] && (PublisherMethods[a] || ListenerMethods[a])) {
+            throw new Error("Cannot override API method " + a + " in Reflux.StoreMethods. Use another method name or override it on Reflux.PublisherMethods / Reflux.ListenerMethods instead.");
+        }
+    }
+
+    for (var d in definition) {
+        if (!allowed[d] && (PublisherMethods[d] || ListenerMethods[d])) {
+            throw new Error("Cannot override API method " + d + " in store creation. Use another method name or override it on Reflux.PublisherMethods / Reflux.ListenerMethods instead.");
+        }
+    }
+
+    definition = mixer(definition);
+
+    function Store() {
+        var i = 0,
+            arr;
+        this.subscriptions = [];
+        this.emitter = new _.EventEmitter();
+        this.eventLabel = "change";
+        bindMethods(this, definition);
+        if (this.init && _.isFunction(this.init)) {
+            this.init();
+        }
+        if (this.listenables) {
+            arr = [].concat(this.listenables);
+            for (; i < arr.length; i++) {
+                this.listenToMany(arr[i]);
+            }
+        }
+    }
+
+    _.extend(Store.prototype, ListenerMethods, PublisherMethods, StoreMethods, definition);
+
+    var store = new Store();
+    Keep.createdStores.push(store);
+
+    return store;
+};
+},{"./Keep":3,"./ListenerMethods":4,"./PublisherMethods":5,"./StoreMethods":6,"./bindMethods":7,"./mixer":12,"./utils":13}],10:[function(require,module,exports){
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+var Reflux = {
+    version: {
+        "reflux-core": "0.2.1"
+    }
+};
+
+Reflux.ActionMethods = require("./ActionMethods");
+
+Reflux.ListenerMethods = require("./ListenerMethods");
+
+Reflux.PublisherMethods = require("./PublisherMethods");
+
+Reflux.StoreMethods = require("./StoreMethods");
+
+Reflux.createAction = require("./createAction");
+
+Reflux.createStore = require("./createStore");
+
+var maker = require("./joins").staticJoinCreator;
+
+Reflux.joinTrailing = Reflux.all = maker("last"); // Reflux.all alias for backward compatibility
+
+Reflux.joinLeading = maker("first");
+
+Reflux.joinStrict = maker("strict");
+
+Reflux.joinConcat = maker("all");
+
+var _ = Reflux.utils = require("./utils");
+
+Reflux.EventEmitter = _.EventEmitter;
+
+Reflux.Promise = _.Promise;
+
+/**
+ * Convenience function for creating a set of actions
+ *
+ * @param definitions the definitions for the actions to be created
+ * @returns an object with actions of corresponding action names
+ */
+Reflux.createActions = (function () {
+    var reducer = function reducer(definitions, actions) {
+        Object.keys(definitions).forEach(function (actionName) {
+            var val = definitions[actionName];
+            actions[actionName] = Reflux.createAction(val);
+        });
+    };
+
+    return function (definitions) {
+        var actions = {};
+        if (definitions instanceof Array) {
+            definitions.forEach(function (val) {
+                if (_.isObject(val)) {
+                    reducer(val, actions);
+                } else {
+                    actions[val] = Reflux.createAction(val);
+                }
+            });
+        } else {
+            reducer(definitions, actions);
+        }
+        return actions;
+    };
+})();
+
+/**
+ * Sets the eventmitter that Reflux uses
+ */
+Reflux.setEventEmitter = function (ctx) {
+    Reflux.EventEmitter = _.EventEmitter = ctx;
+};
+
+/**
+ * Sets the Promise library that Reflux uses
+ */
+Reflux.setPromise = function (ctx) {
+    Reflux.Promise = _.Promise = ctx;
+};
+
+/**
+ * Sets the Promise factory that creates new promises
+ * @param {Function} factory has the signature `function(resolver) { return [new Promise]; }`
+ */
+Reflux.setPromiseFactory = function (factory) {
+    _.createPromise = factory;
+};
+
+/**
+ * Sets the method used for deferring actions and stores
+ */
+Reflux.nextTick = function (nextTick) {
+    _.nextTick = nextTick;
+};
+
+Reflux.use = function (pluginCb) {
+    pluginCb(Reflux);
+};
+
+/**
+ * Provides the set of created actions and stores for introspection
+ */
+/*eslint-disable no-underscore-dangle*/
+Reflux.__keep = require("./Keep");
+/*eslint-enable no-underscore-dangle*/
+
+/**
+ * Warn if Function.prototype.bind not available
+ */
+if (!Function.prototype.bind) {
+    console.error("Function.prototype.bind not available. " + "ES5 shim required. " + "https://github.com/spoike/refluxjs#es5");
+}
+
+exports["default"] = Reflux;
+module.exports = exports["default"];
+},{"./ActionMethods":2,"./Keep":3,"./ListenerMethods":4,"./PublisherMethods":5,"./StoreMethods":6,"./createAction":8,"./createStore":9,"./joins":11,"./utils":13}],11:[function(require,module,exports){
+/**
+ * Internal module used to create static and instance join methods
+ */
+
+"use strict";
+
+var createStore = require("./createStore"),
+    _ = require("./utils");
+
+var slice = Array.prototype.slice,
+    strategyMethodNames = {
+    strict: "joinStrict",
+    first: "joinLeading",
+    last: "joinTrailing",
+    all: "joinConcat"
+};
+
+/**
+ * Used in `index.js` to create the static join methods
+ * @param {String} strategy Which strategy to use when tracking listenable trigger arguments
+ * @returns {Function} A static function which returns a store with a join listen on the given listenables using the given strategy
+ */
+exports.staticJoinCreator = function (strategy) {
+    return function () /* listenables... */{
+        var listenables = slice.call(arguments);
+        return createStore({
+            init: function init() {
+                this[strategyMethodNames[strategy]].apply(this, listenables.concat("triggerAsync"));
+            }
+        });
+    };
+};
+
+/**
+ * Used in `ListenerMethods.js` to create the instance join methods
+ * @param {String} strategy Which strategy to use when tracking listenable trigger arguments
+ * @returns {Function} An instance method which sets up a join listen on the given listenables using the given strategy
+ */
+exports.instanceJoinCreator = function (strategy) {
+    return function () /* listenables..., callback*/{
+        _.throwIf(arguments.length < 2, "Cannot create a join with less than 2 listenables!");
+        var listenables = slice.call(arguments),
+            callback = listenables.pop(),
+            numberOfListenables = listenables.length,
+            join = {
+            numberOfListenables: numberOfListenables,
+            callback: this[callback] || callback,
+            listener: this,
+            strategy: strategy
+        },
+            i,
+            cancels = [],
+            subobj;
+        for (i = 0; i < numberOfListenables; i++) {
+            _.throwIf(this.validateListening(listenables[i]));
+        }
+        for (i = 0; i < numberOfListenables; i++) {
+            cancels.push(listenables[i].listen(newListener(i, join), this));
+        }
+        reset(join);
+        subobj = { listenable: listenables };
+        subobj.stop = makeStopper(subobj, cancels, this);
+        this.subscriptions = (this.subscriptions || []).concat(subobj);
+        return subobj;
+    };
+};
+
+// ---- internal join functions ----
+
+function makeStopper(subobj, cancels, context) {
+    return function () {
+        var i,
+            subs = context.subscriptions,
+            index = subs ? subs.indexOf(subobj) : -1;
+        _.throwIf(index === -1, "Tried to remove join already gone from subscriptions list!");
+        for (i = 0; i < cancels.length; i++) {
+            cancels[i]();
+        }
+        subs.splice(index, 1);
+    };
+}
+
+function reset(join) {
+    join.listenablesEmitted = new Array(join.numberOfListenables);
+    join.args = new Array(join.numberOfListenables);
+}
+
+function newListener(i, join) {
+    return function () {
+        var callargs = slice.call(arguments);
+        if (join.listenablesEmitted[i]) {
+            switch (join.strategy) {
+                case "strict":
+                    throw new Error("Strict join failed because listener triggered twice.");
+                case "last":
+                    join.args[i] = callargs;break;
+                case "all":
+                    join.args[i].push(callargs);
+            }
+        } else {
+            join.listenablesEmitted[i] = true;
+            join.args[i] = join.strategy === "all" ? [callargs] : callargs;
+        }
+        emitIfAllListenablesEmitted(join);
+    };
+}
+
+function emitIfAllListenablesEmitted(join) {
+    for (var i = 0; i < join.numberOfListenables; i++) {
+        if (!join.listenablesEmitted[i]) {
+            return;
+        }
+    }
+    join.callback.apply(join.listener, join.args);
+    reset(join);
+}
+},{"./createStore":9,"./utils":13}],12:[function(require,module,exports){
+"use strict";
+
+var _ = require("./utils");
+
+module.exports = function mix(def) {
+    var composed = {
+        init: [],
+        preEmit: [],
+        shouldEmit: []
+    };
+
+    var updated = (function mixDef(mixin) {
+        var mixed = {};
+        if (mixin.mixins) {
+            mixin.mixins.forEach(function (subMixin) {
+                _.extend(mixed, mixDef(subMixin));
+            });
+        }
+        _.extend(mixed, mixin);
+        Object.keys(composed).forEach(function (composable) {
+            if (mixin.hasOwnProperty(composable)) {
+                composed[composable].push(mixin[composable]);
+            }
+        });
+        return mixed;
+    })(def);
+
+    if (composed.init.length > 1) {
+        updated.init = function () {
+            var args = arguments;
+            composed.init.forEach(function (init) {
+                init.apply(this, args);
+            }, this);
+        };
+    }
+    if (composed.preEmit.length > 1) {
+        updated.preEmit = function () {
+            return composed.preEmit.reduce((function (args, preEmit) {
+                var newValue = preEmit.apply(this, args);
+                return newValue === undefined ? args : [newValue];
+            }).bind(this), arguments);
+        };
+    }
+    if (composed.shouldEmit.length > 1) {
+        updated.shouldEmit = function () {
+            var args = arguments;
+            return !composed.shouldEmit.some(function (shouldEmit) {
+                return !shouldEmit.apply(this, args);
+            }, this);
+        };
+    }
+    Object.keys(composed).forEach(function (composable) {
+        if (composed[composable].length === 1) {
+            updated[composable] = composed[composable][0];
+        }
+    });
+
+    return updated;
+};
+},{"./utils":13}],13:[function(require,module,exports){
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+exports.capitalize = capitalize;
+exports.callbackName = callbackName;
+exports.isObject = isObject;
+exports.extend = extend;
+exports.isFunction = isFunction;
+exports.object = object;
+exports.isArguments = isArguments;
+exports.throwIf = throwIf;
+
+function capitalize(string) {
+    return string.charAt(0).toUpperCase() + string.slice(1);
+}
+
+function callbackName(string, prefix) {
+    prefix = prefix || "on";
+    return prefix + exports.capitalize(string);
+}
+
+var environment = {};
+
+exports.environment = environment;
+function checkEnv(target) {
+    var flag = undefined;
+    try {
+        /*eslint-disable no-eval */
+        if (eval(target)) {
+            flag = true;
+        }
+        /*eslint-enable no-eval */
+    } catch (e) {
+        flag = false;
+    }
+    environment[callbackName(target, "has")] = flag;
+}
+checkEnv("setImmediate");
+checkEnv("Promise");
+
+/*
+ * isObject, extend, isFunction, isArguments are taken from undescore/lodash in
+ * order to remove the dependency
+ */
+
+function isObject(obj) {
+    var type = typeof obj;
+    return type === "function" || type === "object" && !!obj;
+}
+
+function extend(obj) {
+    if (!isObject(obj)) {
+        return obj;
+    }
+    var source, prop;
+    for (var i = 1, length = arguments.length; i < length; i++) {
+        source = arguments[i];
+        for (prop in source) {
+            if (Object.getOwnPropertyDescriptor && Object.defineProperty) {
+                var propertyDescriptor = Object.getOwnPropertyDescriptor(source, prop);
+                Object.defineProperty(obj, prop, propertyDescriptor);
+            } else {
+                obj[prop] = source[prop];
+            }
+        }
+    }
+    return obj;
+}
+
+function isFunction(value) {
+    return typeof value === "function";
+}
+
+exports.EventEmitter = require("eventemitter3");
+
+if (environment.hasSetImmediate) {
+    exports.nextTick = function (callback) {
+        setImmediate(callback);
+    };
+} else {
+    exports.nextTick = function (callback) {
+        setTimeout(callback, 0);
+    };
+}
+
+function object(keys, vals) {
+    var o = {},
+        i = 0;
+    for (; i < keys.length; i++) {
+        o[keys[i]] = vals[i];
+    }
+    return o;
+}
+
+if (environment.hasPromise) {
+    exports.Promise = Promise;
+    exports.createPromise = function (resolver) {
+        return new exports.Promise(resolver);
+    };
+} else {
+    exports.Promise = null;
+    exports.createPromise = function () {};
+}
+
+function isArguments(value) {
+    return typeof value === "object" && "callee" in value && typeof value.length === "number";
+}
+
+function throwIf(val, msg) {
+    if (val) {
+        throw Error(msg || val);
+    }
+}
+},{"eventemitter3":1}],14:[function(require,module,exports){
+var _ = require('reflux-core/lib/utils'),
+    ListenerMethods = require('reflux-core/lib/ListenerMethods');
 
 /**
  * A module meant to be consumed as a mixin by a React component. Supplies the methods from
@@ -525,226 +1301,10 @@ module.exports = _.extend({
 
 }, ListenerMethods);
 
-},{"./ListenerMethods":4,"./utils":18}],6:[function(require,module,exports){
-var _ = require('./utils');
-
-/**
- * A module of methods for object that you want to be able to listen to.
- * This module is consumed by `createStore` and `createAction`
- */
-module.exports = {
-
-    /**
-     * Hook used by the publisher that is invoked before emitting
-     * and before `shouldEmit`. The arguments are the ones that the action
-     * is invoked with. If this function returns something other than
-     * undefined, that will be passed on as arguments for shouldEmit and
-     * emission.
-     */
-    preEmit: function() {},
-
-    /**
-     * Hook used by the publisher after `preEmit` to determine if the
-     * event should be emitted with given arguments. This may be overridden
-     * in your application, default implementation always returns true.
-     *
-     * @returns {Boolean} true if event should be emitted
-     */
-    shouldEmit: function() { return true; },
-
-    /**
-     * Subscribes the given callback for action triggered
-     *
-     * @param {Function} callback The callback to register as event handler
-     * @param {Mixed} [optional] bindContext The context to bind the callback with
-     * @returns {Function} Callback that unsubscribes the registered event handler
-     */
-    listen: function(callback, bindContext) {
-        bindContext = bindContext || this;
-        var eventHandler = function(args) {
-            if (aborted){
-                return;
-            }
-            callback.apply(bindContext, args);
-        }, me = this, aborted = false;
-        this.emitter.addListener(this.eventLabel, eventHandler);
-        return function() {
-            aborted = true;
-            me.emitter.removeListener(me.eventLabel, eventHandler);
-        };
-    },
-
-    /**
-     * Attach handlers to promise that trigger the completed and failed
-     * child publishers, if available.
-     *
-     * @param {Object} The promise to attach to
-     */
-    promise: function(promise) {
-        var me = this;
-
-        var canHandlePromise =
-            this.children.indexOf('completed') >= 0 &&
-            this.children.indexOf('failed') >= 0;
-
-        if (!canHandlePromise){
-            throw new Error('Publisher must have "completed" and "failed" child publishers');
-        }
-
-        promise.then(function(response) {
-            return me.completed(response);
-        }, function(error) {
-            return me.failed(error);
-        });
-    },
-
-    /**
-     * Subscribes the given callback for action triggered, which should
-     * return a promise that in turn is passed to `this.promise`
-     *
-     * @param {Function} callback The callback to register as event handler
-     */
-    listenAndPromise: function(callback, bindContext) {
-        var me = this;
-        bindContext = bindContext || this;
-        this.willCallPromise = (this.willCallPromise || 0) + 1;
-
-        var removeListen = this.listen(function() {
-
-            if (!callback) {
-                throw new Error('Expected a function returning a promise but got ' + callback);
-            }
-
-            var args = arguments,
-                promise = callback.apply(bindContext, args);
-            return me.promise.call(me, promise);
-        }, bindContext);
-
-        return function () {
-          me.willCallPromise--;
-          removeListen.call(me);
-        };
-
-    },
-
-    /**
-     * Publishes an event using `this.emitter` (if `shouldEmit` agrees)
-     */
-    trigger: function() {
-        var args = arguments,
-            pre = this.preEmit.apply(this, args);
-        args = pre === undefined ? args : _.isArguments(pre) ? pre : [].concat(pre);
-        if (this.shouldEmit.apply(this, args)) {
-            this.emitter.emit(this.eventLabel, args);
-        }
-    },
-
-    /**
-     * Tries to publish the event on the next tick
-     */
-    triggerAsync: function(){
-        var args = arguments,me = this;
-        _.nextTick(function() {
-            me.trigger.apply(me, args);
-        });
-    },
-
-    /**
-     * Returns a Promise for the triggered action
-     *
-     * @return {Promise}
-     *   Resolved by completed child action.
-     *   Rejected by failed child action.
-     *   If listenAndPromise'd, then promise associated to this trigger.
-     *   Otherwise, the promise is for next child action completion.
-     */
-    triggerPromise: function(){
-        var me = this;
-        var args = arguments;
-
-        var canHandlePromise =
-            this.children.indexOf('completed') >= 0 &&
-            this.children.indexOf('failed') >= 0;
-
-        var promise = _.createPromise(function(resolve, reject) {
-            // If `listenAndPromise` is listening
-            // patch `promise` w/ context-loaded resolve/reject
-            if (me.willCallPromise) {
-                _.nextTick(function() {
-                    var old_promise_method = me.promise;
-                    me.promise = function (promise) {
-                        promise.then(resolve, reject);
-                        // Back to your regularly schedule programming.
-                        me.promise = old_promise_method;
-                        return me.promise.apply(me, arguments);
-                    };
-                    me.trigger.apply(me, args);
-                });
-                return;
-            }
-
-            if (canHandlePromise) {
-                var removeSuccess = me.completed.listen(function(args) {
-                    removeSuccess();
-                    removeFailed();
-                    resolve(args);
-                });
-
-                var removeFailed = me.failed.listen(function(args) {
-                    removeSuccess();
-                    removeFailed();
-                    reject(args);
-                });
-            }
-
-            me.triggerAsync.apply(me, args);
-
-            if (!canHandlePromise) {
-                resolve();
-            }
-        });
-
-        return promise;
-    }
-};
-
-},{"./utils":18}],7:[function(require,module,exports){
-/**
- * A module of methods that you want to include in all stores.
- * This module is consumed by `createStore`.
- */
-module.exports = {
-};
-
-},{}],8:[function(require,module,exports){
-module.exports = function(store, definition) {
-  for (var name in definition) {
-    if (Object.getOwnPropertyDescriptor && Object.defineProperty) {
-        var propertyDescriptor = Object.getOwnPropertyDescriptor(definition, name);
-
-        if (!propertyDescriptor.value || typeof propertyDescriptor.value !== 'function' || !definition.hasOwnProperty(name)) {
-            continue;
-        }
-
-        store[name] = definition[name].bind(store);
-    } else {
-        var property = definition[name];
-
-        if (typeof property !== 'function' || !definition.hasOwnProperty(name)) {
-            continue;
-        }
-
-        store[name] = property.bind(store);
-    }
-  }
-
-  return store;
-};
-
-},{}],9:[function(require,module,exports){
-var ListenerMethods = require('./ListenerMethods'),
+},{"reflux-core/lib/ListenerMethods":4,"reflux-core/lib/utils":13}],15:[function(require,module,exports){
+var ListenerMethods = require('reflux-core/lib/ListenerMethods'),
     ListenerMixin = require('./ListenerMixin'),
-    _ = require('./utils');
+    _ = require('reflux-core/lib/utils');
 
 module.exports = function(listenable,key){
     return {
@@ -770,10 +1330,10 @@ module.exports = function(listenable,key){
     };
 };
 
-},{"./ListenerMethods":4,"./ListenerMixin":5,"./utils":18}],10:[function(require,module,exports){
-var ListenerMethods = require('./ListenerMethods'),
+},{"./ListenerMixin":14,"reflux-core/lib/ListenerMethods":4,"reflux-core/lib/utils":13}],16:[function(require,module,exports){
+var ListenerMethods = require('reflux-core/lib/ListenerMethods'),
     ListenerMixin = require('./ListenerMixin'),
-    _ = require('./utils');
+    _ = require('reflux-core/lib/utils');
 
 module.exports = function(listenable, key, filterFunc) {
     filterFunc = _.isFunction(key) ? key : filterFunc;
@@ -812,359 +1372,23 @@ module.exports = function(listenable, key, filterFunc) {
 };
 
 
-},{"./ListenerMethods":4,"./ListenerMixin":5,"./utils":18}],11:[function(require,module,exports){
-var _ = require('./utils'),
-    ActionMethods = require('./ActionMethods'),
-    PublisherMethods = require('./PublisherMethods'),
-    Keep = require('./Keep'),
-    allowed = {preEmit:1,shouldEmit:1};
+},{"./ListenerMixin":14,"reflux-core/lib/ListenerMethods":4,"reflux-core/lib/utils":13}],17:[function(require,module,exports){
+var Reflux = require('reflux-core');
 
-/**
- * Creates an action functor object. It is mixed in with functions
- * from the `PublisherMethods` mixin. `preEmit` and `shouldEmit` may
- * be overridden in the definition object.
- *
- * @param {Object} definition The action object definition
- */
-var createAction = function(definition) {
+Reflux.connect = require('./connect');
 
-    definition = definition || {};
-    if (!_.isObject(definition)){
-        definition = {actionName: definition};
-    }
+Reflux.connectFilter = require('./connectFilter');
 
-    for(var a in ActionMethods){
-        if (!allowed[a] && PublisherMethods[a]) {
-            throw new Error("Cannot override API method " + a +
-                " in Reflux.ActionMethods. Use another method name or override it on Reflux.PublisherMethods instead."
-            );
-        }
-    }
+Reflux.ListenerMixin = require('./ListenerMixin');
 
-    for(var d in definition){
-        if (!allowed[d] && PublisherMethods[d]) {
-            throw new Error("Cannot override API method " + d +
-                " in action creation. Use another method name or override it on Reflux.PublisherMethods instead."
-            );
-        }
-    }
+Reflux.listenTo = require('./listenTo');
 
-    definition.children = definition.children || [];
-    if (definition.asyncResult){
-        definition.children = definition.children.concat(["completed","failed"]);
-    }
+Reflux.listenToMany = require('./listenToMany');
 
-    var i = 0, childActions = {};
-    for (; i < definition.children.length; i++) {
-        var name = definition.children[i];
-        childActions[name] = createAction(name);
-    }
+module.exports = Reflux;
 
-    var context = _.extend({
-        eventLabel: "action",
-        emitter: new _.EventEmitter(),
-        _isAction: true
-    }, PublisherMethods, ActionMethods, definition);
-
-    var functor = function() {
-        var triggerType = functor.sync ? "trigger" :
-            ( _.environment.hasPromises ? "triggerPromise" : "triggerAsync" );
-        return functor[triggerType].apply(functor, arguments);
-    };
-
-    _.extend(functor,childActions,context);
-
-    Keep.createdActions.push(functor);
-
-    return functor;
-
-};
-
-module.exports = createAction;
-
-},{"./ActionMethods":2,"./Keep":3,"./PublisherMethods":6,"./utils":18}],12:[function(require,module,exports){
-var _ = require('./utils'),
-    Keep = require('./Keep'),
-    mixer = require('./mixer'),
-    allowed = {preEmit:1,shouldEmit:1},
-    bindMethods = require('./bindMethods');
-
-/**
- * Creates an event emitting Data Store. It is mixed in with functions
- * from the `ListenerMethods` and `PublisherMethods` mixins. `preEmit`
- * and `shouldEmit` may be overridden in the definition object.
- *
- * @param {Object} definition The data store object definition
- * @returns {Store} A data store instance
- */
-module.exports = function(definition) {
-
-    var StoreMethods = require('./StoreMethods'),
-        PublisherMethods = require('./PublisherMethods'),
-        ListenerMethods = require('./ListenerMethods');
-
-    definition = definition || {};
-
-    for(var a in StoreMethods){
-        if (!allowed[a] && (PublisherMethods[a] || ListenerMethods[a])){
-            throw new Error("Cannot override API method " + a +
-                " in Reflux.StoreMethods. Use another method name or override it on Reflux.PublisherMethods / Reflux.ListenerMethods instead."
-            );
-        }
-    }
-
-    for(var d in definition){
-        if (!allowed[d] && (PublisherMethods[d] || ListenerMethods[d])){
-            throw new Error("Cannot override API method " + d +
-                " in store creation. Use another method name or override it on Reflux.PublisherMethods / Reflux.ListenerMethods instead."
-            );
-        }
-    }
-
-    definition = mixer(definition);
-
-    function Store() {
-        var i=0, arr;
-        this.subscriptions = [];
-        this.emitter = new _.EventEmitter();
-        this.eventLabel = "change";
-        bindMethods(this, definition);
-        if (this.init && _.isFunction(this.init)) {
-            this.init();
-        }
-        if (this.listenables){
-            arr = [].concat(this.listenables);
-            for(;i < arr.length;i++){
-                this.listenToMany(arr[i]);
-            }
-        }
-    }
-
-    _.extend(Store.prototype, ListenerMethods, PublisherMethods, StoreMethods, definition);
-
-    var store = new Store();
-    Keep.createdStores.push(store);
-
-    return store;
-};
-
-},{"./Keep":3,"./ListenerMethods":4,"./PublisherMethods":6,"./StoreMethods":7,"./bindMethods":8,"./mixer":17,"./utils":18}],13:[function(require,module,exports){
-exports.ActionMethods = require('./ActionMethods');
-
-exports.ListenerMethods = require('./ListenerMethods');
-
-exports.PublisherMethods = require('./PublisherMethods');
-
-exports.StoreMethods = require('./StoreMethods');
-
-exports.createAction = require('./createAction');
-
-exports.createStore = require('./createStore');
-
-exports.connect = require('./connect');
-
-exports.connectFilter = require('./connectFilter');
-
-exports.ListenerMixin = require('./ListenerMixin');
-
-exports.listenTo = require('./listenTo');
-
-exports.listenToMany = require('./listenToMany');
-
-
-var maker = require('./joins').staticJoinCreator;
-
-exports.joinTrailing = exports.all = maker("last"); // Reflux.all alias for backward compatibility
-
-exports.joinLeading = maker("first");
-
-exports.joinStrict = maker("strict");
-
-exports.joinConcat = maker("all");
-
-var _ = exports.utils = require('./utils');
-
-exports.EventEmitter = _.EventEmitter;
-
-exports.Promise = _.Promise;
-
-/**
- * Convenience function for creating a set of actions
- *
- * @param definitions the definitions for the actions to be created
- * @returns an object with actions of corresponding action names
- */
-exports.createActions = function(definitions) {
-    var actions = {};
-    for (var k in definitions){
-        if (definitions.hasOwnProperty(k)) {
-            var val = definitions[k],
-                actionName = _.isObject(val) ? k : val;
-
-            actions[actionName] = exports.createAction(val);
-        }
-    }
-    return actions;
-};
-
-/**
- * Sets the eventmitter that Reflux uses
- */
-exports.setEventEmitter = function(ctx) {
-    exports.EventEmitter = _.EventEmitter = ctx;
-};
-
-
-/**
- * Sets the Promise library that Reflux uses
- */
-exports.setPromise = function(ctx) {
-    exports.Promise = _.Promise = ctx;
-};
-
-
-/**
- * Sets the Promise factory that creates new promises
- * @param {Function} factory has the signature `function(resolver) { return [new Promise]; }`
- */
-exports.setPromiseFactory = function(factory) {
-    _.createPromise = factory;
-};
-
-
-/**
- * Sets the method used for deferring actions and stores
- */
-exports.nextTick = function(nextTick) {
-    _.nextTick = nextTick;
-};
-
-/**
- * Provides the set of created actions and stores for introspection
- */
-exports.__keep = require('./Keep');
-
-/**
- * Warn if Function.prototype.bind not available
- */
-if (!Function.prototype.bind) {
-  console.error(
-    'Function.prototype.bind not available. ' +
-    'ES5 shim required. ' +
-    'https://github.com/spoike/refluxjs#es5'
-  );
-}
-
-},{"./ActionMethods":2,"./Keep":3,"./ListenerMethods":4,"./ListenerMixin":5,"./PublisherMethods":6,"./StoreMethods":7,"./connect":9,"./connectFilter":10,"./createAction":11,"./createStore":12,"./joins":14,"./listenTo":15,"./listenToMany":16,"./utils":18}],14:[function(require,module,exports){
-/**
- * Internal module used to create static and instance join methods
- */
-
-var slice = Array.prototype.slice,
-    _ = require("./utils"),
-    createStore = require("./createStore"),
-    strategyMethodNames = {
-        strict: "joinStrict",
-        first: "joinLeading",
-        last: "joinTrailing",
-        all: "joinConcat"
-    };
-
-/**
- * Used in `index.js` to create the static join methods
- * @param {String} strategy Which strategy to use when tracking listenable trigger arguments
- * @returns {Function} A static function which returns a store with a join listen on the given listenables using the given strategy
- */
-exports.staticJoinCreator = function(strategy){
-    return function(/* listenables... */) {
-        var listenables = slice.call(arguments);
-        return createStore({
-            init: function(){
-                this[strategyMethodNames[strategy]].apply(this,listenables.concat("triggerAsync"));
-            }
-        });
-    };
-};
-
-/**
- * Used in `ListenerMethods.js` to create the instance join methods
- * @param {String} strategy Which strategy to use when tracking listenable trigger arguments
- * @returns {Function} An instance method which sets up a join listen on the given listenables using the given strategy
- */
-exports.instanceJoinCreator = function(strategy){
-    return function(/* listenables..., callback*/){
-        _.throwIf(arguments.length < 2,'Cannot create a join with less than 2 listenables!');
-        var listenables = slice.call(arguments),
-            callback = listenables.pop(),
-            numberOfListenables = listenables.length,
-            join = {
-                numberOfListenables: numberOfListenables,
-                callback: this[callback]||callback,
-                listener: this,
-                strategy: strategy
-            }, i, cancels = [], subobj;
-        for (i = 0; i < numberOfListenables; i++) {
-            _.throwIf(this.validateListening(listenables[i]));
-        }
-        for (i = 0; i < numberOfListenables; i++) {
-            cancels.push(listenables[i].listen(newListener(i,join),this));
-        }
-        reset(join);
-        subobj = {listenable: listenables};
-        subobj.stop = makeStopper(subobj,cancels,this);
-        this.subscriptions = (this.subscriptions || []).concat(subobj);
-        return subobj;
-    };
-};
-
-// ---- internal join functions ----
-
-function makeStopper(subobj,cancels,context){
-    return function() {
-        var i, subs = context.subscriptions,
-            index = (subs ? subs.indexOf(subobj) : -1);
-        _.throwIf(index === -1,'Tried to remove join already gone from subscriptions list!');
-        for(i=0;i < cancels.length; i++){
-            cancels[i]();
-        }
-        subs.splice(index, 1);
-    };
-}
-
-function reset(join) {
-    join.listenablesEmitted = new Array(join.numberOfListenables);
-    join.args = new Array(join.numberOfListenables);
-}
-
-function newListener(i,join) {
-    return function() {
-        var callargs = slice.call(arguments);
-        if (join.listenablesEmitted[i]){
-            switch(join.strategy){
-                case "strict": throw new Error("Strict join failed because listener triggered twice.");
-                case "last": join.args[i] = callargs; break;
-                case "all": join.args[i].push(callargs);
-            }
-        } else {
-            join.listenablesEmitted[i] = true;
-            join.args[i] = (join.strategy==="all"?[callargs]:callargs);
-        }
-        emitIfAllListenablesEmitted(join);
-    };
-}
-
-function emitIfAllListenablesEmitted(join) {
-    for (var i = 0; i < join.numberOfListenables; i++) {
-        if (!join.listenablesEmitted[i]) {
-            return;
-        }
-    }
-    join.callback.apply(join.listener,join.args);
-    reset(join);
-}
-
-},{"./createStore":12,"./utils":18}],15:[function(require,module,exports){
-var ListenerMethods = require('./ListenerMethods');
+},{"./ListenerMixin":14,"./connect":15,"./connectFilter":16,"./listenTo":18,"./listenToMany":19,"reflux-core":10}],18:[function(require,module,exports){
+var ListenerMethods = require('reflux-core/lib/ListenerMethods');
 
 /**
  * A mixin factory for a React component. Meant as a more convenient way of using the `ListenerMixin`,
@@ -1200,8 +1424,8 @@ module.exports = function(listenable,callback,initial){
     };
 };
 
-},{"./ListenerMethods":4}],16:[function(require,module,exports){
-var ListenerMethods = require('./ListenerMethods');
+},{"reflux-core/lib/ListenerMethods":4}],19:[function(require,module,exports){
+var ListenerMethods = require('reflux-core/lib/ListenerMethods');
 
 /**
  * A mixin factory for a React component. Meant as a more convenient way of using the `listenerMixin`,
@@ -1235,143 +1459,5 @@ module.exports = function(listenables){
     };
 };
 
-},{"./ListenerMethods":4}],17:[function(require,module,exports){
-var _ = require('./utils');
-
-module.exports = function mix(def) {
-    var composed = {
-        init: [],
-        preEmit: [],
-        shouldEmit: []
-    };
-
-    var updated = (function mixDef(mixin) {
-        var mixed = {};
-        if (mixin.mixins) {
-            mixin.mixins.forEach(function (subMixin) {
-                _.extend(mixed, mixDef(subMixin));
-            });
-        }
-        _.extend(mixed, mixin);
-        Object.keys(composed).forEach(function (composable) {
-            if (mixin.hasOwnProperty(composable)) {
-                composed[composable].push(mixin[composable]);
-            }
-        });
-        return mixed;
-    }(def));
-
-    if (composed.init.length > 1) {
-        updated.init = function () {
-            var args = arguments;
-            composed.init.forEach(function (init) {
-                init.apply(this, args);
-            }, this);
-        };
-    }
-    if (composed.preEmit.length > 1) {
-        updated.preEmit = function () {
-            return composed.preEmit.reduce(function (args, preEmit) {
-                var newValue = preEmit.apply(this, args);
-                return newValue === undefined ? args : [newValue];
-            }.bind(this), arguments);
-        };
-    }
-    if (composed.shouldEmit.length > 1) {
-        updated.shouldEmit = function () {
-            var args = arguments;
-            return !composed.shouldEmit.some(function (shouldEmit) {
-                return !shouldEmit.apply(this, args);
-            }, this);
-        };
-    }
-    Object.keys(composed).forEach(function (composable) {
-        if (composed[composable].length === 1) {
-            updated[composable] = composed[composable][0];
-        }
-    });
-
-    return updated;
-};
-
-},{"./utils":18}],18:[function(require,module,exports){
-exports.environment = {};
-
-/*
- * isObject, extend, isFunction, isArguments are taken from undescore/lodash in
- * order to remove the dependency
- */
-var isObject = exports.isObject = function(obj) {
-    var type = typeof obj;
-    return type === 'function' || type === 'object' && !!obj;
-};
-
-exports.extend = function(obj) {
-    if (!isObject(obj)) {
-        return obj;
-    }
-    var source, prop;
-    for (var i = 1, length = arguments.length; i < length; i++) {
-        source = arguments[i];
-        for (prop in source) {
-            if (Object.getOwnPropertyDescriptor && Object.defineProperty) {
-                var propertyDescriptor = Object.getOwnPropertyDescriptor(source, prop);
-                Object.defineProperty(obj, prop, propertyDescriptor);
-            } else {
-                obj[prop] = source[prop];
-            }
-        }
-    }
-    return obj;
-};
-
-exports.isFunction = function(value) {
-    return typeof value === 'function';
-};
-
-exports.EventEmitter = require('eventemitter3');
-
-exports.nextTick = function(callback) {
-    setTimeout(callback, 0);
-};
-
-exports.capitalize = function(string){
-    return string.charAt(0).toUpperCase()+string.slice(1);
-};
-
-exports.callbackName = function(string){
-    return "on"+exports.capitalize(string);
-};
-
-exports.object = function(keys,vals){
-    var o={}, i=0;
-    for(;i < keys.length; i++){
-        o[keys[i]] = vals[i];
-    }
-    return o;
-};
-
-try {
-    exports.Promise = Promise;
-    exports.createPromise = function(resolver) {
-        return new exports.Promise(resolver);
-    };
-} catch (err) {
-    // ReferenceError, Promise is not defined
-    exports.Promise = null;
-    exports.createPromise = function() {};
-}
-exports.environment.hasPromises = !!exports.Promise;
-
-exports.isArguments = function(value) {
-    return typeof value === 'object' && ('callee' in value) && typeof value.length === 'number';
-};
-
-exports.throwIf = function(val,msg){
-    if (val){
-        throw Error(msg||val);
-    }
-};
-
-},{"eventemitter3":1}]},{},[13])(13)
+},{"reflux-core/lib/ListenerMethods":4}]},{},[17])(17)
 });
