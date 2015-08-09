@@ -1,6 +1,6 @@
-var ListenerMethods = require('./ListenerMethods'),
+var ListenerMethods = require('reflux-core/lib/ListenerMethods'),
     ListenerMixin = require('./ListenerMixin'),
-    _ = require('./utils');
+    _ = require('reflux-core/lib/utils');
 
 module.exports = function(listenable,key){
     return {

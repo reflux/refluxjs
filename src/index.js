@@ -1,105 +1,13 @@
-exports.ActionMethods = require('./ActionMethods');
+var Reflux = require('reflux-core');
 
-exports.ListenerMethods = require('./ListenerMethods');
+Reflux.connect = require('./connect');
 
-exports.PublisherMethods = require('./PublisherMethods');
+Reflux.connectFilter = require('./connectFilter');
 
-exports.StoreMethods = require('./StoreMethods');
+Reflux.ListenerMixin = require('./ListenerMixin');
 
-exports.createAction = require('./createAction');
+Reflux.listenTo = require('./listenTo');
 
-exports.createStore = require('./createStore');
+Reflux.listenToMany = require('./listenToMany');
 
-exports.connect = require('./connect');
-
-exports.connectFilter = require('./connectFilter');
-
-exports.ListenerMixin = require('./ListenerMixin');
-
-exports.listenTo = require('./listenTo');
-
-exports.listenToMany = require('./listenToMany');
-
-
-var maker = require('./joins').staticJoinCreator;
-
-exports.joinTrailing = exports.all = maker("last"); // Reflux.all alias for backward compatibility
-
-exports.joinLeading = maker("first");
-
-exports.joinStrict = maker("strict");
-
-exports.joinConcat = maker("all");
-
-var _ = exports.utils = require('./utils');
-
-exports.EventEmitter = _.EventEmitter;
-
-exports.Promise = _.Promise;
-
-/**
- * Convenience function for creating a set of actions
- *
- * @param definitions the definitions for the actions to be created
- * @returns an object with actions of corresponding action names
- */
-exports.createActions = function(definitions) {
-    var actions = {};
-    for (var k in definitions){
-        if (definitions.hasOwnProperty(k)) {
-            var val = definitions[k],
-                actionName = _.isObject(val) ? k : val;
-
-            actions[actionName] = exports.createAction(val);
-        }
-    }
-    return actions;
-};
-
-/**
- * Sets the eventmitter that Reflux uses
- */
-exports.setEventEmitter = function(ctx) {
-    exports.EventEmitter = _.EventEmitter = ctx;
-};
-
-
-/**
- * Sets the Promise library that Reflux uses
- */
-exports.setPromise = function(ctx) {
-    exports.Promise = _.Promise = ctx;
-};
-
-
-/**
- * Sets the Promise factory that creates new promises
- * @param {Function} factory has the signature `function(resolver) { return [new Promise]; }`
- */
-exports.setPromiseFactory = function(factory) {
-    _.createPromise = factory;
-};
-
-
-/**
- * Sets the method used for deferring actions and stores
- */
-exports.nextTick = function(nextTick) {
-    _.nextTick = nextTick;
-};
-
-/**
- * Provides the set of created actions and stores for introspection
- */
-exports.__keep = require('./Keep');
-
-/**
- * Warn if Function.prototype.bind not available
- */
-if (!Function.prototype.bind) {
-  console.error(
-    'Function.prototype.bind not available. ' +
-    'ES5 shim required. ' +
-    'https://github.com/spoike/refluxjs#es5'
-  );
-}
+module.exports = Reflux;

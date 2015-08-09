@@ -1,4 +1,4 @@
-var ListenerMethods = require('./ListenerMethods');
+var ListenerMethods = require('reflux-core/lib/ListenerMethods');
 
 /**
  * A mixin factory for a React component. Meant as a more convenient way of using the `ListenerMixin`,

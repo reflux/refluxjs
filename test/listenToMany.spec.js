@@ -1,8 +1,8 @@
 var assert = require('chai').assert,
     sinon = require('sinon'),
     listenToMany = require('../src/listenToMany'),
-    _ = require('../src/utils'),
-    Reflux = require('../src');
+    Reflux = require('../src'),
+    _ = Reflux.utils;
 
 describe('the listenToMany shorthand',function(){
 

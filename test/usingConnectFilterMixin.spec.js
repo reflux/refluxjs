@@ -1,8 +1,8 @@
 var assert = require('chai').assert,
     sinon = require('sinon'),
     connectFilter = require('../src/connectFilter'),
-    _ = require('../src/utils'),
-    Reflux = require('../src');
+    Reflux = require('../src'),
+    _ = Reflux.utils;
 
 var dummyFilter = function(value) { return value.slice(0,2); };
 

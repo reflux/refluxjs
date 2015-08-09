@@ -1,5 +1,5 @@
-var _ = require('./utils'),
-    ListenerMethods = require('./ListenerMethods');
+var _ = require('reflux-core/lib/utils'),
+    ListenerMethods = require('reflux-core/lib/ListenerMethods');
 
 /**
  * A module meant to be consumed as a mixin by a React component. Supplies the methods from
