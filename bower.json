@@ -21,8 +21,8 @@
     "test",
     "src",
     "Gruntfile.js",
-    "package.json",
-    "README.md"
+    "karma.conf.js",
+    "package.json"
   ],
   "dependencies": {
   }
