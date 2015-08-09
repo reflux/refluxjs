@@ -2,6 +2,12 @@
 
 Check for latest changes on the [milestones page](https://github.com/spoike/refluxjs/milestones).
 
+For updates on reflux core methods, check the [`CHANGELOG`](https://github.com/reflux/reflux-core/blob/master/CHANGELOG.md) at `reflux-core` project.
+
+## v0.2.12
+
+* Integrated [`reflux-core`](https://github.com/reflux/reflux-core) v0.2.1, see [#380](https://github.com/reflux/refluxjs/issues/380).
+
 ## v0.2.11
 
 * Using setImmediate if available. Fixes issue with IE10+, see [#374](https://github.com/spoike/refluxjs/issues/374).
