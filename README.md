@@ -584,7 +584,7 @@ The `Reflux.connect()` mixin will check the store for a `getInitialState` method
 ```javascript
 var statusStore = Reflux.createStore({
     getInitialState: function() {
-        return {currentStatus: "open"}
+        return "open";
     }
 });
 
