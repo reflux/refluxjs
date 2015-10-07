@@ -55,8 +55,5 @@
     "mocha": "latest",
     "q": "^1.0.1",
     "sinon": "^1.10.3"
-  },
-  "peerDependencies": {
-    "react": ">=0.12.2 <0.14.0"
   }
 }
