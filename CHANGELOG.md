@@ -4,6 +4,11 @@ Check for latest changes on the [milestones page](https://github.com/spoike/refl
 
 For updates on reflux core methods, check the [`CHANGELOG`](https://github.com/reflux/reflux-core/blob/master/CHANGELOG.md) at `reflux-core` project.
 
+## v0.2.13
+
+* Fixed React dependency [#425](https://github.com/reflux/refluxjs/pull/425)
+* Example on README corrected [#406](https://github.com/reflux/refluxjs/pull/406)
+
 ## v0.2.12
 
 * Integrated [`reflux-core`](https://github.com/reflux/reflux-core) v0.2.1, see [#380](https://github.com/reflux/refluxjs/issues/380).
