@@ -782,7 +782,7 @@ This project uses [eventemitter3](https://github.com/3rd-Eden/EventEmitter3), is
 
 [npm-image]: http://img.shields.io/npm/v/reflux.svg
 [downloads-image]: http://img.shields.io/npm/dm/reflux.svg
-[dependencies-image]: http://img.shields.io/david/spoike/refluxjs.svg
+[dependencies-image]: http://img.shields.io/david/reflux/refluxjs.svg
 [npm-url]: https://www.npmjs.org/package/reflux
 [bower-image]: http://img.shields.io/bower/v/reflux.svg
 [bower-url]: http://bower.io/search/?q=reflux
