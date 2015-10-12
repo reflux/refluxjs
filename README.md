@@ -90,6 +90,7 @@ You can find some example projects at these locations:
 
 ## Extensions and Plugins
 
+* [reflux-promise](https://github.com/reflux/reflux-promise) - Extends reflux with Promises
 * [reflux-triggerable-mixin](https://github.com/jesstelford/reflux-triggerable-mixin) - Stores mixin adding `triggerable` syntax similar to `listenable`
 * [reflux-state-mixin](https://github.com/yonatanmn/reflux-state-mixin) - Stores mixin adding `state` syntax similar to React components.
 
@@ -164,7 +165,7 @@ For actions that represent asynchronous operations (e.g. API calls), a few separ
 
 ```javascript
 // this creates 'load', 'load.completed' and 'load.failed'
-var Actions = Reflux.createActions({
+var Actions = Reflux.createcActions({
     "load": {children: ["completed","failed"]}
 });
 
@@ -188,66 +189,6 @@ createAction({
 createAction({
     asyncResult: true,
     children: ["progressed"]
-});
-```
-
-There are a couple of helper methods available to trigger the `completed` and `failed` actions:
-
-* `promise` - Expects a promise object and binds the triggers of the `completed` and `failed` child actions to that promise, using `then()` and `catch()`.
-
-* `listenAndPromise` - Expects a function that returns a promise object, which is called when the action is triggered, after which `promise` is called with the returned promise object. Essentially calls the function on trigger of the action, which then triggers the `completed` or `failed` child actions after the promise is fulfilled.
-
-Therefore, the following are all equivalent:
-
-```javascript
-asyncResultAction.listen( function(arguments) {
-    someAsyncOperation(arguments)
-        .then(asyncResultAction.completed)
-        .catch(asyncResultAction.failed);
-});
-
-asyncResultAction.listen( function(arguments) {
-    asyncResultAction.promise( someAsyncOperation(arguments) );
-});
-
-asyncResultAction.listenAndPromise( someAsyncOperation );
-```
-
-##### Asynchronous actions as Promises
-
-Asynchronous actions can be used as promises, which is particularly useful for server-side rendering when you must await the successful (or failed) completion of an action before rendering.
-
-Suppose you had an action + store to make an API request:
-
-```javascript
-// Create async action with `completed` & `failed` children
-var makeRequest = Reflux.createAction({ asyncResult: true });
-
-var RequestStore = Reflux.createStore({
-    init: function() {
-        this.listenTo(makeRequest, 'onMakeRequest');
-    },
-
-    onMakeRequest: function(url) {
-        // Assume `request` is some HTTP library (e.g. superagent)
-        request(url, function(response) {
-            if (response.ok) {
-                makeRequest.completed(response.body);
-            } else {
-                makeRequest.failed(response.error);
-            }
-        })
-    }
-});
-```
-
-Then, on the server, you could use promises to make the request and either render or serve an error:
-
-```javascript
-makeRequest.triggerPromise('/api/something').then(function(body) {
-    // Render the response body
-}).catch(function(err) {
-    // Handle the API error object
 });
 ```
 
@@ -658,30 +599,6 @@ Don't like to use the EventEmitter provided? You can switch to another one, such
 // Do this before creating actions or stores
 
 Reflux.setEventEmitter(require('events').EventEmitter);
-```
-
-### Switching Promise library
-
-Don't like to use the Promise library provided? You can switch to another one, such as [Bluebird](https://github.com/petkaantonov/bluebird/) like this:
-
-```javascript
-// Do this before triggering actions
-
-Reflux.setPromise(require('bluebird'));
-```
-
-*Note that promises are constructed with `new Promise(...)`. If your Promise library uses factories (e.g. `Q`), then use `Reflux.setPromiseFactory` instead.*
-
-### Switching Promise factory
-
-Since most Promise libraries use constructors (e.g. `new Promise(...)`), this is the default behavior.
-
-However, if you use `Q` or another library that uses a factory method, you can use `Reflux.setPromiseFactory` for it.
-
-```javascript
-// Do this before triggering actions
-
-Reflux.setPromiseFactory(require('Q').Promise);
 ```
 
 ### Switching nextTick
