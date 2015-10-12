@@ -90,8 +90,6 @@ module.exports = function(grunt) {
 
   grunt.registerTask('test', ['jshint', 'mochaTest', 'karma:local']);
 
-  grunt.registerTask('travis', ['jshint', 'karma:sauce']);
-
   grunt.registerTask('build', ['test', 'browserify', 'uglify']);
 
   grunt.registerTask('default', ['watch']);
