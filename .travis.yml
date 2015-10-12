@@ -6,10 +6,10 @@ node_js:
 before_install:
   - "export DISPLAY=:99.0"
   - "sh -e /etc/init.d/xvfb start"
-  - npm install -g grunt-cli
 
 script:
-  - grunt travis
+  - npm test
+  - if [ "$SAUCE_USERNAME" ]; then npm run test:sauce; fi
 
 env:
   global:

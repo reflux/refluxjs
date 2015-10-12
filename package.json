@@ -5,6 +5,7 @@
   "main": "src/index.js",
   "scripts": {
     "test": "grunt test",
+    "test:sauce": "grunt karma:sauce",
     "benchmark": "node test/benchmarks",
     "build": "grunt build"
   },
