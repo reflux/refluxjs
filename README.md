@@ -85,6 +85,7 @@ You can find some example projects at these locations:
 * [Another Todo Project with a Python backend](https://github.com/limelights/todo-reflux) by limelights
 * [Sample app with authentication, permissions, sidebar and editable collection](https://github.com/VladimirPal/react-flux-backbone)
 * [TodoMVC demonstrating Reflux + Angular](https://github.com/javamonn/Angular-TodoMVC-Redux)
+* [Sample blog by @akornatskyy](https://github.com/akornatskyy/sample-blog-react)
 
 [Back to top](#content)
 
