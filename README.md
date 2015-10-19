@@ -166,7 +166,7 @@ For actions that represent asynchronous operations (e.g. API calls), a few separ
 
 ```javascript
 // this creates 'load', 'load.completed' and 'load.failed'
-var Actions = Reflux.createcActions({
+var Actions = Reflux.createActions({
     "load": {children: ["completed","failed"]}
 });
 
