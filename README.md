@@ -123,10 +123,6 @@ Like React, Reflux depends on an es5-shim for older browsers. The es5-shim.js fr
 
 ## Usage
 
-For a full example check the [`test/index.js`](test/index.js) file.
-
-[Back to top](#content)
-
 ### Creating actions
 
 Create an action by calling `Reflux.createAction` with an optional options object.
