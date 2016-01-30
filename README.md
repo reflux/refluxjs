@@ -24,16 +24,17 @@ You can read an overview of Flux [here](https://facebook.github.io/flux/docs/ove
 
 The pattern is composed of actions and data stores, where actions initiate new data to pass through data stores before coming back to the view components again. If a view component has an event that needs to make a change in the application's data stores, they need to do so by signaling to the stores through the actions available.
 
-For questions please use the following communication channels:
+Feel free to open an issue on our [**discussion forum**](https://github.com/reflux/discuss) for **questions and general discussion**.  Here is a complete list of communication channels:
 
-1. [StackOverflow with the `refluxjs` tag](http://stackoverflow.com/questions/tagged/refluxjs)
-2. [`#reflux` channel](https://reactiflux.slack.com/messages/reflux/) on Reactiflux Slack group. [Sign up here](http://reactiflux.com/) for an account.
-3. [![Gitter](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/spoike/refluxjs?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge)
-4. [![Thinkful][thinkful-image]][thinkful-url]
+1. The [discussion forum](https://github.com/reflux/discuss)
+2. [StackOverflow with the `refluxjs` tag](http://stackoverflow.com/questions/tagged/refluxjs)
+3. [`#reflux` channel](https://reactiflux.slack.com/messages/reflux/) on Reactiflux Slack group. [Sign up here](http://reactiflux.com/) for an account.
+4. [![Gitter](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/spoike/refluxjs?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge)
+5. [![Thinkful][thinkful-image]][thinkful-url]
 
-Please only use the [issue tracker](https://github.com/spoike/refluxjs/issues) for bugs and feature requests only.
+Please use the [issue tracker](https://github.com/spoike/refluxjs/issues) only for bugs and feature requests.
 
-If you don't want to use the React specific API, or want to develop Reflux for your view engine framework of choice, have a look at [`reflux-core`](https://github.com/reflux/reflux-core).
+If you don't want to use the React-specific API, or want to develop Reflux for your view engine framework of choice, have a look at [`reflux-core`](https://github.com/reflux/reflux-core).
 
 ## Content
 
