@@ -80,7 +80,7 @@ Reflux has refactored Flux to be a bit more dynamic and be more Functional React
 
 You can find some example projects at these locations:
 
-* [Todo Example Project](https://github.com/spoike/refluxjs-todo) - [http://spoike.github.io/refluxjs-todo/](http://spoike.github.io/refluxjs-todo/)
+* [Todo Example Project](https://github.com/spoike/refluxjs-todo) - [http://reflux.github.io/refluxjs-todo/](http://reflux.github.io/refluxjs-todo/)
 * [Hacker News Clone](https://github.com/echenley/react-news) by echenley
 * [Another Todo Project with a Python backend](https://github.com/limelights/todo-reflux) by limelights
 * [Sample app with authentication, permissions, sidebar and editable collection](https://github.com/VladimirPal/react-flux-backbone)
