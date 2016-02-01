@@ -2,9 +2,9 @@ var ListenerMethods = require('reflux-core/lib/ListenerMethods'),
     ListenerMixin = require('./ListenerMixin'),
     _ = require('reflux-core/lib/utils');
 
-module.exports = function(listenable,key){
+module.exports = function(listenable,key) {
     return {
-        getInitialState: function(){
+        getInitialState: function() {
             if (!_.isFunction(listenable.getInitialState)) {
                 return {};
             } else if (key === undefined) {
@@ -13,14 +13,15 @@ module.exports = function(listenable,key){
                 return _.object([key],[listenable.getInitialState()]);
             }
         },
-        componentDidMount: function(){
-            _.extend(this,ListenerMethods);
-            var me = this, cb = (key === undefined ? this.setState : function(v){
-                if (typeof me.isMounted === "undefined" || me.isMounted() === true) {
+        componentDidMount: function() {
+            var me = this,
+                cb = (key === undefined ? me.setState : function(v) {
                     me.setState(_.object([key],[v]));
-                }
-            });
-            this.listenTo(listenable,cb);
+                });
+
+            _.extend(me, ListenerMethods);
+
+            this.listenTo(listenable, cb);
         },
         componentWillUnmount: ListenerMixin.componentWillUnmount
     };
