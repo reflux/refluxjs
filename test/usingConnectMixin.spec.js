@@ -15,7 +15,7 @@ describe('using the connect(...) mixin',function(){
                 listen: sinon.spy()
             },
             context = {setState: sinon.spy()};
-        _.extend(context,connect(listenable));
+        _.extend(context,connect(listenable, "KEY"));
 
         it("should pass empty object to state",function(){
             assert.deepEqual({},context.getInitialState());
@@ -23,35 +23,17 @@ describe('using the connect(...) mixin',function(){
     });
 
     describe("when calling without key",function(){
-        var initialstate = "DEFAULTDATA",
-            listenable = {
-                listen: sinon.spy(),
-                getInitialState: sinon.stub().returns(initialstate)
-            },
-            context = {setState: sinon.spy()},
-            result = _.extend(context,connect(listenable));
 
-        it("should add getInitialState and componentDidMount and WillUnmount",function(){
-            assert.isFunction(context.getInitialState);
-            assert.isFunction(context.componentDidMount);
-            assert.isFunction(context.componentWillUnmount);
-            assert.equal(context.componentWillUnmount,Reflux.ListenerMethods.stopListeningToAll);
-        });
+        it("should throw.",function(){
 
-        it("should pass initial state to state",function(){
-            assert.deepEqual(initialstate,context.getInitialState());
-        });
+            var listenable = {
+                listen: function() {},
+                getInitialState: function() {}
+            };
 
-        result.componentDidMount();
-
-        it("should call listen on the listenable correctly",function(){
-            assert.equal(1,listenable.listen.callCount);
-            assert.equal(context.setState,listenable.listen.firstCall.args[0]);
-            assert.equal(context,listenable.listen.firstCall.args[1]);
-        });
-
-        it("should store the subscription object correctly",function(){
-            assert.equal(listenable,context.subscriptions[0].listenable);
+            assert.throws(function () {
+                connect(listenable);
+            }, 'Reflux.connect() requires a key.');
         });
 
     });
