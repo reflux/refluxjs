@@ -507,7 +507,7 @@ There is also `Reflux.listenToMany` which works in exactly the same way, exposin
 
 #### Using Reflux.connect
 
-If all you want to do is update the state of your component to whatever the data store transmits, you can use `Reflux.connect(listener,[stateKey])` as a mixin. If you supply a `stateKey` the state will be updated through `this.setState({<stateKey>:data})`, otherwise `this.setState(data)`. Here's the example above changed to use this syntax:
+If all you want to do is update the state of your component to whatever the data store transmits, you can use `Reflux.connect(listener,stateKey)` as a mixin. The state is updated via `this.setState({<stateKey>:data})`. Here's the example above changed to use this syntax:
 
 ```javascript
 var Status = React.createClass({
