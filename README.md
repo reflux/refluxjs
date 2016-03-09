@@ -11,6 +11,8 @@ A simple library for unidirectional dataflow architecture inspired by ReactJS [F
 
 [![Sauce Test Status](https://saucelabs.com/browser-matrix/refluxjs.svg)](https://saucelabs.com/u/refluxjs)
 
+Development version: **0.4.x** ([release notes](https://github.com/reflux/refluxjs/issues?q=is%3Aclosed+label%3A%22release+notes%22))
+
 You can read an overview of Flux [here](https://facebook.github.io/flux/docs/overview.html), however the gist of it is to introduce a more functional programming style architecture by eschewing MVC like pattern and adopting a single data flow pattern.
 
 ```
