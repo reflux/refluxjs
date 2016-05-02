@@ -30,7 +30,7 @@ Feel free to open an issue on our [**discussion forum**](https://github.com/refl
 
 1. The [discussion forum](https://github.com/reflux/discuss)
 2. [StackOverflow with the `refluxjs` tag](http://stackoverflow.com/questions/tagged/refluxjs)
-3. `#reflux` channel on Reactiflux Discord group. [Sign up here](http://join.reactiflux.com/) for an account.
+3. `#flux` channel on Reactiflux Discord group. [Sign up here](https://discord.gg/0ZcbPKXt5bYedEbN) for an account.
 4. [![Gitter](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/spoike/refluxjs?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge)
 5. [![Thinkful][thinkful-image]][thinkful-url]
 
