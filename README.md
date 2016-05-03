@@ -463,7 +463,7 @@ var Status = React.createClass({
 
 ### React ES6 component example
 
-Reflux exposes `Reflux.Component` for class extension for easy creation of ES6 style React components that automatically has the state of one or more Reflux stores mixed into the React component state. In order to accomplish this you simply need use Reflux stores that start with a `state` property with an object holding the default state of the store's data, then you need to set `this.store` (to 1 store) or `this.stores` (to an Array of stores) from within the constructor of the component. An example would look like this:
+Reflux exposes `Reflux.Component` for class extension for easy creation of ES6 style React components that automatically has the state of one or more Reflux stores mixed into the React component state. In order to accomplish this you simply need use Reflux stores that start with a `state` property with an object holding the default state of the store's data (i.e. set `this.state = {my:defaults}` in the store's `init`) , then you need to set `this.store` (to 1 store) or `this.stores` (to an Array of stores) from within the constructor of the component. An example would look like this:
 
 ```javascript
 class Counter extends Reflux.Component // <- Reflux.Component instead of React.Component
