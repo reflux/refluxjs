@@ -10,4 +10,6 @@ Reflux.listenTo = require('./listenTo');
 
 Reflux.listenToMany = require('./listenToMany');
 
+Reflux.Component = require('./Component');
+
 module.exports = Reflux;

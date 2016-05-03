@@ -1,6 +1,8 @@
 (function(f){if(typeof exports==="object"&&typeof module!=="undefined"){module.exports=f()}else if(typeof define==="function"&&define.amd){define([],f)}else{var g;if(typeof window!=="undefined"){g=window}else if(typeof global!=="undefined"){g=global}else if(typeof self!=="undefined"){g=self}else{g=this}g.Reflux = f()}})(function(){var define,module,exports;return (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
 'use strict';
 
+var has = Object.prototype.hasOwnProperty;
+
 //
 // We store our EE objects in a plain object whose properties are event names.
 // If `Object.create(null)` is not supported we prefix the event names with a
@@ -16,7 +18,7 @@ var prefix = typeof Object.create !== 'function' ? '~' : false;
  *
  * @param {Function} fn Event handler to be called.
  * @param {Mixed} context Context for function execution.
- * @param {Boolean} once Only emit once
+ * @param {Boolean} [once=false] Only emit once
  * @api private
  */
 function EE(fn, context, once) {
@@ -35,12 +37,37 @@ function EE(fn, context, once) {
 function EventEmitter() { /* Nothing to set */ }
 
 /**
- * Holds the assigned EventEmitters by name.
+ * Hold the assigned EventEmitters by name.
  *
  * @type {Object}
  * @private
  */
 EventEmitter.prototype._events = undefined;
+
+/**
+ * Return an array listing the events for which the emitter has registered
+ * listeners.
+ *
+ * @returns {Array}
+ * @api public
+ */
+EventEmitter.prototype.eventNames = function eventNames() {
+  var events = this._events
+    , names = []
+    , name;
+
+  if (!events) return names;
+
+  for (name in events) {
+    if (has.call(events, name)) names.push(prefix ? name.slice(1) : name);
+  }
+
+  if (Object.getOwnPropertySymbols) {
+    return names.concat(Object.getOwnPropertySymbols(events));
+  }
+
+  return names;
+};
 
 /**
  * Return a list of assigned event listeners.
@@ -127,8 +154,8 @@ EventEmitter.prototype.emit = function emit(event, a1, a2, a3, a4, a5) {
  * Register a new EventListener for the given event.
  *
  * @param {String} event Name of the event.
- * @param {Functon} fn Callback function.
- * @param {Mixed} context The context of the function.
+ * @param {Function} fn Callback function.
+ * @param {Mixed} [context=this] The context of the function.
  * @api public
  */
 EventEmitter.prototype.on = function on(event, fn, context) {
@@ -152,7 +179,7 @@ EventEmitter.prototype.on = function on(event, fn, context) {
  *
  * @param {String} event Name of the event.
  * @param {Function} fn Callback function.
- * @param {Mixed} context The context of the function.
+ * @param {Mixed} [context=this] The context of the function.
  * @api public
  */
 EventEmitter.prototype.once = function once(event, fn, context) {
@@ -1147,6 +1174,69 @@ function throwIf(val, msg) {
     }
 }
 },{"eventemitter3":1}],14:[function(require,module,exports){
+
+var __extends = (this && this.__extends) || function (d, b) {
+    for (var p in b) {
+		if (b.hasOwnProperty(p)) {
+			d[p] = b[p];
+		}
+	}
+    function __() {
+		this.constructor = d;
+	}
+    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+};
+
+/* globals React: false */
+
+/**
+ * An implementation for idiomatic React.js classes that mix with
+ * Reflux stores. To utilize extend Reflux.Component instead of
+ * React.Component. Then you may hook any Reflux store that has a
+ * `this.state` property containing its state values to the component
+ * via `this.store` or an Array of Reflux stores via `this.stores` in
+ * the component's constructor (similar to how you assign initial state
+ * in the constructor in ES6 style React). The default values of the
+ * stores will automaticall reflect in the component's state, and any
+ * further `trigger` calls from that store will update properties passed
+ * in the trigger into the component automatically.
+ */
+try {
+	if (React && React.Component) {
+		module.exports = (function (_super) {
+			__extends(RefluxComponent, _super);
+			function RefluxComponent(props) {
+				_super.call(this, props);
+			}
+			RefluxComponent.prototype.componentDidMount = function () {
+				if (this.store) {
+					if (Array.isArray(this.stores)) {
+						this.stores.unshift(this.store);
+					} else {
+						this.stores = [this.store];
+					}
+				}
+				if (this.stores) {
+					this.__storeunsubscribes__ = [];
+					for (var i = 0, ii = this.stores.length; i < ii; i++) {
+						this.__storeunsubscribes__.push(this.stores[i].listen(this.setState.bind(this)));
+						this.setState(this.stores[i].state);
+					}
+				}
+				else {
+					throw new Error('Extending Reflux.Component requires you to set either this.store or this.stores in the constructor.');
+				}
+			};
+			RefluxComponent.prototype.componentWillUnmount = function () {
+				for (var i = 0, ii = this.__storeunsubscribes__.length; i < ii; i++) {
+					this.__storeunsubscribe__[i]();
+				}
+			};
+			return RefluxComponent;
+		}(React.Component));
+	}
+} catch (e) {}
+},{}],15:[function(require,module,exports){
 var _ = require('reflux-core/lib/utils'),
     ListenerMethods = require('reflux-core/lib/ListenerMethods');
 
@@ -1165,7 +1255,7 @@ module.exports = _.extend({
 
 }, ListenerMethods);
 
-},{"reflux-core/lib/ListenerMethods":4,"reflux-core/lib/utils":13}],15:[function(require,module,exports){
+},{"reflux-core/lib/ListenerMethods":4,"reflux-core/lib/utils":13}],16:[function(require,module,exports){
 var ListenerMethods = require('reflux-core/lib/ListenerMethods'),
     ListenerMixin = require('./ListenerMixin'),
     _ = require('reflux-core/lib/utils');
@@ -1195,7 +1285,7 @@ module.exports = function(listenable, key) {
     };
 };
 
-},{"./ListenerMixin":14,"reflux-core/lib/ListenerMethods":4,"reflux-core/lib/utils":13}],16:[function(require,module,exports){
+},{"./ListenerMixin":15,"reflux-core/lib/ListenerMethods":4,"reflux-core/lib/utils":13}],17:[function(require,module,exports){
 var ListenerMethods = require('reflux-core/lib/ListenerMethods'),
     ListenerMixin = require('./ListenerMixin'),
     _ = require('reflux-core/lib/utils');
@@ -1232,7 +1322,7 @@ module.exports = function(listenable, key, filterFunc) {
     };
 };
 
-},{"./ListenerMixin":14,"reflux-core/lib/ListenerMethods":4,"reflux-core/lib/utils":13}],17:[function(require,module,exports){
+},{"./ListenerMixin":15,"reflux-core/lib/ListenerMethods":4,"reflux-core/lib/utils":13}],18:[function(require,module,exports){
 var Reflux = require('reflux-core');
 
 Reflux.connect = require('./connect');
@@ -1245,9 +1335,11 @@ Reflux.listenTo = require('./listenTo');
 
 Reflux.listenToMany = require('./listenToMany');
 
+Reflux.Component = require('./Component');
+
 module.exports = Reflux;
 
-},{"./ListenerMixin":14,"./connect":15,"./connectFilter":16,"./listenTo":18,"./listenToMany":19,"reflux-core":10}],18:[function(require,module,exports){
+},{"./Component":14,"./ListenerMixin":15,"./connect":16,"./connectFilter":17,"./listenTo":19,"./listenToMany":20,"reflux-core":10}],19:[function(require,module,exports){
 var ListenerMethods = require('reflux-core/lib/ListenerMethods');
 
 /**
@@ -1284,7 +1376,7 @@ module.exports = function(listenable,callback,initial){
     };
 };
 
-},{"reflux-core/lib/ListenerMethods":4}],19:[function(require,module,exports){
+},{"reflux-core/lib/ListenerMethods":4}],20:[function(require,module,exports){
 var ListenerMethods = require('reflux-core/lib/ListenerMethods');
 
 /**
@@ -1319,5 +1411,5 @@ module.exports = function(listenables){
     };
 };
 
-},{"reflux-core/lib/ListenerMethods":4}]},{},[17])(17)
+},{"reflux-core/lib/ListenerMethods":4}]},{},[18])(18)
 });
