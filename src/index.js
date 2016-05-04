@@ -10,6 +10,12 @@ Reflux.listenTo = require('./listenTo');
 
 Reflux.listenToMany = require('./listenToMany');
 
-Reflux.Component = require('./Component');
+/* globals React: false */
+Reflux.defineReact = require('./Component');
+try {
+	if (React) {
+		Reflux.defineReact(React, Reflux);
+	}
+} catch (e) { }
 
 module.exports = Reflux;

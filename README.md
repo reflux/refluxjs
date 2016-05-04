@@ -483,6 +483,18 @@ class Counter extends Reflux.Component // <- Reflux.Component instead of React.C
 
 The default states of the stores will be mixed in from the start, and any time the store does a `trigger` the triggered data will be mixed in to the component and it will re-render. If you wish to avoid too many root properties in the state then you can just namespace your store's state to avoid that (i.e. your store's state looks like `this.state.mycounter.count` instead of just `this.state.count`).
 
+If you need to load Reflux before React or if you are in an environment where `React` is not a global variable then there is an exposed method `Reflux.defineReact` that you can use to manually give Reflux a reference to the React object so that it may create the `Reflux.Component` class to extend from. A second optional argument also allows manually giving it a Reflux reference in case that isn't global either. An example on Node.js would be:
+
+```javascript
+// only needed on some environments, usually Reflux just uses the globals!
+
+// In Node.js, for example there won't be a global Reflux/React though...so:
+var Reflux = require('reflux');
+var React  = require('react');
+Reflux.defineReact(React, Reflux);
+// now Reflux.Component is accessible!
+```
+
 #### Convenience mixin for React
 
 You always need to unsubscribe components from observed actions and stores upon

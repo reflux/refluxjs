@@ -56,6 +56,7 @@
     "matchdep": "^0.3.0",
     "mocha": "latest",
     "q": "^1.0.1",
+    "react-dom": "^15.0.2",
     "sinon": "^1.10.3"
   },
   "peerDependencies": {
