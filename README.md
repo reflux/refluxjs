@@ -11,7 +11,7 @@ A simple library for unidirectional dataflow architecture inspired by ReactJS [F
 
 [![Sauce Test Status](https://saucelabs.com/browser-matrix/refluxjs.svg)](https://saucelabs.com/u/refluxjs)
 
-Development version: **0.4.x** ([release notes](https://github.com/reflux/refluxjs/issues?q=is%3Aclosed+label%3A%22release+notes%22))
+Development version: **0.5.x** ([release notes](https://github.com/reflux/refluxjs/issues?q=is%3Aclosed+label%3A%22release+notes%22))
 
 You can read an overview of Flux [here](https://facebook.github.io/flux/docs/overview.html), however the gist of it is to introduce a more functional programming style architecture by eschewing MVC like pattern and adopting a single data flow pattern.
 
@@ -49,6 +49,7 @@ If you don't want to use the React-specific API, or want to develop Reflux for y
      - [Stores](#creating-data-stores)
      - [Component](#react-component-example)
 - [Advanced Usage](#advanced-usage)
+- [React ES6 Usage](#react-es6-usage)
 - [Colophon](#colophon)
 
 ## Comparing RefluxJS with Facebook Flux
@@ -461,39 +462,7 @@ var Status = React.createClass({
 });
 ```
 
-### React ES6 component example
-
-Reflux exposes `Reflux.Component` for class extension for easy creation of ES6 style React components that automatically has the state of one or more Reflux stores mixed into the React component state. In order to accomplish this you simply need use Reflux stores that start with a `state` property with an object holding the default state of the store's data (i.e. set `this.state = {my:defaults}` in the store's `init`) , then you need to set `this.store` (to 1 store) or `this.stores` (to an Array of stores) from within the constructor of the component. An example would look like this:
-
-```javascript
-class Counter extends Reflux.Component // <- Reflux.Component instead of React.Component
-{
-    constructor(props) {
-        super(props);
-        this.state = {foo:'bar'}; // <- stays usable, so normal state usage can still happen
-        this.store = myStore; // <- the only thing needed to tie the store into this component
-    }
-
-    render() {
-        // `count` is mixed in from the store, and reflects in the component state
-        return <p>Count {this.state.count}, Foo: {this.state.foo}</p>;
-    }
-}
-```
-
-The default states of the stores will be mixed in from the start, and any time the store does a `trigger` the triggered data will be mixed in to the component and it will re-render. If you wish to avoid too many root properties in the state then you can just namespace your store's state to avoid that (i.e. your store's state looks like `this.state.mycounter.count` instead of just `this.state.count`).
-
-If you need to load Reflux before React or if you are in an environment where `React` is not a global variable then there is an exposed method `Reflux.defineReact` that you can use to manually give Reflux a reference to the React object so that it may create the `Reflux.Component` class to extend from. A second optional argument also allows manually giving it a Reflux reference in case that isn't global either. An example on Node.js would be:
-
-```javascript
-// only needed on some environments, usually Reflux just uses the globals!
-
-// In Node.js, for example there won't be a global Reflux/React though...so:
-var Reflux = require('reflux');
-var React  = require('react');
-Reflux.defineReact(React, Reflux);
-// now Reflux.Component is accessible!
-```
+It's also important to note that Reflux now supports [React ES6 style usage](#react-es6-usage) as well.
 
 #### Convenience mixin for React
 
@@ -719,6 +688,87 @@ this.listenTo(exampleStore, onChangeCallback, initialCallback)
 ```
 
 Remember the `listenToMany` method? In case you use that with other stores, it supports `getInitialState`. That data is sent to the normal listening callback, or a `this.on<Listenablename>Default` method if that exists.
+
+[Back to top](#content)
+
+## React ES6 Usage
+
+### React ES6 component example
+
+Reflux exposes `Reflux.Component` for class extension for easy creation of ES6 style React components that automatically has the state of one or more Reflux stores mixed into the React component state. In order to accomplish this you simply need use Reflux stores that start with a `state` property with an object holding the default state of the store's data (i.e. set `this.state = {my:"defaults"}` in the store's `init`) , then you need to set `this.store` (to 1 store) or `this.stores` (to an Array of stores) from within the constructor of the component. An example would look like this:
+
+```javascript
+class MyComponent extends Reflux.Component // <- Reflux.Component instead of React.Component
+{
+    constructor(props) {
+        super(props);
+        this.state = {foo:'bar'}; // <- stays usable, so normal state usage can still happen
+        this.store = myStore; // <- the only thing needed to tie the store into this component
+    }
+
+    render() {
+        // `storeProp` is mixed in from the store, and reflects in the component state
+        return <p>From Store: {this.state.storeProp}, Foo: {this.state.foo}</p>;
+    }
+}
+```
+
+The default states of the stores will be mixed in from the start, and any time the store does a `trigger` the triggered data will be mixed in to the component and it will re-render. If you wish to avoid too many root properties in the state then you can just namespace your store's state to avoid that (i.e. your store's state looks like `this.state.mycounter.count` instead of just `this.state.count`).
+
+A fully working example may look something like this:
+
+```javascript
+var Actions = Reflux.createActions(["increment"]);
+
+var counterStore = Reflux.createStore(
+{
+    listenables: Actions,
+    
+    init: function() {
+        this.state = {count:0};
+    },
+    
+    onIncrement: function(txt) {
+        this.state.count++;
+        this.trigger(this.state);
+    }
+});
+
+class Counter extends Reflux.Component
+{
+    constructor(props) {
+        super(props);
+        this.state = {};
+        this.store = counterStore;
+    }
+    
+    render() {
+        return <p>Count: {this.state.count}</p>;
+    }
+}
+
+
+ReactDOM.render(
+    <Counter />,
+    document.getElementById('container')
+);
+
+setInterval(Actions.increment, 1000);
+```
+
+#### Making sure Reflux.Component is available
+
+`Reflux.Component` extends `React.Component`. Therefore Reflux needs to be able to access React in order to expose it. If you need to load Reflux before React or if you are in an environment where `React` is not a global variable then there is an exposed method `Reflux.defineReact` that you can use to manually give Reflux a reference to the React object so that it may create the `Reflux.Component` class to extend from. A second optional argument also allows manually giving it a Reflux reference in case that isn't global either. An example on Node.js would be:
+
+```javascript
+// only needed on some environments, usually Reflux just uses the globals!
+
+// In Node.js, for example there won't be a global Reflux/React though...so:
+var Reflux = require('reflux');
+var React  = require('react');
+Reflux.defineReact(React, Reflux);
+// now Reflux.Component is accessible!
+```
 
 [Back to top](#content)
 
