@@ -11,7 +11,7 @@ Reflux.listenTo = require('./listenTo');
 Reflux.listenToMany = require('./listenToMany');
 
 /* globals React: false */
-Reflux.defineReact = require('./Component');
+Reflux.defineReact = require('./defineReact');
 try {
 	if (React) {
 		Reflux.defineReact(React, Reflux);

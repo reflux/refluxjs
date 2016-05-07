@@ -12,6 +12,16 @@
  * further `trigger` calls from that store will update properties passed
  * in the trigger into the component automatically.
  */
+ 
+/**
+ * Also implements optionsl Reflux.Store class that is idiomatic with
+ * the React ES6 style. You extend Reflux.Store and then the rest works
+ * the same as createStore, except the constructor instead of init, and
+ * it holds state in a state property, and a .setState method is available
+ * which automatically updates state and does a trigger. Then when using
+ * with this.store or this.stores in an ES6 component just plass the class,
+ * it will deal with a singleton instantiation of the class automatically.
+ */
 
 
 var __extends = (this && this.__extends) || function (d, b) {
@@ -64,6 +74,12 @@ function defineReact(react, reflux)
 			if (this.stores) {
 				this.__storeunsubscribes__ = [];
 				for (var i = 0, ii = this.stores.length; i < ii; i++) {
+					if (this.stores[i].isES6Store) {
+						if (!this.stores[i].singleton) {
+							this.stores[i].singleton = new this.stores[i]();
+						}
+						this.stores[i] = this.stores[i].singleton;
+					}
 					this.__storeunsubscribes__.push(this.stores[i].listen(this.setState.bind(this)));
 					this.setState(this.stores[i].state);
 				}
@@ -80,6 +96,61 @@ function defineReact(react, reflux)
 		};
 		
 		rflx.Component = RefluxComponent;
+		
+		// ---------------------------------------------------
+		
+		var RefluxStore = function() {
+			this.__store__ = rflx.createStore();
+			this.state = {};
+			var self = this;
+			for (var key in this.__store__) {
+				/*jshint loopfunc: true */
+				(function (prop) {
+					Object.defineProperty(self, prop, {
+						get: function () { return self.__store__[prop]; },
+						set: function (v) { self.__store__[prop] = v; }
+					});
+				})(key);
+			}
+		};
+		
+		Object.defineProperty(RefluxStore.prototype, "listenables", {
+			get: function () {
+				return this.__listenables__;
+			},
+			set: function (v) {
+				this.__listenables__ = v;
+				for (var key in v) {
+					var camel = 'on' + key.charAt(0).toUpperCase() + key.substr(1);
+					if (this[key] && typeof this[key] === 'function') {
+						this.listenTo(v[key], this[key].bind(this));
+					}
+					if (this[camel] && typeof this[camel] === 'function') {
+						this.listenTo(v[key], this[camel].bind(this));
+					}
+				}
+			},
+			enumerable: true,
+			configurable: true
+		});
+		
+		RefluxStore.prototype.setState = function (obj) {
+			// Object.assign(this.state, obj); // later turn this to Object.assign and remove loop once support is good enough
+			for (var key in obj) {
+				this.state[key] = obj[key];
+			}
+			this.trigger(obj);
+		};
+		
+		Object.defineProperty(RefluxStore, "isES6Store", {
+			get: function () {
+				return true;
+			},
+			enumerable: true,
+			configurable: true
+		});
+		
+		rflx.Store = RefluxStore;
 	}
 }
 

@@ -756,6 +756,57 @@ ReactDOM.render(
 setInterval(Actions.increment, 1000);
 ```
 
+### Using ES6 Reflux Stores via Reflux.Store
+
+Stores do not directly integrate within React like `Reflux.Component` needs to, so using a more idiomatic way to declare them is not necessary. However, it can be very useful when using the `Reflux.Component` style components. Therefore whenever `Reflux.Component` is exposed Reflux also exposes `Reflux.Store` which can be extended to make a class that wraps and acts as a reflux store but with an approach that is easier to implement into `Reflux.Component` classes.
+
+To create one looks something like this:
+
+```javascript
+class MyStore extends Reflux.Store
+{
+	constructor() {
+		this.state = {foo:'bar'}; // <-- the store's default state
+	}
+}
+```
+
+These act much like a normal store. You can use `this.listenTo`, `this.listenToMany`, etc. from within the constructor, and you can define things like a `this.listenables` property and it will automatically call `action` and `onAction` named methods on the class. It also exposes a `setState` method that you can use to modify your `state` property and automatically `trigger` the change:
+
+```javascript
+var Actions = Reflux.createActions(["increment"]);
+
+class CounterStore extends Reflux.Store
+{
+	constructor() {
+		this.listenables = Actions;
+		this.state = {count:0};
+	}
+	
+	onIncrement() {
+		var cnt = this.state.count;
+		this.setState({count:cnt+1});
+	}
+}
+```
+
+One thing you may notice is that the original style `Reflux.createStore` creates an actual instance (as opposed to a class) which is what is assigned to `this.store` in the `Reflux.Component`. Extending `Reflux.Store` means you just have a class, not an instance of anything. Of course you can instantiate and use that store; however, if you just assign the class itself to `this.store` or `this.stores` in the `Reflux.Component` then it will automatically create a singleton instance of the store class (or use a previously created singleton instance of it if another component has already done so in its own construction). So, for example, to utilize the `Reflux.Store` store in the last example within a `Reflux.Component` class would look like this:
+
+```javascript
+class Counter extends Reflux.Component
+{
+    constructor(props) {
+        super(props);
+        this.state = {};
+        this.store = CounterStore; // <- just assign the class itself
+    }
+    
+    render() {
+        return <p>Count: {this.state.count}</p>;
+    }
+}
+```
+
 #### Making sure Reflux.Component is available
 
 `Reflux.Component` extends `React.Component`. Therefore Reflux needs to be able to access React in order to expose it. If you need to load Reflux before React or if you are in an environment where `React` is not a global variable then there is an exposed method `Reflux.defineReact` that you can use to manually give Reflux a reference to the React object so that it may create the `Reflux.Component` class to extend from. A second optional argument also allows manually giving it a Reflux reference in case that isn't global either. An example on Node.js would be:
