@@ -1,7 +1,4 @@
 
-/*jshint esnext:true */
-
-
 var chai = require('chai');
 var assert = chai.assert;
 chai.use(require('chai-as-promised'));

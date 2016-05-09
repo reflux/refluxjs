@@ -1,6 +1,4 @@
 
-/*jshint esnext:true */
-
 var chai = require('chai'),
     assert = chai.assert,
     Reflux = require('../src'),

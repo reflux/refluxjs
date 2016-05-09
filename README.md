@@ -807,6 +807,64 @@ class Counter extends Reflux.Component
 }
 ```
 
+### Utilizing Reflux.GlobalState
+
+Another neat feature that the ES6 implementation of Reflux has is the ability to track a global state of all stores in use, as well as initialize all stores in use to a predefined global state. It happens internally too, so you don't have to do hardly anything to make it happen. This would be useful for many things, including tracking the state of an application and going back to that same state the next time the app is used.
+
+To make it happen you just have to use ES6 style reflux classes and stores like explained in the last couple sections and define a static `id` property in your `Reflux.Store` definition. That id will then be used as a property name within the `Reflux.GlobalState` object for the property holding that store's current state. Then you just need to make sure to use `setState` to modify the state of the `Reflux.Store` instead of mutating the state directly. After that the `Reflux.GlobalState` object will reflect a collection of all your stores at all times once the components using those stores are mounted. An example using the example above:
+
+```javascript
+class CounterStore extends Reflux.Store
+{
+	constructor() {
+		this.listenables = Actions;
+		this.state = {count:0};
+	}
+	
+	onIncrement() {
+		var cnt = this.state.count;
+		this.setState({count:cnt+1});
+	}
+	
+	static get id() {
+		return 'counterstore';
+	}
+}
+
+// ... make component and render as normal ...
+
+console.log(Reflux.GlobalState); // <- would be: {'counterstore':{'count':0}}
+```
+
+Notice that you can only read the GlobalState **after** the components using the stores have been mounted. Up until then is the time where you can manually set the `Reflux.GlobalState` in order to initialize the entire app in a state of your choosing (or a previous state you recorded earlier). For example we could do this:
+
+```javascript
+class CounterStore extends Reflux.Store
+{
+	constructor() {
+		this.listenables = Actions;
+		this.state = {count:0};
+	}
+	
+	onIncrement() {
+		var cnt = this.state.count;
+		this.setState({count:cnt+1});
+	}
+	
+	static get id() {
+		return 'counterstore';
+	}
+}
+
+Reflux.GlobalState = {'counterstore':{'count':50}};
+
+// ... make component and render as normal ...
+
+// at this point it would render with a count of 50!
+```
+
+One of the most useful ways you could do this is to store a `Reflux.GlobalState` state as a JSON string in order to implement it again the next time the app starts up and have the user begin right where they left off.
+
 #### Making sure Reflux.Component is available
 
 `Reflux.Component` extends `React.Component`. Therefore Reflux needs to be able to access React in order to expose it. If you need to load Reflux before React or if you are in an environment where `React` is not a global variable then there is an exposed method `Reflux.defineReact` that you can use to manually give Reflux a reference to the React object so that it may create the `Reflux.Component` class to extend from. A second optional argument also allows manually giving it a Reflux reference in case that isn't global either. An example on Node.js would be:
