@@ -12,10 +12,20 @@ Reflux.listenToMany = require('./listenToMany');
 
 /* globals React: false */
 Reflux.defineReact = require('./defineReact');
-try {
-	if (React) {
-		Reflux.defineReact(React, Reflux);
-	}
-} catch (e) { }
+
+if (reactExists()) {
+	Reflux.defineReact(React, Reflux);
+}
+
+function reactExists()
+{
+	try {
+		if (React) {
+			return true;
+		}
+	} catch (e) { }
+	
+	return false;
+}
 
 module.exports = Reflux;
