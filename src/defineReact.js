@@ -100,7 +100,7 @@ function defineReact(react, reflux)
 		
 		proto.componentWillUnmount = function () {
 			for (var i = 0, ii = this.__storeunsubscribes__.length; i < ii; i++) {
-				this.__storeunsubscribe__[i]();
+				this.__storeunsubscribes__[i]();
 			}
 		};
 		
