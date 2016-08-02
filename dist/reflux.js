@@ -1314,6 +1314,7 @@ function defineReact(react, reflux)
 	}
 	
 	rflx.GlobalState = rflx.GlobalState || {};
+	rflx._stores = {};
 	
 	if (rflx && react && react.Component)
 	{
@@ -1342,6 +1343,9 @@ function defineReact(react, reflux)
 						var storeId = str.id;
 						if (!str.singleton) {
 							str.singleton = new str();
+							if (storeId) {
+								rflx._stores[storeId] = str.singleton;
+							}
 						}
 						this.stores[i] = str = str.singleton;
 						str.id = storeId;
@@ -1362,7 +1366,7 @@ function defineReact(react, reflux)
 		
 		proto.componentWillUnmount = function () {
 			for (var i = 0, ii = this.__storeunsubscribes__.length; i < ii; i++) {
-				this.__storeunsubscribe__[i]();
+				this.__storeunsubscribes__[i]();
 			}
 		};
 		
