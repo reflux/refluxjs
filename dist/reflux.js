@@ -1393,15 +1393,7 @@ function defineReact(react, reflux)
 			},
 			set: function (v) {
 				this.__listenables__ = v;
-				for (var key in v) {
-					var camel = 'on' + key.charAt(0).toUpperCase() + key.substr(1);
-					if (this[key] && typeof this[key] === 'function') {
-						this.listenTo(v[key], this[key].bind(this));
-					}
-					if (this[camel] && typeof this[camel] === 'function') {
-						this.listenTo(v[key], this[camel].bind(this));
-					}
-				}
+				this.listenToMany(v);
 			},
 			enumerable: true,
 			configurable: true
@@ -1460,20 +1452,8 @@ Reflux.listenToMany = require('./listenToMany');
 
 /* globals React: false */
 Reflux.defineReact = require('./defineReact');
-
-if (reactExists()) {
+if (typeof React !== 'undefined' && React) {
 	Reflux.defineReact(React, Reflux);
-}
-
-function reactExists()
-{
-	try {
-		if (React) {
-			return true;
-		}
-	} catch (e) { }
-	
-	return false;
 }
 
 module.exports = Reflux;

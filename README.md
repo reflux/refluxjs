@@ -811,6 +811,8 @@ class Counter extends Reflux.Component
 }
 ```
 
+**Note!** `Reflux.Store` still works with instances of stores (i.e. the class must get intantiated). Assigning the class itself to `this.store` just allows Reflux to handle the instantiation and do some internal things that allow features like global state tracking. it does *not* mean that the class itself is the store. Internally Reflux creates and utilizes a singleton instance of the class. After mounting you may access that singleton instance of the class via `MyStoreClass.singleton`.
+
 ### Utilizing Reflux.GlobalState
 
 Another neat feature that the ES6 implementation of Reflux has is the ability to track a global state of all stores in use, as well as initialize all stores in use to a predefined global state. It happens internally too, so you don't have to do hardly anything to make it happen. This would be useful for many things, including tracking the state of an application and going back to that same state the next time the app is used.
