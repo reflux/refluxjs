@@ -811,6 +811,36 @@ class Counter extends Reflux.Component
 }
 ```
 
+**Note!** `Reflux.Store` still works with instances of stores (i.e. the class must get intantiated). Assigning the class itself to `this.store` just allows Reflux to handle the instantiation and do some internal things that allow features like global state tracking. it does *not* mean that the class itself is the store. Internally Reflux creates and utilizes a singleton instance of the class. After mounting you may access that singleton instance of the class via `MyStoreClass.singleton`.
+
+#### Using Reflux.Store without a component
+
+With to ability to do so much via global states (covered in the next section), and the fact that that functionality is tied to `Reflux.Store`, being able to properly utilize `Reflux.Store` on its own (without binding to a React component) becomes useful. However, just using `new MyStoreClass()` isn't enough, as it has to tie itself into the Reflux global state as a singleton. Therefore Reflux exposes an API for getting a properly globalized singleton instance of a `Reflux.Store` extended class without having to tie it to a React component. You do this via the following:
+
+```javascript
+var mySingleton = Reflux.initializeGlobalStore(MyClassName);
+```
+
+When done this way the singleton instance of your `Reflux.Store` class can, externally, be used much like a non-ES6 store created via `Reflux.createStore` except with the advantages that it: 1) is written in the `Reflux.Store` ES6 syntax and 2) it ties in with the global state being tracked by Reflux.
+
+Note: your store _must_ be set up with an `id` to be used this way.
+
+Note: even after instantiating with `Reflux.initializeGlobalStore` you can still later assign the class name itself to `this.store` or `this.stores` in a `Reflux.Component`. The component will recognize that a singleton for the class has already been created and use that singleton.
+
+##### A deeper understanding:
+
+To avoid confusion I want to better explain what `Reflux.initializeGlobalStore` is for on a deeper level. This is also a good section to read for people that just want a better understanding of working with `Reflux.Store` in general.
+
+When you define a store in ES6 `Reflux.Store` syntax you are creating a class, not an instance of a class. For Reflux to use that store internally an instance of the class must be created. But it's also important that only **one** instance of that store class get created (i.e. a singleton) so that each component using it is using the same store instance. That is why you're told to assign the class itself to `this.store` or `this.stores` in a `Reflux.Component`. Assigning an instance works...but if you assign the class itself then it can use its own internal logic to say *"Is a singleton already made for this class? If yes, use that singleton. If not, then make it first, then use it."* therefore automatically making sure only one singleton instance is used everywhere. On top of that (if the class has an id) it also makes sure that the global state is aware of that store so that it can track it.
+
+This works great as long as you're going to be using that store in a component. But what if you don't want to use it in any components?
+
+If you don't care about the global state knowing about it and tracking it then it's easy. Since no components are using it then there's no chance of multiple store instances accidentally being created, so just use `var store = new MyStoreClass();` like any other class you'd be instantiating. If you wanted to be thorough and make your instance in the same singleton fashion as is done internally (just in case some later component decides to use that class without your knowledge) then you could go `var store = new MyStoreClass(); MyStoreClass.singleton = store;` and then any future component usage would know about, and use, that singleton instance.
+
+But that still leaves a scenario out in the cold: needing to intantiate a store without it being attached to any components to handle it for you, but *also* wanting that store to be properly tracked by the global state. That is where `Reflux.initializeGlobalStore` can be used to create your singleton instance and handle what needs to be handled internally to track the global state. 
+
+Another possible scenario would be if you need to access the singleton instance of the store *before* the `componentWillMount` part of any component's lifecycle (which is where the component would set up the singleton). You can use `Reflux.initializeGlobalStore` to create a singleton that you can access sooner. You can *still* assign the class itself to `this.store` or `this.stores` in any components though! The component will know that a singleton has already been created and automatically use it, there is no need for you to manually track the singleton for the components just because you used `Reflux.initializeGlobalStore` in order to get access to that singleton sooner!
+
 ### Utilizing Reflux.GlobalState
 
 Another neat feature that the ES6 implementation of Reflux has is the ability to track a global state of all stores in use, as well as initialize all stores in use to a predefined global state. It happens internally too, so you don't have to do hardly anything to make it happen. This would be useful for many things, including tracking the state of an application and going back to that same state the next time the app is used.
@@ -869,7 +899,11 @@ Reflux.GlobalState = {'counterstore':{'count':50}};
 
 One of the most useful ways you could do this is to store a `Reflux.GlobalState` state as a JSON string in order to implement it again the next time the app starts up and have the user begin right where they left off.
 
-#### Making sure Reflux.Component is available
+#### Reflux.setGlobalState and Reflux.getGlobalState
+
+Directly accessing `Reflux.GlobalState` is a fine way to do set the starting state of an app and to do automated testing, but it is also helpful to be able to manipulate the global state while the app is running as well. To do this Reflux exposes a `Reflux.getGlobalState()` function and a `Reflux.setGlobalState()` function. The former allows you to get a deep copy of the current global state (so that the copy will not mutate as the global state itself continues to mutate) and the latter allows you to set part or all of the global state at any time in the program. Between these two functions things like state time-travel, undo/redo, and move-by-move tracking become relatively easy.
+
+### Making sure Reflux.Component is available
 
 `Reflux.Component` extends `React.Component`. Therefore Reflux needs to be able to access React in order to expose it. If you need to load Reflux before React or if you are in an environment where `React` is not a global variable then there is an exposed method `Reflux.defineReact` that you can use to manually give Reflux a reference to the React object so that it may create the `Reflux.Component` class to extend from. A second optional argument also allows manually giving it a Reflux reference in case that isn't global either. An example on Node.js would be:
 
