@@ -717,7 +717,7 @@ class MyComponent extends Reflux.Component // <- Reflux.Component instead of Rea
 }
 ```
 
-The default states of the stores will be mixed in from the start, and any time the store does a `trigger` the triggered data will be mixed in to the component and it will re-render. If you wish to avoid too many root properties in the state then you can just namespace your store's state to avoid that (i.e. your store's state looks like `this.state.mycounter.count` instead of just `this.state.count`).
+The default states of the stores will be mixed in from the start, and any time the store does a `trigger` the triggered data will be mixed in to the component and it will re-render.
 
 A fully working example may look something like this:
 
@@ -758,6 +758,20 @@ ReactDOM.render(
 );
 
 setInterval(Actions.increment, 1000);
+```
+
+NOTE: If you are also using `Reflux.Store` ES6 stores and updating them properly via their `setState` method then you may also choose to only mix in certain properties from the store(s) attached to a component, instead of all of them. To do this you may define `this.storeKeys` in the component's constructor and set it to an array of key names (strings) for properties you want mixed in from the attached stores. The component will then only mix in state object properties of those key names for any stores attached to it. If the store state is changed and none of the changed state involves the keys in `this.storeKeys` then the component will not change state at all nor re-render.
+
+```javascript
+//...
+    constructor(props) {
+        super(props);
+        this.state = {};
+        this.store = MyStore;
+        this.storeKeys = ['color', 'height'];
+        // ^ will only include the color and height parts of MyStore's state
+    }
+//...
 ```
 
 ### Using ES6 Reflux Stores via Reflux.Store
