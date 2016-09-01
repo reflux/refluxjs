@@ -1370,6 +1370,17 @@ function defineReact(react, reflux)
 		
 		proto = RefluxComponent.prototype;
 		
+		/**
+		 * this.storeKeys
+		 * When this is a falsey value (null by default) the component mixes in
+		 * all properties from the stores attached to it and updates on changes
+		 * from all of them. When set to an array of string keys it will only
+		 * utilized state property names of those keys in any store attached. This
+		 * lets you choose which parts of stores update the component on a component-
+		 * by-component basis. If using this it is best set in the constructor.
+		 */
+		proto.storeKeys = null;
+		
 		// on the mounting of the component that is where the store/stores are attached and initialized if needed
 		proto.componentWillMount = function () {
 			// if there is a this.store then simply push it onto the this.stores array or make one if needed
@@ -1383,6 +1394,27 @@ function defineReact(react, reflux)
 			
 			if (this.stores) {
 				this.__storeunsubscribes__ = [];
+				var sS = this.setState.bind(this);
+				// this handles the triggering of a store, checking what's updated if proto.storeKeys is utilized
+				var onStoreTrigger = function(obj){
+					if (!this.storeKeys) {
+						sS(obj);
+						return;
+					}
+					// go through and only update properties that are in the storeKeys array, and only trigger if there are some
+					var doUpdate = false;
+					var updateObj = {};
+					for (var i = 0, ii = this.storeKeys.length; i < ii; i++) {
+						var prop = this.storeKeys[i];
+						if (obj.hasOwnProperty(prop)) {
+							doUpdate = true;
+							updateObj[prop] = obj[prop];
+						}
+					}
+					if (doUpdate) {
+						sS(updateObj);
+					}
+				}.bind(this);
 				// for each store in this.stores...
 				for (var i = 0, ii = this.stores.length; i < ii; i++) {
 					var str = this.stores[i];
@@ -1415,8 +1447,8 @@ function defineReact(react, reflux)
 						}
 						// if no id, then no messing with global state
 					}
-					// track the unsubscribes so that we can unsubscribe on unmount
-					this.__storeunsubscribes__.push(str.listen(this.setState.bind(this)));
+					// listen/subscribe for the ".trigger()" in the store, and track the unsubscribes so that we can unsubscribe on unmount
+					this.__storeunsubscribes__.push(str.listen(onStoreTrigger));
 					// run set state so that it mixes in the props from the store with the component
 					this.setState(str.state);
 				}
