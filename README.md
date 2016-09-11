@@ -855,6 +855,39 @@ But that still leaves a scenario out in the cold: needing to intantiate a store 
 
 Another possible scenario would be if you need to access the singleton instance of the store *before* the `componentWillMount` part of any component's lifecycle (which is where the component would set up the singleton). You can use `Reflux.initializeGlobalStore` to create a singleton that you can access sooner. You can *still* assign the class itself to `this.store` or `this.stores` in any components though! The component will know that a singleton has already been created and automatically use it, there is no need for you to manually track the singleton for the components just because you used `Reflux.initializeGlobalStore` in order to get access to that singleton sooner!
 
+#### Mapping Stores to Components with `mapStoreToState`
+
+Reflux's ES6 stores and components work together fairly well in a very declarative syntax by simply assigning stores to components via the component's `this.store` and `this.stores` properties, and that functionality rounds itself out by adding some filtering ability with `this.storeKeys`. With enough thought given to architecture this can get you almost everything you need in a declarative syntax that is easy for you to write and others to read. Therefore it's highly suggested that you put the time into planning your architecture to be able to use those for connecting stores and components.
+
+However, there still exists a need to have deeper control and to be able to map stores to component states with your own custom logic in some cases. For that each `Reflux.Component` will have a `this.mapStoreToState` method. This is **completely separate** from the previously mentioned declarative side of things (such as `this.store`). That means you should not have the same store attached to a component both via `this.store` *and* using `this.mapStoreToState`, and also that this method is completely unaffected by `this.storeKeys`. These differing methods can both be used within a single component, they just shouldn't be both used for the *same store* within the same component.
+
+This method takes 2 arguments: the `Reflux.Store` you want mapped to the component state (either the class itself or the singleton instance) and a mapping function supplied by you. The mapping function will be called any time the store instance's `setState` is used to change the state of the store. The mapping function takes an argument which will be the state change object from the store for that particular change. It needs to return an object which will then be mapped to the component state (similar to if that very returned object were used in the component's `setState`). If an object with no properties is returned then the component will *not* re-render. The mapping function is also called with its `this` keyword representing the component, so comparing store values to current component state values via `this.state` is possible as well.
+
+```javascript
+class Counter extends Reflux.Component
+{
+    constructor(props) {
+        super(props);
+        this.mapStoreToState(MyStoreClass, function(fromStore){
+            var obj = {};
+            if (fromStore.color)
+                obj.color = fromStore.color;
+            if (fromStore.data && fromStore.data.classToUse)
+                obj.class = fromStore.data.classToUse;
+            return obj;
+        });
+    }
+    
+    render() {
+        return <p className={this.state.class}>The color is: {this.state.color}</p>;
+    }
+}
+```
+
+In the above example `MyStoreClass` could have lots of state properties, but we use a bit of logic to 1) only trigger a re-render if the store's `state.color` or `state.data.classToUse` were among the parts of the state involved in the store's `setState` call (because, remember, if the returned object has no properties no re-render happens), and 2) to map the stores `state.color` straight to the component's `state.color`, but the store's `state.data.classToUse` to the component's `state.class`.
+
+Note that the example function above is merely that: an example. Whatever sort of logic you want to apply to get from the change object given by the store to how you want that to change the state of your component is fair game, except that you should not mutate the incoming data itself.
+
 ### Utilizing Reflux.GlobalState
 
 Another neat feature that the ES6 implementation of Reflux has is the ability to track a global state of all stores in use, as well as initialize all stores in use to a predefined global state. It happens internally too, so you don't have to do hardly anything to make it happen. This would be useful for many things, including tracking the state of an application and going back to that same state the next time the app is used.

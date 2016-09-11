@@ -131,15 +131,16 @@ function defineReact(react, reflux)
 			}
 			
 			if (this.stores) {
-				this.__storeunsubscribes__ = [];
+				this.__storeunsubscribes__ = this.__storeunsubscribes__ || [];
 				var sS = this.setState.bind(this);
 				// this handles the triggering of a store, checking what's updated if proto.storeKeys is utilized
 				var onStoreTrigger = function(obj){
+					// if there are not storeKeys defined then simply merge the state into the component
 					if (!this.storeKeys) {
 						sS(obj);
 						return;
 					}
-					// go through and only update properties that are in the storeKeys array, and only trigger if there are some
+					// otherwise go through and only update properties that are in the storeKeys array, and only trigger if there are some
 					var doUpdate = false;
 					var updateObj = {};
 					for (var i = 0, ii = this.storeKeys.length; i < ii; i++) {
@@ -191,17 +192,84 @@ function defineReact(react, reflux)
 					this.setState(str.state);
 				}
 			}
-			// to avoid confusion with people new to the API, if they don't use a this.store or this.stores then throw an
-			// error letting them know why nothing is actually working
-			else {
-				throw new Error('Extending Reflux.Component requires you to set either this.store or this.stores in the constructor.');
+			
+			// mapStoreToState needs to know if is ready to map or must wait
+			this.__readytomap__ = true;
+			// if there are mappings that were delayed, do them now
+			var dmaps = this.__delayedmaps__;
+			if (dmaps) {
+				for (var j=0,jj=dmaps.length; j<jj; j++) {
+					dmaps[j].func( dmaps[j].state );
+				}
 			}
+			this.__delayedmaps__ = null;
 		};
 		
 		// on the unmount phase of the component unsubscribe that which we subscribed earlier to keep our garbage trail clean
 		proto.componentWillUnmount = function () {
 			for (var i = 0, ii = this.__storeunsubscribes__.length; i < ii; i++) {
 				this.__storeunsubscribes__[i]();
+			}
+			this.__readytomap__ = false;
+		};
+		
+		/**
+		 * this.mapStoreToState
+		 * This function allow you to supply map the state of a store to the
+		 * state of this component manually via your own logic. This method
+		 * is completely separate from this.store/this.stores and/or this.storeKeys.
+		 * Call this function with an ES6 store (class or singleton instance) as the
+		 * first argument and your filter function as the second. Your filter function
+		 * will receive an object of the parts of the ES6 store being updated every
+		 * time its setState is called. Your filter function then returns an object
+		 * which will be merged with the component state (IF it has any properties at all,
+		 * should you return a blank object the component will not rerender).
+		 */
+		proto.mapStoreToState = function(store, filterFunc)
+		{
+			// make sure we have a proper singleton instance to work with
+			if (store.isES6Store) {
+				if (store.singleton) {
+					store = store.singleton;
+				} else if (store.id) {
+					store = Reflux.initializeGlobalStore(store);
+				} else {
+					store = store.singleton = new store();
+				}
+			}
+			
+			// we need a closure so that the called function can remember the proper filter function to use, so function gets defined here
+			var self = this;
+			function onMapStoreTrigger(obj) {
+				// get an object 
+				var update = filterFunc.call(self, obj);
+				// if no object returned from filter functions do nothing
+				if (!update) {
+					return;
+				}
+				// check if the update actually has any mapped props
+				/*jshint unused: false */
+				var hasProps = false;
+				for (var check in update) {
+					hasProps = true;
+					break;
+				}
+				// if there were props mapped, then update via setState
+				if (hasProps) {
+					self.setState(update);
+				}
+			}
+			
+			// add the listener to know when the store is triggered
+			this.__storeunsubscribes__ = this.__storeunsubscribes__ || [];
+			this.__storeunsubscribes__.push(store.listen(onMapStoreTrigger));
+			
+			// now actually run onMapStoreTrigger with the full store state so that we immediately have all store state mapped to component state
+			if (this.__readytomap__) {
+				onMapStoreTrigger(store.state);
+			} else {
+				this.__delayedmaps__ = this.__delayedmaps__ || [];
+				this.__delayedmaps__.push({func:onMapStoreTrigger, state:store.state});
 			}
 		};
 		
