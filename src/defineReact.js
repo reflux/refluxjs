@@ -130,8 +130,18 @@ function defineReact(react, reflux)
 				return this.__listenables__;
 			},
 			set: function (v) {
-				this.__listenables__ = v;
-				this.listenToMany(v);
+                var Combined = {};
+                if (Array.isArray(v)){
+                    v.forEach(function(obj) {
+                        for (var key in obj) {
+                            Combined[key] = obj[key];
+                        }
+                    })
+                } else {
+                    Combined = v;
+                }
+                this.__listenables__ = Combined;
+                this.listenToMany(Combined);
 			},
 			enumerable: true,
 			configurable: true
