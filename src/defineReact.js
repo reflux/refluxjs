@@ -136,7 +136,7 @@ function defineReact(react, reflux)
                         for (var key in obj) {
                             Combined[key] = obj[key];
                         }
-                    })
+                    });
                 } else {
                     Combined = v;
                 }
