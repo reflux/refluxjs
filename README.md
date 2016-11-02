@@ -762,6 +762,11 @@ setInterval(Actions.increment, 1000);
 
 ### Using ES6 Reflux Stores via Reflux.Store
 
+Actions can not be declared as a variable. When importing actions from a seperated file, this is the correct syntax for declaring actions in ES6
+```javascript
+module.exports = Reflux.createActions(["action1", "action2"]);
+```
+
 Stores do not directly integrate within React like `Reflux.Component` needs to, so using a more idiomatic way to declare them is not necessary. However, it can be very useful when using the `Reflux.Component` style components. Therefore whenever `Reflux.Component` is exposed Reflux also exposes `Reflux.Store` which can be extended to make a class that wraps and acts as a reflux store but with an approach that is easier to implement into `Reflux.Component` classes.
 
 To create one looks something like this:
@@ -803,6 +808,23 @@ class Counter extends Reflux.Component
         super(props);
         this.state = {};
         this.store = CounterStore; // <- just assign the class itself
+    }
+    
+    render() {
+        return <p>Count: {this.state.count}</p>;
+    }
+}
+```
+
+For using multiple stores in one component, they need to be assigned in an array
+
+```javascript
+class Counter extends Reflux.Component
+{
+    constructor(props) {
+        super(props);
+        this.state = {};
+        this.stores = [CounterStore, OtherStore, OtherStore]; // <-- use bracket notation instead of curly brackets
     }
     
     render() {
