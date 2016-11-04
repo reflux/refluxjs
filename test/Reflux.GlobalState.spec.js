@@ -6,6 +6,7 @@ chai.use(require('chai-as-promised'));
 	
 var React = require('react');
 var ReactDOMServer = require('react-dom/server');
+var Reflux;
 
 
 function __extends (d, b) {
@@ -23,9 +24,9 @@ function __extends (d, b) {
 
 describe('Working with Reflux.GlobalState', function()
 {
-	it('should allow defining of React with Reflux.defineReact without error', function()
+	it('should allow defining of React with Reflux.defineReact without error and empty', function()
 	{
-		var Reflux = require('../src');
+		Reflux = require('../src');
 		Reflux.defineReact(React, Reflux);
 		
 		return true;
@@ -33,17 +34,11 @@ describe('Working with Reflux.GlobalState', function()
 	
 	it('should construct with a default empty state object', function()
 	{
-		var Reflux = require('../src');
-		Reflux.defineReact(React, Reflux);
-		
 		assert.equal( typeof Reflux.GlobalState, 'object' );
 	});
 	
 	it('should remain empty when a store is created without a static id', function()
 	{
-		var Reflux = require('../src');
-		Reflux.defineReact(React, Reflux);
-		
 		var MyStore = (function (_super) {
 			__extends(Store, _super);
 			function Store() {
@@ -74,8 +69,8 @@ describe('Working with Reflux.GlobalState', function()
 	
 	it('should gain state when a store is created with a static id', function()
 	{
-		var Reflux = require('../src');
-		Reflux.defineReact(React, Reflux);
+		Reflux.GlobalState = {};
+		Reflux.stores = {};
 		
 		var MyStore = (function (_super) {
 			__extends(Store, _super);
@@ -108,8 +103,8 @@ describe('Working with Reflux.GlobalState', function()
 	
 	it('should gain state when a store is created with a static id - initializeGlobalStore', function()
 	{
-		var Reflux = require('../src');
-		Reflux.defineReact(React, Reflux);
+		Reflux.GlobalState = {};
+		Reflux.stores = {};
 		
 		var MyStore = (function (_super) {
 			__extends(Store, _super);
@@ -128,8 +123,8 @@ describe('Working with Reflux.GlobalState', function()
 	
 	it('should update upon setState in store', function()
 	{
-		var Reflux = require('../src');
-		Reflux.defineReact(React, Reflux);
+		Reflux.GlobalState = {};
+		Reflux.stores = {};
 		
 		var MyStore = (function (_super) {
 			__extends(Store, _super);
@@ -166,8 +161,8 @@ describe('Working with Reflux.GlobalState', function()
 	
 	it('should update upon setState in store - initializeGlobalStore', function()
 	{
-		var Reflux = require('../src');
-		Reflux.defineReact(React, Reflux);
+		Reflux.GlobalState = {};
+		Reflux.stores = {};
 		
 		var MyStore = (function (_super) {
 			__extends(Store, _super);
@@ -190,8 +185,8 @@ describe('Working with Reflux.GlobalState', function()
 	
 	it('when set before component mounting should define initial state in store', function()
 	{
-		var Reflux = require('../src');
-		Reflux.defineReact(React, Reflux);
+		Reflux.GlobalState = {};
+		Reflux.stores = {};
 		
 		var MyStore = (function (_super) {
 			__extends(Store, _super);
@@ -226,8 +221,8 @@ describe('Working with Reflux.GlobalState', function()
 	
 	it('when set before initializeGlobalStore should define initial state in store', function()
 	{
-		var Reflux = require('../src');
-		Reflux.defineReact(React, Reflux);
+		Reflux.GlobalState = {};
+		Reflux.stores = {};
 		
 		var MyStore = (function (_super) {
 			__extends(Store, _super);
@@ -249,8 +244,8 @@ describe('Working with Reflux.GlobalState', function()
 	
 	it('when set via setGlobalState before component mounting should define initial state in store', function()
 	{
-		var Reflux = require('../src');
-		Reflux.defineReact(React, Reflux);
+		Reflux.GlobalState = {};
+		Reflux.stores = {};
 		
 		var MyStore = (function (_super) {
 			__extends(Store, _super);
@@ -285,8 +280,8 @@ describe('Working with Reflux.GlobalState', function()
 	
 	it('values from getGlobalState should not mutate upon further GlobalState mutations', function()
 	{
-		var Reflux = require('../src');
-		Reflux.defineReact(React, Reflux);
+		Reflux.GlobalState = {};
+		Reflux.stores = {};
 		
 		var MyStore = (function (_super) {
 			__extends(Store, _super);
@@ -326,8 +321,8 @@ describe('Working with Reflux.GlobalState', function()
 	
 	it('setGlobalState should update all global states when used with a full object', function()
 	{
-		var Reflux = require('../src');
-		Reflux.defineReact(React, Reflux);
+		Reflux.GlobalState = {};
+		Reflux.stores = {};
 		
 		var MyStore = (function (_super) {
 			__extends(Store, _super);
@@ -364,8 +359,8 @@ describe('Working with Reflux.GlobalState', function()
 	
 	it('setGlobalState should update partial global states when used with a partial object', function()
 	{
-		var Reflux = require('../src');
-		Reflux.defineReact(React, Reflux);
+		Reflux.GlobalState = {};
+		Reflux.stores = {};
 		
 		var MyStore = (function (_super) {
 			__extends(Store, _super);

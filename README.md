@@ -88,7 +88,7 @@ Reflux has refactored Flux to be a bit more dynamic and be more Functional React
 
 You can find some example projects at these locations:
 
-* [Todo Example Project](https://github.com/spoike/refluxjs-todo) - [http://reflux.github.io/refluxjs-todo/](http://reflux.github.io/refluxjs-todo/)
+* [Todo Example Project](https://github.com/spoike/refluxjs-todo)
 * [Hacker News Clone](https://github.com/echenley/react-news) by echenley
 * [Another Todo Project with a Python backend](https://github.com/limelights/todo-reflux) by limelights
 * [Sample app with authentication, permissions, sidebar and editable collection](https://github.com/VladimirPal/react-flux-backbone)
@@ -962,6 +962,21 @@ var Reflux = require('reflux');
 var React  = require('react');
 Reflux.defineReact(React, Reflux);
 // now Reflux.Component is accessible!
+```
+
+### Extending a 3rd Party Class
+
+Sometimes 3rd party libraries will have their own class that extends `React.Component` that they require you to use. Reflux handles this by exposing the `Reflux.Component.extend` method. If you have such a 3rd party class you can pass that class to this method and it will return a version of `Reflux.Component` that extends it instead of extending `React.Component` directly. Example:
+
+```javascript
+import {ThirdPartyComponent} from 'third-party';
+
+var RefluxThirdPartyComponent = Reflux.Component.extend(ThirdPartyComponent);
+
+class MyComponent extends RefluxThirdPartyComponent
+{
+	// ...
+}
 ```
 
 [Back to top](#content)
