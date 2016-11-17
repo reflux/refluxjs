@@ -254,4 +254,83 @@ describe('Creating ES6 style stores', function()
 		assert.equal( result, '<div><p>bar</p><p>bar</p></div>' );
 		assert.equal( MyStore.instanceCount, 1 );
 	});
+	
+	it('should mix state in with a Reflux.Component instance via mapStoreToState', function()
+	{
+		var MyStore = (function (_super) {
+			__extends(Store, _super);
+			function Store() {
+				_super.call(this);
+				this.state = {foo:'bar'};
+			}
+			return Store;
+		}(Reflux.Store));
+		
+		var MyComponent = (function (_super) {
+			__extends(Component, _super);
+			function Component(props) {
+				_super.call(this, props);
+				this.state = {};
+				this.mapStoreToState(MyStore, function(fromStore){
+					return {foobar:fromStore.foo};
+				});
+			}
+			Component.prototype.render = function () {
+				return React.createElement("p", null, this.state.foobar);
+			};
+			return Component;
+		}(Reflux.Component));
+		
+		var result = ReactDOMServer.renderToStaticMarkup( React.createElement(MyComponent, null) );
+		
+		assert.equal( result, '<p>bar</p>' );
+	});
+	
+	it('should mix state separately with two Reflux.Component instances via mapStoreToState', function()
+	{
+		var MyStore = (function (_super) {
+			__extends(Store, _super);
+			function Store() {
+				_super.call(this);
+				this.state = {foo:'bar', bar:'foo'};
+			}
+			return Store;
+		}(Reflux.Store));
+		
+		var MyComponent1 = (function (_super) {
+			__extends(Component, _super);
+			function Component(props) {
+				_super.call(this, props);
+				this.state = {foo:'?'};
+				this.mapStoreToState(MyStore, function(fromStore){
+					return {bar:fromStore.bar};
+				});
+			}
+			Component.prototype.render = function () {
+				return React.createElement("p", null, this.state.bar+this.state.foo);
+			};
+			return Component;
+		}(Reflux.Component));
+		
+		var MyComponent2 = (function (_super) {
+			__extends(Component, _super);
+			function Component(props) {
+				_super.call(this, props);
+				this.state = {bar:'?'};
+				this.mapStoreToState(MyStore, function(fromStore){
+					return {foo:fromStore.foo};
+				});
+			}
+			Component.prototype.render = function () {
+				return React.createElement("p", null, this.state.foo+this.state.bar);
+			};
+			return Component;
+		}(Reflux.Component));
+		
+		var result1 = ReactDOMServer.renderToStaticMarkup( React.createElement(MyComponent1, null) );
+		var result2 = ReactDOMServer.renderToStaticMarkup( React.createElement(MyComponent2, null) );
+		
+		assert.equal( result1, '<p>foo?</p>' );
+		assert.equal( result2, '<p>bar?</p>' );
+	});
 });
