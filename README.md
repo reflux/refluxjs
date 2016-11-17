@@ -794,6 +794,31 @@ class CounterStore extends Reflux.Store
 }
 ```
 
+`this.listenables` also accepts an array of actions in the event you want your store to listen to actions from other places as well:
+
+```javascript
+var Actions1 = Reflux.createActions(["increment"]);
+var Actions2 = Reflux.createActions(["decrement"]);
+
+class CounterStore extends Reflux.Store
+{
+    constructor() {
+        this.listenables = [Actions1, Actions2];
+        this.state = {count:0};
+    }
+
+    onIncrement() {
+        var cnt = this.state.count;
+        this.setState({count:cnt+1});
+    }
+
+    onDecrement() {
+        var cnt = this.state.count;
+        this.setState({count:cnt-1});
+    }
+}
+```
+
 One thing you may notice is that the original style `Reflux.createStore` creates an actual instance (as opposed to a class) which is what is assigned to `this.store` in the `Reflux.Component`. Extending `Reflux.Store` means you just have a class, not an instance of anything. Of course you can instantiate and use that store; however, if you just assign the class itself to `this.store` or `this.stores` in the `Reflux.Component` then it will automatically create a singleton instance of the store class (or use a previously created singleton instance of it if another component has already done so in its own construction). So, for example, to utilize the `Reflux.Store` store in the last example within a `Reflux.Component` class would look like this:
 
 ```javascript
