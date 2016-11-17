@@ -79,22 +79,8 @@ function defineReact(react, reflux, extend)
 			var sS = this.setState.bind(this);
 			// this handles the triggering of a store, checking what's updated if proto.storeKeys is utilized
 			var onStoreTrigger = function(obj){
-				// if there are not storeKeys defined then simply merge the state into the component
-				if (!this.storeKeys) {
-					sS(obj);
-					return;
-				}
-				// otherwise go through and only update properties that are in the storeKeys array, and only trigger if there are some
-				var doUpdate = false;
-				var updateObj = {};
-				for (var i = 0, ii = this.storeKeys.length; i < ii; i++) {
-					var prop = this.storeKeys[i];
-					if (obj.hasOwnProperty(prop)) {
-						doUpdate = true;
-						updateObj[prop] = obj[prop];
-					}
-				}
-				if (doUpdate) {
+				var updateObj = filterByStoreKeys(this.storeKeys, obj);
+				if (updateObj) {
 					sS(updateObj);
 				}
 			}.bind(this);
@@ -133,7 +119,10 @@ function defineReact(react, reflux, extend)
 				// listen/subscribe for the ".trigger()" in the store, and track the unsubscribes so that we can unsubscribe on unmount
 				this.__storeunsubscribes__.push(str.listen(onStoreTrigger));
 				// run set state so that it mixes in the props from the store with the component
-				this.setState(str.state);
+				var updateObj = filterByStoreKeys(this.storeKeys, str.state);
+				if (updateObj) {
+					this.setState(updateObj);
+				}
 			}
 		}
 		
@@ -403,6 +392,27 @@ function defineReact(react, reflux, extend)
 	
 	// so it knows not to redefine Reflux static stuff and stores if called again
 	_defined = true;
+}
+
+// filters a state object by storeKeys array (if it exists)
+// if filtering and obj contains no properties to use, returns false to let the component know not to update
+function filterByStoreKeys(storeKeys, obj)
+{
+	// if there are not storeKeys defined then simply return the whole original object
+	if (!storeKeys) {
+		return obj;
+	}
+	// otherwise go through and only update properties that are in the storeKeys array, and return straight false if there are none
+	var doUpdate = false;
+	var updateObj = {};
+	for (var i = 0, ii = storeKeys.length; i < ii; i++) {
+		var prop = storeKeys[i];
+		if (obj.hasOwnProperty(prop)) {
+			doUpdate = true;
+			updateObj[prop] = obj[prop];
+		}
+	}
+	return doUpdate ? updateObj : false;
 }
 
 // used as a well tested way to mimic ES6 class `extends` in ES5 code
