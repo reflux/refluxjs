@@ -783,9 +783,9 @@ To create one looks something like this:
 ```javascript
 class MyStore extends Reflux.Store
 {
-	constructor() {
-		this.state = {foo:'bar'}; // <-- the store's default state
-	}
+    constructor() {
+        this.state = {foo:'bar'}; // <-- the store's default state
+    }
 }
 ```
 
@@ -796,15 +796,40 @@ var Actions = Reflux.createActions(["increment"]);
 
 class CounterStore extends Reflux.Store
 {
-	constructor() {
-		this.listenables = Actions;
-		this.state = {count:0};
-	}
-	
-	onIncrement() {
-		var cnt = this.state.count;
-		this.setState({count:cnt+1});
-	}
+    constructor() {
+        this.listenables = Actions;
+        this.state = {count:0};
+    }
+    
+    onIncrement() {
+        var cnt = this.state.count;
+        this.setState({count:cnt+1});
+    }
+}
+```
+
+`this.listenables` also accepts an array of actions in the event you want your store to listen to actions from other places as well:
+
+```javascript
+var Actions1 = Reflux.createActions(["increment"]);
+var Actions2 = Reflux.createActions(["decrement"]);
+
+class CounterStore extends Reflux.Store
+{
+    constructor() {
+        this.listenables = [Actions1, Actions2];
+        this.state = {count:0};
+    }
+    
+    onIncrement() {
+        var cnt = this.state.count;
+        this.setState({count:cnt+1});
+    }
+
+    onDecrement() {
+        var cnt = this.state.count;
+        this.setState({count:cnt-1});
+    }
 }
 ```
 
@@ -897,19 +922,19 @@ To make it happen you just have to use ES6 style reflux classes and stores like 
 ```javascript
 class CounterStore extends Reflux.Store
 {
-	constructor() {
-		this.listenables = Actions;
-		this.state = {count:0};
-	}
-	
-	onIncrement() {
-		var cnt = this.state.count;
-		this.setState({count:cnt+1});
-	}
-	
-	static get id() {
-		return 'counterstore';
-	}
+    constructor() {
+        this.listenables = Actions;
+        this.state = {count:0};
+    }
+    
+    onIncrement() {
+        var cnt = this.state.count;
+        this.setState({count:cnt+1});
+    }
+    
+    static get id() {
+        return 'counterstore';
+    }
 }
 
 // ... make component and render as normal ...
@@ -922,19 +947,19 @@ Notice that you can only read the GlobalState **after** the components using the
 ```javascript
 class CounterStore extends Reflux.Store
 {
-	constructor() {
-		this.listenables = Actions;
-		this.state = {count:0};
-	}
-	
-	onIncrement() {
-		var cnt = this.state.count;
-		this.setState({count:cnt+1});
-	}
-	
-	static get id() {
-		return 'counterstore';
-	}
+    constructor() {
+        this.listenables = Actions;
+        this.state = {count:0};
+    }
+    
+    onIncrement() {
+        var cnt = this.state.count;
+        this.setState({count:cnt+1});
+    }
+    
+    static get id() {
+        return 'counterstore';
+    }
 }
 
 Reflux.GlobalState = {'counterstore':{'count':50}};
@@ -975,7 +1000,7 @@ var RefluxThirdPartyComponent = Reflux.Component.extend(ThirdPartyComponent);
 
 class MyComponent extends RefluxThirdPartyComponent
 {
-	// ...
+    // ...
 }
 ```
 
