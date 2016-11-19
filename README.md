@@ -113,10 +113,13 @@ The following command installs reflux as a npm package:
 The following command installs reflux as a bower component that can be used in the browser:
 
     bower install reflux
+	
+Then the files may be embedded in your html file via `bower_components/reflux/dist/reflux.js` or `bower_components/reflux/dist/reflux.min.js`.
 
 ### CDN
 
-Reflux is available at [jsdelivr](http://www.jsdelivr.com/#!refluxjs).
+Reflux is available at [jsdelivr](http://www.jsdelivr.com/#!refluxjs).  
+jsdelivr [v5.0.1](https://cdn.jsdelivr.net/refluxjs/5.0.1/reflux.min.js)
 
 ### ES5
 
