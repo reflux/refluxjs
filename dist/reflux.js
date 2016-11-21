@@ -290,33 +290,73 @@ if ('undefined' !== typeof module) {
 }
 
 },{}],2:[function(require,module,exports){
-/**
- * A module of methods that you want to include in all actions.
- * This module is consumed by `createAction`.
- */
 "use strict";
 
-module.exports = {};
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
 },{}],3:[function(require,module,exports){
 "use strict";
 
-exports.createdStores = [];
+Object.defineProperty(exports, "__esModule", {
+	value: true
+});
 
-exports.createdActions = [];
+// this needs to be set to true before Keep.js starts storing, done via useKeep
+var use = false;
 
-exports.reset = function () {
-    while (exports.createdStores.length) {
-        exports.createdStores.pop();
-    }
-    while (exports.createdActions.length) {
-        exports.createdActions.pop();
-    }
-};
+var createdStores = [];
+
+var createdActions = [];
+
+function useKeep() {
+	var bool = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : true;
+
+	use = bool;
+}
+
+function addStore(str) {
+	if (use) {
+		createdStores.push(str);
+	}
+}
+
+function addAction(act) {
+	if (use) {
+		createdActions.push(act);
+	}
+}
+
+function reset() {
+	while (createdStores.length) {
+		createdStores.pop();
+	}
+	while (createdActions.length) {
+		createdActions.pop();
+	}
+}
+
+exports.useKeep = useKeep;
+exports.addStore = addStore;
+exports.addAction = addAction;
+exports.createdStores = createdStores;
+exports.createdActions = createdActions;
+exports.reset = reset;
 },{}],4:[function(require,module,exports){
 "use strict";
 
-var _ = require("./utils"),
-    maker = require("./joins").instanceJoinCreator;
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+exports.joinStrict = exports.joinConcat = exports.joinLeading = exports.joinTrailing = exports.fetchInitialState = exports.stopListeningToAll = exports.stopListeningTo = exports.listenTo = exports.validateListening = exports.listenToMany = exports.hasListener = undefined;
+
+var _utils = require("./utils");
+
+var _ = _interopRequireWildcard(_utils);
+
+var _joins = require("./joins");
+
+function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
 
 /**
  * Extract child listenables from a parent from their
@@ -364,298 +404,296 @@ var flattenListenables = function flattenListenables(listenables) {
 };
 
 /**
- * A module of methods related to listening.
+ * An internal utility function used by `validateListening`
+ *
+ * @param {Action|Store} listenable The listenable we want to search for
+ * @returns {Boolean} The result of a recursive search among `this.subscriptions`
  */
-module.exports = {
-
-    /**
-     * An internal utility function used by `validateListening`
-     *
-     * @param {Action|Store} listenable The listenable we want to search for
-     * @returns {Boolean} The result of a recursive search among `this.subscriptions`
-     */
-    hasListener: function hasListener(listenable) {
-        var i = 0,
-            j,
-            listener,
-            listenables;
-        for (; i < (this.subscriptions || []).length; ++i) {
-            listenables = [].concat(this.subscriptions[i].listenable);
-            for (j = 0; j < listenables.length; j++) {
-                listener = listenables[j];
-                if (listener === listenable || listener.hasListener && listener.hasListener(listenable)) {
-                    return true;
-                }
-            }
-        }
-        return false;
-    },
-
-    /**
-     * A convenience method that listens to all listenables in the given object.
-     *
-     * @param {Object} listenables An object of listenables. Keys will be used as callback method names.
-     */
-    listenToMany: function listenToMany(listenables) {
-        var allListenables = flattenListenables(listenables);
-        for (var key in allListenables) {
-            var cbname = _.callbackName(key),
-                localname = this[cbname] ? cbname : this[key] ? key : undefined;
-            if (localname) {
-                this.listenTo(allListenables[key], localname, this[cbname + "Default"] || this[localname + "Default"] || localname);
-            }
-        }
-    },
-
-    /**
-     * Checks if the current context can listen to the supplied listenable
-     *
-     * @param {Action|Store} listenable An Action or Store that should be
-     *  listened to.
-     * @returns {String|Undefined} An error message, or undefined if there was no problem.
-     */
-    validateListening: function validateListening(listenable) {
-        if (listenable === this) {
-            return "Listener is not able to listen to itself";
-        }
-        if (!_.isFunction(listenable.listen)) {
-            return listenable + " is missing a listen method";
-        }
-        if (listenable.hasListener && listenable.hasListener(this)) {
-            return "Listener cannot listen to this listenable because of circular loop";
-        }
-    },
-
-    /**
-     * Sets up a subscription to the given listenable for the context object
-     *
-     * @param {Action|Store} listenable An Action or Store that should be
-     *  listened to.
-     * @param {Function|String} callback The callback to register as event handler
-     * @param {Function|String} defaultCallback The callback to register as default handler
-     * @returns {Object} A subscription obj where `stop` is an unsub function and `listenable` is the object being listened to
-     */
-    listenTo: function listenTo(listenable, callback, defaultCallback) {
-        var desub,
-            unsubscriber,
-            subscriptionobj,
-            subs = this.subscriptions = this.subscriptions || [];
-        _.throwIf(this.validateListening(listenable));
-        this.fetchInitialState(listenable, defaultCallback);
-        desub = listenable.listen(this[callback] || callback, this);
-        unsubscriber = function () {
-            var index = subs.indexOf(subscriptionobj);
-            _.throwIf(index === -1, "Tried to remove listen already gone from subscriptions list!");
-            subs.splice(index, 1);
-            desub();
-        };
-        subscriptionobj = {
-            stop: unsubscriber,
-            listenable: listenable
-        };
-        subs.push(subscriptionobj);
-        return subscriptionobj;
-    },
-
-    /**
-     * Stops listening to a single listenable
-     *
-     * @param {Action|Store} listenable The action or store we no longer want to listen to
-     * @returns {Boolean} True if a subscription was found and removed, otherwise false.
-     */
-    stopListeningTo: function stopListeningTo(listenable) {
-        var sub,
-            i = 0,
-            subs = this.subscriptions || [];
-        for (; i < subs.length; i++) {
-            sub = subs[i];
-            if (sub.listenable === listenable) {
-                sub.stop();
-                _.throwIf(subs.indexOf(sub) !== -1, "Failed to remove listen from subscriptions list!");
+var hasListener = exports.hasListener = function hasListener(listenable) {
+    var i = 0,
+        j,
+        listener,
+        listenables;
+    for (; i < (this.subscriptions || []).length; ++i) {
+        listenables = [].concat(this.subscriptions[i].listenable);
+        for (j = 0; j < listenables.length; j++) {
+            listener = listenables[j];
+            if (listener === listenable || listener.hasListener && listener.hasListener(listenable)) {
                 return true;
             }
         }
-        return false;
-    },
-
-    /**
-     * Stops all subscriptions and empties subscriptions array
-     */
-    stopListeningToAll: function stopListeningToAll() {
-        var remaining,
-            subs = this.subscriptions || [];
-        while (remaining = subs.length) {
-            subs[0].stop();
-            _.throwIf(subs.length !== remaining - 1, "Failed to remove listen from subscriptions list!");
-        }
-    },
-
-    /**
-     * Used in `listenTo`. Fetches initial data from a publisher if it has a `getInitialState` method.
-     * @param {Action|Store} listenable The publisher we want to get initial state from
-     * @param {Function|String} defaultCallback The method to receive the data
-     */
-    fetchInitialState: function fetchInitialState(listenable, defaultCallback) {
-        defaultCallback = defaultCallback && this[defaultCallback] || defaultCallback;
-        var me = this;
-        if (_.isFunction(defaultCallback) && _.isFunction(listenable.getInitialState)) {
-            var data = listenable.getInitialState();
-            if (data && _.isFunction(data.then)) {
-                data.then(function () {
-                    defaultCallback.apply(me, arguments);
-                });
-            } else {
-                defaultCallback.call(this, data);
-            }
-        }
-    },
-
-    /**
-     * The callback will be called once all listenables have triggered at least once.
-     * It will be invoked with the last emission from each listenable.
-     * @param {...Publishers} publishers Publishers that should be tracked.
-     * @param {Function|String} callback The method to call when all publishers have emitted
-     * @returns {Object} A subscription obj where `stop` is an unsub function and `listenable` is an array of listenables
-     */
-    joinTrailing: maker("last"),
-
-    /**
-     * The callback will be called once all listenables have triggered at least once.
-     * It will be invoked with the first emission from each listenable.
-     * @param {...Publishers} publishers Publishers that should be tracked.
-     * @param {Function|String} callback The method to call when all publishers have emitted
-     * @returns {Object} A subscription obj where `stop` is an unsub function and `listenable` is an array of listenables
-     */
-    joinLeading: maker("first"),
-
-    /**
-     * The callback will be called once all listenables have triggered at least once.
-     * It will be invoked with all emission from each listenable.
-     * @param {...Publishers} publishers Publishers that should be tracked.
-     * @param {Function|String} callback The method to call when all publishers have emitted
-     * @returns {Object} A subscription obj where `stop` is an unsub function and `listenable` is an array of listenables
-     */
-    joinConcat: maker("all"),
-
-    /**
-     * The callback will be called once all listenables have triggered.
-     * If a callback triggers twice before that happens, an error is thrown.
-     * @param {...Publishers} publishers Publishers that should be tracked.
-     * @param {Function|String} callback The method to call when all publishers have emitted
-     * @returns {Object} A subscription obj where `stop` is an unsub function and `listenable` is an array of listenables
-     */
-    joinStrict: maker("strict")
+    }
+    return false;
 };
+
+/**
+ * A convenience method that listens to all listenables in the given object.
+ *
+ * @param {Object} listenables An object of listenables. Keys will be used as callback method names.
+ */
+var listenToMany = exports.listenToMany = function listenToMany(listenables) {
+    var allListenables = flattenListenables(listenables);
+    for (var key in allListenables) {
+        var cbname = _.callbackName(key),
+            localname = this[cbname] ? cbname : this[key] ? key : undefined;
+        if (localname) {
+            this.listenTo(allListenables[key], localname, this[cbname + "Default"] || this[localname + "Default"] || localname);
+        }
+    }
+};
+
+/**
+ * Checks if the current context can listen to the supplied listenable
+ *
+ * @param {Action|Store} listenable An Action or Store that should be
+ *  listened to.
+ * @returns {String|Undefined} An error message, or undefined if there was no problem.
+ */
+var validateListening = exports.validateListening = function validateListening(listenable) {
+    if (listenable === this) {
+        return "Listener is not able to listen to itself";
+    }
+    if (!_.isFunction(listenable.listen)) {
+        return listenable + " is missing a listen method";
+    }
+    if (listenable.hasListener && listenable.hasListener(this)) {
+        return "Listener cannot listen to this listenable because of circular loop";
+    }
+};
+
+/**
+ * Sets up a subscription to the given listenable for the context object
+ *
+ * @param {Action|Store} listenable An Action or Store that should be
+ *  listened to.
+ * @param {Function|String} callback The callback to register as event handler
+ * @param {Function|String} defaultCallback The callback to register as default handler
+ * @returns {Object} A subscription obj where `stop` is an unsub function and `listenable` is the object being listened to
+ */
+var listenTo = exports.listenTo = function listenTo(listenable, callback, defaultCallback) {
+    var desub,
+        unsubscriber,
+        subscriptionobj,
+        subs = this.subscriptions = this.subscriptions || [];
+    _.throwIf(this.validateListening(listenable));
+    this.fetchInitialState(listenable, defaultCallback);
+    desub = listenable.listen(this[callback] || callback, this);
+    unsubscriber = function unsubscriber() {
+        var index = subs.indexOf(subscriptionobj);
+        _.throwIf(index === -1, "Tried to remove listen already gone from subscriptions list!");
+        subs.splice(index, 1);
+        desub();
+    };
+    subscriptionobj = {
+        stop: unsubscriber,
+        listenable: listenable
+    };
+    subs.push(subscriptionobj);
+    return subscriptionobj;
+};
+
+/**
+ * Stops listening to a single listenable
+ *
+ * @param {Action|Store} listenable The action or store we no longer want to listen to
+ * @returns {Boolean} True if a subscription was found and removed, otherwise false.
+ */
+var stopListeningTo = exports.stopListeningTo = function stopListeningTo(listenable) {
+    var sub,
+        i = 0,
+        subs = this.subscriptions || [];
+    for (; i < subs.length; i++) {
+        sub = subs[i];
+        if (sub.listenable === listenable) {
+            sub.stop();
+            _.throwIf(subs.indexOf(sub) !== -1, "Failed to remove listen from subscriptions list!");
+            return true;
+        }
+    }
+    return false;
+};
+
+/**
+ * Stops all subscriptions and empties subscriptions array
+ */
+var stopListeningToAll = exports.stopListeningToAll = function stopListeningToAll() {
+    var remaining,
+        subs = this.subscriptions || [];
+    while (remaining = subs.length) {
+        subs[0].stop();
+        _.throwIf(subs.length !== remaining - 1, "Failed to remove listen from subscriptions list!");
+    }
+};
+
+/**
+ * Used in `listenTo`. Fetches initial data from a publisher if it has a `getInitialState` method.
+ * @param {Action|Store} listenable The publisher we want to get initial state from
+ * @param {Function|String} defaultCallback The method to receive the data
+ */
+var fetchInitialState = exports.fetchInitialState = function fetchInitialState(listenable, defaultCallback) {
+    defaultCallback = defaultCallback && this[defaultCallback] || defaultCallback;
+    var me = this;
+    if (_.isFunction(defaultCallback) && _.isFunction(listenable.getInitialState)) {
+        var data = listenable.getInitialState();
+        if (data && _.isFunction(data.then)) {
+            data.then(function () {
+                defaultCallback.apply(me, arguments);
+            });
+        } else {
+            defaultCallback.call(this, data);
+        }
+    }
+};
+
+/**
+ * The callback will be called once all listenables have triggered at least once.
+ * It will be invoked with the last emission from each listenable.
+ * @param {...Publishers} publishers Publishers that should be tracked.
+ * @param {Function|String} callback The method to call when all publishers have emitted
+ * @returns {Object} A subscription obj where `stop` is an unsub function and `listenable` is an array of listenables
+ */
+var joinTrailing = exports.joinTrailing = (0, _joins.instanceJoinCreator)("last");
+
+/**
+ * The callback will be called once all listenables have triggered at least once.
+ * It will be invoked with the first emission from each listenable.
+ * @param {...Publishers} publishers Publishers that should be tracked.
+ * @param {Function|String} callback The method to call when all publishers have emitted
+ * @returns {Object} A subscription obj where `stop` is an unsub function and `listenable` is an array of listenables
+ */
+var joinLeading = exports.joinLeading = (0, _joins.instanceJoinCreator)("first");
+
+/**
+ * The callback will be called once all listenables have triggered at least once.
+ * It will be invoked with all emission from each listenable.
+ * @param {...Publishers} publishers Publishers that should be tracked.
+ * @param {Function|String} callback The method to call when all publishers have emitted
+ * @returns {Object} A subscription obj where `stop` is an unsub function and `listenable` is an array of listenables
+ */
+var joinConcat = exports.joinConcat = (0, _joins.instanceJoinCreator)("all");
+
+/**
+ * The callback will be called once all listenables have triggered.
+ * If a callback triggers twice before that happens, an error is thrown.
+ * @param {...Publishers} publishers Publishers that should be tracked.
+ * @param {Function|String} callback The method to call when all publishers have emitted
+ * @returns {Object} A subscription obj where `stop` is an unsub function and `listenable` is an array of listenables
+ */
+var joinStrict = exports.joinStrict = (0, _joins.instanceJoinCreator)("strict");
 },{"./joins":11,"./utils":13}],5:[function(require,module,exports){
 "use strict";
 
-var _ = require("./utils");
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+exports.deferWith = exports.triggerAsync = exports.trigger = exports.listen = exports.shouldEmit = exports.preEmit = undefined;
+
+var _utils = require("./utils");
+
+var _ = _interopRequireWildcard(_utils);
+
+function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
 
 /**
  * A module of methods for object that you want to be able to listen to.
  * This module is consumed by `createStore` and `createAction`
  */
-module.exports = {
 
-    /**
-     * Hook used by the publisher that is invoked before emitting
-     * and before `shouldEmit`. The arguments are the ones that the action
-     * is invoked with. If this function returns something other than
-     * undefined, that will be passed on as arguments for shouldEmit and
-     * emission.
-     */
-    preEmit: function preEmit() {},
+/**
+ * Hook used by the publisher that is invoked before emitting
+ * and before `shouldEmit`. The arguments are the ones that the action
+ * is invoked with. If this function returns something other than
+ * undefined, that will be passed on as arguments for shouldEmit and
+ * emission.
+ */
+var preEmit = exports.preEmit = function preEmit() {};
 
-    /**
-     * Hook used by the publisher after `preEmit` to determine if the
-     * event should be emitted with given arguments. This may be overridden
-     * in your application, default implementation always returns true.
-     *
-     * @returns {Boolean} true if event should be emitted
-     */
-    shouldEmit: function shouldEmit() {
-        return true;
-    },
+/**
+ * Hook used by the publisher after `preEmit` to determine if the
+ * event should be emitted with given arguments. This may be overridden
+ * in your application, default implementation always returns true.
+ *
+ * @returns {Boolean} true if event should be emitted
+ */
+var shouldEmit = exports.shouldEmit = function shouldEmit() {
+    return true;
+};
 
-    /**
-     * Subscribes the given callback for action triggered
-     *
-     * @param {Function} callback The callback to register as event handler
-     * @param {Mixed} [optional] bindContext The context to bind the callback with
-     * @returns {Function} Callback that unsubscribes the registered event handler
-     */
-    listen: function listen(callback, bindContext) {
-        bindContext = bindContext || this;
-        var eventHandler = function eventHandler(args) {
-            if (aborted) {
-                return;
-            }
-            callback.apply(bindContext, args);
-        },
-            me = this,
-            aborted = false;
-        this.emitter.addListener(this.eventLabel, eventHandler);
-        return function () {
-            aborted = true;
-            me.emitter.removeListener(me.eventLabel, eventHandler);
-        };
-    },
-
-    /**
-     * Publishes an event using `this.emitter` (if `shouldEmit` agrees)
-     */
-    trigger: function trigger() {
-        var args = arguments,
-            pre = this.preEmit.apply(this, args);
-        args = pre === undefined ? args : _.isArguments(pre) ? pre : [].concat(pre);
-        if (this.shouldEmit.apply(this, args)) {
-            this.emitter.emit(this.eventLabel, args);
+/**
+ * Subscribes the given callback for action triggered
+ *
+ * @param {Function} callback The callback to register as event handler
+ * @param {Mixed} [optional] bindContext The context to bind the callback with
+ * @returns {Function} Callback that unsubscribes the registered event handler
+ */
+var listen = exports.listen = function listen(callback, bindContext) {
+    bindContext = bindContext || this;
+    var eventHandler = function eventHandler(args) {
+        if (aborted) {
+            return;
         }
+        callback.apply(bindContext, args);
     },
+        me = this,
+        aborted = false;
+    this.emitter.addListener(this.eventLabel, eventHandler);
+    return function () {
+        aborted = true;
+        me.emitter.removeListener(me.eventLabel, eventHandler);
+    };
+};
 
-    /**
-     * Tries to publish the event on the next tick
-     */
-    triggerAsync: function triggerAsync() {
-        var args = arguments,
-            me = this;
-        _.nextTick(function () {
-            me.trigger.apply(me, args);
-        });
-    },
-
-    /**
-     * Wraps the trigger mechanism with a deferral function.
-     *
-     * @param {Function} callback the deferral function,
-     *        first argument is the resolving function and the
-     *        rest are the arguments provided from the previous
-     *        trigger invocation
-     */
-    deferWith: function deferWith(callback) {
-        var oldTrigger = this.trigger,
-            ctx = this,
-            resolver = function resolver() {
-            oldTrigger.apply(ctx, arguments);
-        };
-        this.trigger = function () {
-            callback.apply(ctx, [resolver].concat([].splice.call(arguments, 0)));
-        };
+/**
+ * Publishes an event using `this.emitter` (if `shouldEmit` agrees)
+ */
+var trigger = exports.trigger = function trigger() {
+    var args = arguments,
+        pre = this.preEmit.apply(this, args);
+    args = pre === undefined ? args : _.isArguments(pre) ? pre : [].concat(pre);
+    if (this.shouldEmit.apply(this, args)) {
+        this.emitter.emit(this.eventLabel, args);
     }
+};
 
+/**
+ * Tries to publish the event on the next tick
+ */
+var triggerAsync = exports.triggerAsync = function triggerAsync() {
+    var args = arguments,
+        me = this;
+    _.nextTick(function () {
+        me.trigger.apply(me, args);
+    });
+};
+
+/**
+ * Wraps the trigger mechanism with a deferral function.
+ *
+ * @param {Function} callback the deferral function,
+ *        first argument is the resolving function and the
+ *        rest are the arguments provided from the previous
+ *        trigger invocation
+ */
+var deferWith = exports.deferWith = function deferWith(callback) {
+    var oldTrigger = this.trigger,
+        ctx = this,
+        resolver = function resolver() {
+        oldTrigger.apply(ctx, arguments);
+    };
+    this.trigger = function () {
+        callback.apply(ctx, [resolver].concat([].splice.call(arguments, 0)));
+    };
 };
 },{"./utils":13}],6:[function(require,module,exports){
-/**
- * A module of methods that you want to include in all stores.
- * This module is consumed by `createStore`.
- */
+arguments[4][2][0].apply(exports,arguments)
+},{"dup":2}],7:[function(require,module,exports){
 "use strict";
 
-module.exports = {};
-},{}],7:[function(require,module,exports){
-"use strict";
-
-module.exports = function (store, definition) {
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+exports.bindMethods = bindMethods;
+function bindMethods(store, definition) {
     for (var name in definition) {
         if (Object.getOwnPropertyDescriptor && Object.defineProperty) {
             var propertyDescriptor = Object.getOwnPropertyDescriptor(definition, name);
@@ -677,14 +715,32 @@ module.exports = function (store, definition) {
     }
 
     return store;
-};
+}
 },{}],8:[function(require,module,exports){
 "use strict";
 
-var _ = require("./utils"),
-    ActionMethods = require("./ActionMethods"),
-    PublisherMethods = require("./PublisherMethods"),
-    Keep = require("./Keep");
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+exports.createAction = createAction;
+
+var _utils = require("./utils");
+
+var _ = _interopRequireWildcard(_utils);
+
+var _ActionMethods = require("./ActionMethods");
+
+var ActionMethods = _interopRequireWildcard(_ActionMethods);
+
+var _PublisherMethods = require("./PublisherMethods");
+
+var PublisherMethods = _interopRequireWildcard(_PublisherMethods);
+
+var _Keep = require("./Keep");
+
+var Keep = _interopRequireWildcard(_Keep);
+
+function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
 
 var allowed = { preEmit: 1, shouldEmit: 1 };
 
@@ -695,7 +751,7 @@ var allowed = { preEmit: 1, shouldEmit: 1 };
  *
  * @param {Object} definition The action object definition
  */
-var createAction = function createAction(definition) {
+function createAction(definition) {
 
     definition = definition || {};
     if (!_.isObject(definition)) {
@@ -739,19 +795,43 @@ var createAction = function createAction(definition) {
 
     _.extend(functor, childActions, context);
 
-    Keep.createdActions.push(functor);
+    Keep.addAction(functor);
 
     return functor;
-};
-
-module.exports = createAction;
+}
 },{"./ActionMethods":2,"./Keep":3,"./PublisherMethods":5,"./utils":13}],9:[function(require,module,exports){
 "use strict";
 
-var _ = require("./utils"),
-    Keep = require("./Keep"),
-    mixer = require("./mixer"),
-    bindMethods = require("./bindMethods");
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+exports.createStore = createStore;
+
+var _utils = require("./utils");
+
+var _ = _interopRequireWildcard(_utils);
+
+var _Keep = require("./Keep");
+
+var Keep = _interopRequireWildcard(_Keep);
+
+var _mixer = require("./mixer");
+
+var _bindMethods = require("./bindMethods");
+
+var _StoreMethods = require("./StoreMethods");
+
+var StoreMethods = _interopRequireWildcard(_StoreMethods);
+
+var _PublisherMethods = require("./PublisherMethods");
+
+var PublisherMethods = _interopRequireWildcard(_PublisherMethods);
+
+var _ListenerMethods = require("./ListenerMethods");
+
+var ListenerMethods = _interopRequireWildcard(_ListenerMethods);
+
+function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
 
 var allowed = { preEmit: 1, shouldEmit: 1 };
 
@@ -763,11 +843,7 @@ var allowed = { preEmit: 1, shouldEmit: 1 };
  * @param {Object} definition The data store object definition
  * @returns {Store} A data store instance
  */
-module.exports = function (definition) {
-
-    var StoreMethods = require("./StoreMethods"),
-        PublisherMethods = require("./PublisherMethods"),
-        ListenerMethods = require("./ListenerMethods");
+function createStore(definition) {
 
     definition = definition || {};
 
@@ -783,7 +859,7 @@ module.exports = function (definition) {
         }
     }
 
-    definition = mixer(definition);
+    definition = (0, _mixer.mix)(definition);
 
     function Store() {
         var i = 0,
@@ -791,7 +867,7 @@ module.exports = function (definition) {
         this.subscriptions = [];
         this.emitter = new _.EventEmitter();
         this.eventLabel = "change";
-        bindMethods(this, definition);
+        (0, _bindMethods.bindMethods)(this, definition);
         if (this.init && _.isFunction(this.init)) {
             this.init();
         }
@@ -806,49 +882,62 @@ module.exports = function (definition) {
     _.extend(Store.prototype, ListenerMethods, PublisherMethods, StoreMethods, definition);
 
     var store = new Store();
-    Keep.createdStores.push(store);
+    Keep.addStore(store);
 
     return store;
-};
+}
 },{"./Keep":3,"./ListenerMethods":4,"./PublisherMethods":5,"./StoreMethods":6,"./bindMethods":7,"./mixer":12,"./utils":13}],10:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
     value: true
 });
-var Reflux = {
-    version: {
-        "reflux-core": "0.3.0"
-    }
+exports.__keep = exports.joinConcat = exports.joinStrict = exports.joinLeading = exports.all = exports.joinTrailing = exports.use = exports.nextTick = exports.setEventEmitter = exports.createActions = exports.createStore = exports.createAction = exports.utils = exports.StoreMethods = exports.PublisherMethods = exports.ListenerMethods = exports.ActionMethods = exports.version = undefined;
+
+var _ActionMethods = require("./ActionMethods");
+
+var ActionMethods = _interopRequireWildcard(_ActionMethods);
+
+var _ListenerMethods = require("./ListenerMethods");
+
+var ListenerMethods = _interopRequireWildcard(_ListenerMethods);
+
+var _PublisherMethods = require("./PublisherMethods");
+
+var PublisherMethods = _interopRequireWildcard(_PublisherMethods);
+
+var _StoreMethods = require("./StoreMethods");
+
+var StoreMethods = _interopRequireWildcard(_StoreMethods);
+
+var _joins = require("./joins");
+
+var _utils = require("./utils");
+
+var _ = _interopRequireWildcard(_utils);
+
+var _createAction = require("./createAction");
+
+var _createStore = require("./createStore");
+
+var _Keep = require("./Keep");
+
+var __keep = _interopRequireWildcard(_Keep);
+
+function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
+
+var version = {
+    "reflux-core": "0.4.1"
 };
 
-Reflux.ActionMethods = require("./ActionMethods");
+var joinTrailing = (0, _joins.staticJoinCreator)("last");
+var all = joinTrailing; // Reflux.all alias for backward compatibility
+var joinLeading = (0, _joins.staticJoinCreator)("first");
+var joinStrict = (0, _joins.staticJoinCreator)("strict");
+var joinConcat = (0, _joins.staticJoinCreator)("all");
 
-Reflux.ListenerMethods = require("./ListenerMethods");
+var utils = _;
 
-Reflux.PublisherMethods = require("./PublisherMethods");
-
-Reflux.StoreMethods = require("./StoreMethods");
-
-Reflux.createAction = require("./createAction");
-
-Reflux.createStore = require("./createStore");
-
-var maker = require("./joins").staticJoinCreator;
-
-Reflux.joinTrailing = Reflux.all = maker("last"); // Reflux.all alias for backward compatibility
-
-Reflux.joinLeading = maker("first");
-
-Reflux.joinStrict = maker("strict");
-
-Reflux.joinConcat = maker("all");
-
-var _ = Reflux.utils = require("./utils");
-
-Reflux.EventEmitter = _.EventEmitter;
-
-Reflux.Promise = _.Promise;
 
 /**
  * Convenience function for creating a set of actions
@@ -856,11 +945,11 @@ Reflux.Promise = _.Promise;
  * @param definitions the definitions for the actions to be created
  * @returns an object with actions of corresponding action names
  */
-Reflux.createActions = (function () {
+var createActions = function () {
     var reducer = function reducer(definitions, actions) {
         Object.keys(definitions).forEach(function (actionName) {
             var val = definitions[actionName];
-            actions[actionName] = Reflux.createAction(val);
+            actions[actionName] = (0, _createAction.createAction)(val);
         });
     };
 
@@ -871,7 +960,7 @@ Reflux.createActions = (function () {
                 if (_.isObject(val)) {
                     reducer(val, actions);
                 } else {
-                    actions[val] = Reflux.createAction(val);
+                    actions[val] = (0, _createAction.createAction)(val);
                 }
             });
         } else {
@@ -879,51 +968,77 @@ Reflux.createActions = (function () {
         }
         return actions;
     };
-})();
+}();
 
 /**
  * Sets the eventmitter that Reflux uses
  */
-Reflux.setEventEmitter = function (ctx) {
-    Reflux.EventEmitter = _.EventEmitter = ctx;
-};
+function setEventEmitter(ctx) {
+    _.EventEmitter = ctx;
+}
 
 /**
  * Sets the method used for deferring actions and stores
  */
-Reflux.nextTick = function (nextTick) {
+function nextTick(nextTick) {
     _.nextTick = nextTick;
-};
+}
 
-Reflux.use = function (pluginCb) {
-    pluginCb(Reflux);
-};
+function use(pluginCb) {
+    pluginCb(this);
+}
 
 /**
  * Provides the set of created actions and stores for introspection
  */
 /*eslint-disable no-underscore-dangle*/
-Reflux.__keep = require("./Keep");
+exports.version = version;
+exports.ActionMethods = ActionMethods;
+exports.ListenerMethods = ListenerMethods;
+exports.PublisherMethods = PublisherMethods;
+exports.StoreMethods = StoreMethods;
+exports.utils = utils;
+exports.createAction = _createAction.createAction;
+exports.createStore = _createStore.createStore;
+exports.createActions = createActions;
+exports.setEventEmitter = setEventEmitter;
+exports.nextTick = nextTick;
+exports.use = use;
+exports.joinTrailing = joinTrailing;
+exports.all = all;
+exports.joinLeading = joinLeading;
+exports.joinStrict = joinStrict;
+exports.joinConcat = joinConcat;
+exports.__keep = __keep;
 /*eslint-enable no-underscore-dangle*/
 
 /**
  * Warn if Function.prototype.bind not available
  */
+
 if (!Function.prototype.bind) {
     console.error("Function.prototype.bind not available. " + "ES5 shim required. " + "https://github.com/spoike/refluxjs#es5");
 }
-
-exports["default"] = Reflux;
-module.exports = exports["default"];
 },{"./ActionMethods":2,"./Keep":3,"./ListenerMethods":4,"./PublisherMethods":5,"./StoreMethods":6,"./createAction":8,"./createStore":9,"./joins":11,"./utils":13}],11:[function(require,module,exports){
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+exports.staticJoinCreator = staticJoinCreator;
+exports.instanceJoinCreator = instanceJoinCreator;
+
+var _createStore = require("./createStore");
+
+var _utils = require("./utils");
+
+var _ = _interopRequireWildcard(_utils);
+
+function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
+
 /**
  * Internal module used to create static and instance join methods
  */
-
-"use strict";
-
-var createStore = require("./createStore"),
-    _ = require("./utils");
 
 var slice = Array.prototype.slice,
     strategyMethodNames = {
@@ -938,23 +1053,23 @@ var slice = Array.prototype.slice,
  * @param {String} strategy Which strategy to use when tracking listenable trigger arguments
  * @returns {Function} A static function which returns a store with a join listen on the given listenables using the given strategy
  */
-exports.staticJoinCreator = function (strategy) {
+function staticJoinCreator(strategy) {
     return function () /* listenables... */{
         var listenables = slice.call(arguments);
-        return createStore({
+        return (0, _createStore.createStore)({
             init: function init() {
                 this[strategyMethodNames[strategy]].apply(this, listenables.concat("triggerAsync"));
             }
         });
     };
-};
+}
 
 /**
  * Used in `ListenerMethods.js` to create the instance join methods
  * @param {String} strategy Which strategy to use when tracking listenable trigger arguments
  * @returns {Function} An instance method which sets up a join listen on the given listenables using the given strategy
  */
-exports.instanceJoinCreator = function (strategy) {
+function instanceJoinCreator(strategy) {
     return function () /* listenables..., callback*/{
         _.throwIf(arguments.length < 2, "Cannot create a join with less than 2 listenables!");
         var listenables = slice.call(arguments),
@@ -981,7 +1096,7 @@ exports.instanceJoinCreator = function (strategy) {
         this.subscriptions = (this.subscriptions || []).concat(subobj);
         return subobj;
     };
-};
+}
 
 // ---- internal join functions ----
 
@@ -1035,16 +1150,25 @@ function emitIfAllListenablesEmitted(join) {
 },{"./createStore":9,"./utils":13}],12:[function(require,module,exports){
 "use strict";
 
-var _ = require("./utils");
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+exports.mix = mix;
 
-module.exports = function mix(def) {
+var _utils = require("./utils");
+
+var _ = _interopRequireWildcard(_utils);
+
+function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
+
+function mix(def) {
     var composed = {
         init: [],
         preEmit: [],
         shouldEmit: []
     };
 
-    var updated = (function mixDef(mixin) {
+    var updated = function mixDef(mixin) {
         var mixed = {};
         if (mixin.mixins) {
             mixin.mixins.forEach(function (subMixin) {
@@ -1058,7 +1182,7 @@ module.exports = function mix(def) {
             }
         });
         return mixed;
-    })(def);
+    }(def);
 
     if (composed.init.length > 1) {
         updated.init = function () {
@@ -1070,10 +1194,10 @@ module.exports = function mix(def) {
     }
     if (composed.preEmit.length > 1) {
         updated.preEmit = function () {
-            return composed.preEmit.reduce((function (args, preEmit) {
+            return composed.preEmit.reduce(function (args, preEmit) {
                 var newValue = preEmit.apply(this, args);
                 return newValue === undefined ? args : [newValue];
-            }).bind(this), arguments);
+            }.bind(this), arguments);
         };
     }
     if (composed.shouldEmit.length > 1) {
@@ -1091,22 +1215,25 @@ module.exports = function mix(def) {
     });
 
     return updated;
-};
+}
 },{"./utils":13}],13:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
     value: true
 });
+
+var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
+
 exports.capitalize = capitalize;
 exports.callbackName = callbackName;
 exports.isObject = isObject;
 exports.extend = extend;
 exports.isFunction = isFunction;
+exports.nextTick = nextTick;
 exports.object = object;
 exports.isArguments = isArguments;
 exports.throwIf = throwIf;
-
 function capitalize(string) {
     return string.charAt(0).toUpperCase() + string.slice(1);
 }
@@ -1117,12 +1244,11 @@ function callbackName(string, prefix) {
 }
 
 /*
- * isObject, extend, isFunction, isArguments are taken from undescore/lodash in
+ * isObject, extend, isFunction, isArguments are taken from underscore/lodash in
  * order to remove the dependency
  */
-
 function isObject(obj) {
-    var type = typeof obj;
+    var type = typeof obj === "undefined" ? "undefined" : _typeof(obj);
     return type === "function" || type === "object" && !!obj;
 }
 
@@ -1130,10 +1256,12 @@ function extend(obj) {
     if (!isObject(obj)) {
         return obj;
     }
-    var source, prop;
+    var source, keys, prop;
     for (var i = 1, length = arguments.length; i < length; i++) {
         source = arguments[i];
-        for (prop in source) {
+        keys = Object.keys(source);
+        for (var j = 0; j < keys.length; j++) {
+            prop = keys[j];
             if (Object.getOwnPropertyDescriptor && Object.defineProperty) {
                 var propertyDescriptor = Object.getOwnPropertyDescriptor(source, prop);
                 Object.defineProperty(obj, prop, propertyDescriptor);
@@ -1151,9 +1279,9 @@ function isFunction(value) {
 
 exports.EventEmitter = require("eventemitter3");
 
-exports.nextTick = function (callback) {
+function nextTick(callback) {
     setTimeout(callback, 0);
-};
+}
 
 function object(keys, vals) {
     var o = {},
@@ -1165,7 +1293,7 @@ function object(keys, vals) {
 }
 
 function isArguments(value) {
-    return typeof value === "object" && "callee" in value && typeof value.length === "number";
+    return (typeof value === "undefined" ? "undefined" : _typeof(value)) === "object" && "callee" in value && typeof value.length === "number";
 }
 
 function throwIf(val, msg) {

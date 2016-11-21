@@ -30,7 +30,7 @@
   ],
   "dependencies": {
     "eventemitter3": "^1.1.1",
-    "reflux-core": "^0.3.0"
+    "reflux-core": "^0.4.1"
   },
   "devDependencies": {
     "benchmark": "^1.0.0",

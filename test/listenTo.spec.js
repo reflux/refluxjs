@@ -3,7 +3,7 @@ var assert = require('chai').assert,
     listenTo = require('../src/listenTo'),
     Reflux = require('../src'),
     _ = Reflux.utils;
-
+	
 describe('the listenTo shorthand',function(){
 
     describe("when calling the factory",function(){
