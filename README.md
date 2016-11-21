@@ -974,15 +974,14 @@ Directly accessing `Reflux.GlobalState` is a fine way to do set the starting sta
 
 ### Making sure Reflux.Component is available
 
-`Reflux.Component` extends `React.Component`. Therefore Reflux needs to be able to access React in order to expose it. If you need to load Reflux before React or if you are in an environment where `React` is not a global variable then there is an exposed method `Reflux.defineReact` that you can use to manually give Reflux a reference to the React object so that it may create the `Reflux.Component` class to extend from. A second optional argument also allows manually giving it a Reflux reference in case that isn't global either. An example on Node.js would be:
+`Reflux.Component` extends `React.Component`. Therefore Reflux needs to be able to access React in order to expose it. In the browser as long as React is loaded before Reflux then Reflux will automatically find it. Likewise in node-like environments where `require('react')` will function Reflux will try to access React that way. So in almost all situations Reflux will find React on its own.
+
+However, Reflux also exposes the method `Reflux.defineReact` that you can use to manually give Reflux a reference to the React object in case you need to:
 
 ```javascript
-// only needed on some environments, usually Reflux just uses the globals!
-
-// In Node.js, for example there won't be a global Reflux/React though...so:
-var Reflux = require('reflux');
-var React  = require('react');
-Reflux.defineReact(React, Reflux);
+// only needed if, for some reason, Reflux can't get reference to React:
+var React = /* however you access React */;
+Reflux.defineReact(React);
 // now Reflux.Component is accessible!
 ```
 

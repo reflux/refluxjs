@@ -27,7 +27,7 @@ describe('Working with Reflux.GlobalState', function()
 	it('should allow defining of React with Reflux.defineReact without error and empty', function()
 	{
 		Reflux = require('../src');
-		Reflux.defineReact(React, Reflux);
+		Reflux.defineReact(React);
 		
 		return true;
 	});

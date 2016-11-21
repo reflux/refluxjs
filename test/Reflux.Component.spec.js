@@ -26,7 +26,7 @@ describe('Creating ES6 style React classes', function()
 {
 	it('should allow defining of React with Reflux.defineReact without error', function()
 	{
-		Reflux.defineReact(React, Reflux);
+		Reflux.defineReact(React);
 		
 		return true;
 	});
