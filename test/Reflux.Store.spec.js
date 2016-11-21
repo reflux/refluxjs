@@ -9,7 +9,7 @@ chai.use(require('chai-as-promised'));
 var React = require('react');
 var ReactDOMServer = require('react-dom/server');
 
-Reflux.defineReact(React, Reflux);
+Reflux.defineReact(React);
 
 
 function __extends (d, b) {
@@ -29,7 +29,7 @@ describe('Creating ES6 style stores', function()
 {
 	it('should allow defining of React with Reflux.defineReact without error', function()
 	{
-		Reflux.defineReact(React, Reflux);
+		Reflux.defineReact(React);
 		
 		return true;
 	});

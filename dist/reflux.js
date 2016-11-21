@@ -1193,6 +1193,24 @@ module.exports = _.extend({
 }, ListenerMethods);
 
 },{"reflux-core/lib/ListenerMethods":4,"reflux-core/lib/utils":13}],15:[function(require,module,exports){
+
+/* globals React: false */
+
+var Reflux = require('reflux-core');
+Reflux.defineReact = require('./defineReact');
+
+// first try to see if there's a global React var and use it
+if (typeof React !== 'undefined' && React) {
+	Reflux.defineReact(React);
+// otherwise we're gonna resort to 'try' stuff in case of other environments
+} else {
+	try {
+		var R = require("react"); // we ignore this in browserify manually (see grunt file), so it's more of a doublecheck for in node
+		Reflux.defineReact(R);
+	} catch (e) {}
+}
+
+},{"./defineReact":18,"react":undefined,"reflux-core":10}],16:[function(require,module,exports){
 var ListenerMethods = require('reflux-core/lib/ListenerMethods'),
     ListenerMixin = require('./ListenerMixin'),
     _ = require('reflux-core/lib/utils');
@@ -1222,7 +1240,7 @@ module.exports = function(listenable, key) {
     };
 };
 
-},{"./ListenerMixin":14,"reflux-core/lib/ListenerMethods":4,"reflux-core/lib/utils":13}],16:[function(require,module,exports){
+},{"./ListenerMixin":14,"reflux-core/lib/ListenerMethods":4,"reflux-core/lib/utils":13}],17:[function(require,module,exports){
 var ListenerMethods = require('reflux-core/lib/ListenerMethods'),
     ListenerMixin = require('./ListenerMixin'),
     _ = require('reflux-core/lib/utils');
@@ -1259,26 +1277,25 @@ module.exports = function(listenable, key, filterFunc) {
     };
 };
 
-},{"./ListenerMixin":14,"reflux-core/lib/ListenerMethods":4,"reflux-core/lib/utils":13}],17:[function(require,module,exports){
-/* globals Reflux: false */
+},{"./ListenerMixin":14,"reflux-core/lib/ListenerMethods":4,"reflux-core/lib/utils":13}],18:[function(require,module,exports){
 /* globals React: false */
+
+var Reflux = require('reflux-core');
 
 /**
  * Reflux.defineReact function where you can manually supply
  * the React object in order to create in case Reflux needs to load before
  * React or there is a modular environment where there won't be a global
- * React variable. If Reflux is not global either then it can be included
- * as a second parameter.
+ * React variable.
  * @note The third param is for internal usage only.
  */
-var _react, _reflux, _defined = false;
-function defineReact(react, reflux, extend)
+var _react, _defined = false;
+function defineReact(react, noLongerUsed, extend)
 {
 	var proto, _extend;
 	
 	// if no Reflux object is yet available then return and just wait until defineReact is called manually with it
 	try {
-		_reflux = reflux || _reflux || Reflux;
 		_react  = react  || _react  || React;
 		_extend = extend || _react.Component;
 	} catch (e) {
@@ -1287,7 +1304,7 @@ function defineReact(react, reflux, extend)
 	
 	// if Reflux and React aren't present then ignore, wait until they are properly present
 	// also ignore if it's been called before UNLESS there's manual extending happening
-	if (!_reflux || !_react || !_extend || (_defined && !extend)) {
+	if (!_react || !_extend || (_defined && !extend)) {
 		return;
 	}
 	
@@ -1356,7 +1373,7 @@ function defineReact(react, reflux, extend)
 					if (!str.singleton) {
 						str.singleton = new str();
 						if (storeId) {
-							_reflux.stores[storeId] = str.singleton;
+							Reflux.stores[storeId] = str.singleton;
 						}
 					}
 					// before we weren't sure if we were working with an instance or class, so now we know an instance is created set it
@@ -1367,14 +1384,14 @@ function defineReact(react, reflux, extend)
 					// if there is an id and there is a global state property for this store then merge
 					// the properties from that global state into the default state of the store AND then
 					// set the global state to that new state (since it may have previously been partial)
-					if (storeId && _reflux.GlobalState[storeId]) {
-						for (var key in _reflux.GlobalState[storeId]) {
-							str.state[key] = _reflux.GlobalState[storeId][key];
+					if (storeId && Reflux.GlobalState[storeId]) {
+						for (var key in Reflux.GlobalState[storeId]) {
+							str.state[key] = Reflux.GlobalState[storeId][key];
 						}
-						_reflux.GlobalState[storeId] = str.state;
+						Reflux.GlobalState[storeId] = str.state;
 					// otherwise (if it has an id) set the global state to the default state of the store
 					} else if (storeId) {
-						_reflux.GlobalState[storeId] = str.state;
+						Reflux.GlobalState[storeId] = str.state;
 					}
 					// if no id, then no messing with global state
 				}
@@ -1488,7 +1505,7 @@ function defineReact(react, reflux, extend)
 	}
 	
 	// otherwise set as Reflux.Component and continue with other normal definitions
-	_reflux.Component = RefluxComponent;
+	Reflux.Component = RefluxComponent;
 	// ------------ END Reflux.Component ------------
 	
 	// --------- BEGIN Reflux.Store ------------
@@ -1506,7 +1523,7 @@ function defineReact(react, reflux, extend)
 		// extending doesn't really work well here, so instead we create an internal instance
 		// and just loop through its properties/methods and make a getter/setter for each
 		// that will actually be getting and setting on that internal instance.
-		this.__store__ = _reflux.createStore();
+		this.__store__ = Reflux.createStore();
 		this.state = {};
 		var self = this;
 		for (var key in this.__store__) {
@@ -1555,7 +1572,7 @@ function defineReact(react, reflux, extend)
 		}
 		// if there's an id (i.e. it's being tracked by the global state) then make sure to update the global state
 		if (this.id) {
-			_reflux.GlobalState[this.id] = this.state;
+			Reflux.GlobalState[this.id] = this.state;
 		}
 		// trigger, because any component it's attached to is listening and will merge the store state into its own on a store trigger
 		this.trigger(obj);
@@ -1576,7 +1593,7 @@ function defineReact(react, reflux, extend)
 	it will be added to the Reflux.GlobalState object which automatically tracks the
 	current state of all such defined stores in the program. */
 	
-	_reflux.Store = RefluxStore;
+	Reflux.Store = RefluxStore;
 	// ----------- END Reflux.Store -------------
 	
 	// --------- BEGIN Reflux Static Props/Methods ------------
@@ -1590,21 +1607,21 @@ function defineReact(react, reflux, extend)
 	 * state at any point, and Reflux.getGlobalState to return a deep clone of the Reflux.GlobalState object which will
 	 * not continue to mutate as Reflux.GlobalState continues to mutate.
 	 */
-	_reflux.GlobalState = _reflux.GlobalState || {};
+	Reflux.GlobalState = Reflux.GlobalState || {};
 	
 	/**
 	 * Reflux.stores
 	 * All initialized stores that have an id will have a reference to their singleton stored here with the key being the id.
 	 */
-	_reflux.stores = {};
+	Reflux.stores = {};
 	
 	/**
 	 * Reflux.getGlobalState takes no arguments, and returns a deep clone of Reflux.GlobalState 
 	 * which will not continue to mutate as Reflux.GlobalState does. It can essentially store
 	 * snapshots of the global state as the program goes for saving or for in-app time travel.
 	 */
-	_reflux.getGlobalState = function() {
-		return clone(_reflux.GlobalState);
+	Reflux.getGlobalState = function() {
+		return clone(Reflux.GlobalState);
 	};
 	
 	/**
@@ -1614,12 +1631,12 @@ function defineReact(react, reflux, extend)
 	 * instances they are attached to. Partial states may be given to it, and only the represented
 	 * stores/state values will be updated.
 	 */
-	_reflux.setGlobalState = function(obj) {
+	Reflux.setGlobalState = function(obj) {
 		for (var storeID in obj) {
-			if (_reflux.stores[storeID]) {
-				_reflux.stores[storeID].setState(obj[storeID]);
+			if (Reflux.stores[storeID]) {
+				Reflux.stores[storeID].setState(obj[storeID]);
 			} else {
-				_reflux.GlobalState[storeID] = obj[storeID];
+				Reflux.GlobalState[storeID] = obj[storeID];
 			}
 		}
 	};
@@ -1630,7 +1647,7 @@ function defineReact(react, reflux, extend)
 	 * this.store or this.stores during the mounting phase of a component without having to actually attach the
 	 * store to a component in order to work properly with the global state.
 	 */
-	_reflux.initializeGlobalStore = function(str) {
+	Reflux.initializeGlobalStore = function(str) {
 		var storeId = str.id;
 		// this is primarily for making stores work with global state when not in a component, so if no id then notify something is wrong
 		if (!storeId) {
@@ -1643,19 +1660,19 @@ function defineReact(react, reflux, extend)
 		// create the singleton and assign it to the class's singleton static property
 		var inst = str.singleton = new str();
 		// store it on the Reflux.stores array to be accessible later
-		_reflux.stores[storeId] = inst;
+		Reflux.stores[storeId] = inst;
 		// the singleton instance itself should also have the id property of the class
 		inst.id = storeId;
 		// if the global state has something set for this id, copy it to the state and then
 		// make sure to set the global state to the end result, since it may have only been partial
-		if (_reflux.GlobalState[storeId]) {
-			for (var key in _reflux.GlobalState[storeId]) {
-				inst.state[key] = _reflux.GlobalState[storeId][key];
+		if (Reflux.GlobalState[storeId]) {
+			for (var key in Reflux.GlobalState[storeId]) {
+				inst.state[key] = Reflux.GlobalState[storeId][key];
 			}
-			_reflux.GlobalState[storeId] = inst.state;
+			Reflux.GlobalState[storeId] = inst.state;
 		// otherwise just set the global state to the default state of the class
 		} else {
-			_reflux.GlobalState[storeId] = inst.state;
+			Reflux.GlobalState[storeId] = inst.state;
 		}
 		// returns the singleton itself, though it will also be accessible as as `MyClass.singleton`
 		return inst;
@@ -1723,7 +1740,7 @@ function clone(frm, to) {
 module.exports = defineReact;
 
 
-},{}],18:[function(require,module,exports){
+},{"reflux-core":10}],19:[function(require,module,exports){
 var Reflux = require('reflux-core');
 
 Reflux.connect = require('./connect');
@@ -1736,15 +1753,11 @@ Reflux.listenTo = require('./listenTo');
 
 Reflux.listenToMany = require('./listenToMany');
 
-/* globals React: false */
-Reflux.defineReact = require('./defineReact');
-if (typeof React !== 'undefined' && React) {
-	Reflux.defineReact(React, Reflux);
-}
+require('./addES6');
 
 module.exports = Reflux;
 
-},{"./ListenerMixin":14,"./connect":15,"./connectFilter":16,"./defineReact":17,"./listenTo":19,"./listenToMany":20,"reflux-core":10}],19:[function(require,module,exports){
+},{"./ListenerMixin":14,"./addES6":15,"./connect":16,"./connectFilter":17,"./listenTo":20,"./listenToMany":21,"reflux-core":10}],20:[function(require,module,exports){
 var ListenerMethods = require('reflux-core/lib/ListenerMethods');
 
 /**
@@ -1781,7 +1794,7 @@ module.exports = function(listenable,callback,initial){
     };
 };
 
-},{"reflux-core/lib/ListenerMethods":4}],20:[function(require,module,exports){
+},{"reflux-core/lib/ListenerMethods":4}],21:[function(require,module,exports){
 var ListenerMethods = require('reflux-core/lib/ListenerMethods');
 
 /**
@@ -1816,5 +1829,5 @@ module.exports = function(listenables){
     };
 };
 
-},{"reflux-core/lib/ListenerMethods":4}]},{},[18])(18)
+},{"reflux-core/lib/ListenerMethods":4}]},{},[19])(19)
 });
