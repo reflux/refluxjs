@@ -927,7 +927,7 @@ var __keep = _interopRequireWildcard(_Keep);
 function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
 
 var version = {
-    "reflux-core": "0.4.1"
+    "reflux-core": "0.4.2"
 };
 
 var joinTrailing = (0, _joins.staticJoinCreator)("last");
@@ -992,6 +992,9 @@ function use(pluginCb) {
  * Provides the set of created actions and stores for introspection
  */
 /*eslint-disable no-underscore-dangle*/
+
+
+// export in format that supports syntax: var Reflux = require('reflux-core');
 exports.version = version;
 exports.ActionMethods = ActionMethods;
 exports.ListenerMethods = ListenerMethods;
@@ -1012,10 +1015,17 @@ exports.joinConcat = joinConcat;
 exports.__keep = __keep;
 /*eslint-enable no-underscore-dangle*/
 
+// export in format that supports syntax: import Reflux from 'reflux-core';
+
+Object.defineProperty(exports, "default", {
+    get: function get() {
+        return exports;
+    }
+});
+
 /**
  * Warn if Function.prototype.bind not available
  */
-
 if (!Function.prototype.bind) {
     console.error("Function.prototype.bind not available. " + "ES5 shim required. " + "https://github.com/spoike/refluxjs#es5");
 }
@@ -1571,10 +1581,8 @@ function defineReact(react, noLongerUsed, extend)
 		if (store.isES6Store) {
 			if (store.singleton) {
 				store = store.singleton;
-			} else if (store.id) {
-				store = Reflux.initializeGlobalStore(store);
 			} else {
-				store = store.singleton = new store();
+				store = Reflux.initStore(store);
 			}
 		}
 		
@@ -1717,7 +1725,7 @@ function defineReact(react, noLongerUsed, extend)
 	
 	/* NOTE:
 	If a Reflux.Store definition is given a static id property and used
-	properly within a Reflux.Component or with Reflux.initializeGlobalStore then
+	properly within a Reflux.Component or with Reflux.initStore then
 	it will be added to the Reflux.GlobalState object which automatically tracks the
 	current state of all such defined stores in the program. */
 	
@@ -1770,20 +1778,23 @@ function defineReact(react, noLongerUsed, extend)
 	};
 	
 	/**
-	 * Reflux.initializeGlobalStore takes one argument (a class that extends Reflux.Store) and returns a singleton
+	 * Reflux.initStore takes one argument (a class that extends Reflux.Store) and returns a singleton
 	 * intance of that class. Its main functionality is to be able to mimic what happens to stores attached to
 	 * this.store or this.stores during the mounting phase of a component without having to actually attach the
 	 * store to a component in order to work properly with the global state.
 	 */
-	Reflux.initializeGlobalStore = function(str) {
+	// Reflux.initializeGlobalStore is kept for backwards compatibility, but deprecated since the function is
+	// now for more broad instantiation of globally stored AND non-globally stored classes
+	Reflux.initializeGlobalStore = Reflux.initStore = function(str) {
 		var storeId = str.id;
-		// this is primarily for making stores work with global state when not in a component, so if no id then notify something is wrong
-		if (!storeId) {
-			throw new Error('Invalid store id.');
-		}
-		// if they're initializing something twice then that's a problem, throw an error
+		// if they're initializing something twice then we're done already, return it
 		if (str.singleton) {
-			throw new Error('Store already initialized.');
+			return str.singleton;
+		}
+		// if no id then it's easy: just make new instance and set to singleton
+		if (!storeId) {
+			str.singleton = new str();
+			return str.singleton;
 		}
 		// create the singleton and assign it to the class's singleton static property
 		var inst = str.singleton = new str();
