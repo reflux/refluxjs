@@ -101,7 +101,7 @@ describe('Working with Reflux.GlobalState', function()
 		assert.equal( Reflux.GlobalState.MyStore.foo, 'bar' );
 	});
 	
-	it('should gain state when a store is created with a static id - initializeGlobalStore', function()
+	it('should gain state when a store is created with a static id - initStore', function()
 	{
 		Reflux.GlobalState = {};
 		Reflux.stores = {};
@@ -116,7 +116,7 @@ describe('Working with Reflux.GlobalState', function()
 		}(Reflux.Store));
 		MyStore.id = "MyStore";
 		
-		Reflux.initializeGlobalStore(MyStore);
+		Reflux.initStore(MyStore);
 		
 		assert.equal( Reflux.GlobalState.MyStore.foo, 'bar' );
 	});
@@ -159,7 +159,7 @@ describe('Working with Reflux.GlobalState', function()
 		assert.equal( Reflux.GlobalState.MyStore.foo, 'BAR' );
 	});
 	
-	it('should update upon setState in store - initializeGlobalStore', function()
+	it('should update upon setState in store - initStore', function()
 	{
 		Reflux.GlobalState = {};
 		Reflux.stores = {};
@@ -174,7 +174,7 @@ describe('Working with Reflux.GlobalState', function()
 		}(Reflux.Store));
 		MyStore.id = "MyStore";
 		
-		var str = Reflux.initializeGlobalStore(MyStore);
+		var str = Reflux.initStore(MyStore);
 		
 		try {
 			str.setState({foo:'BAR'});
@@ -219,7 +219,7 @@ describe('Working with Reflux.GlobalState', function()
 		assert.equal( Reflux.GlobalState.MyStore.foo, 'not bar' );
 	});
 	
-	it('when set before initializeGlobalStore should define initial state in store', function()
+	it('when set before initStore should define initial state in store', function()
 	{
 		Reflux.GlobalState = {};
 		Reflux.stores = {};
@@ -236,7 +236,7 @@ describe('Working with Reflux.GlobalState', function()
 		
 		Reflux.GlobalState = {'MyStore':{'foo':'not bar'}};
 		
-		var str = Reflux.initializeGlobalStore(MyStore);
+		var str = Reflux.initStore(MyStore);
 		
 		assert.equal( Reflux.GlobalState.MyStore.foo, 'not bar' );
 		assert.equal( str.state.foo, 'not bar' );

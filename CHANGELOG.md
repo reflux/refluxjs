@@ -4,13 +4,21 @@ Check for latest changes on the [milestones page](https://github.com/spoike/refl
 
 For updates on reflux core methods, check the [`CHANGELOG`](https://github.com/reflux/reflux-core/blob/master/CHANGELOG.md) at `reflux-core` project.
 
+## v5.0.3
+
+* Implemented `Reflux.initStore` (basically clone of `Reflux.initializeGlobalStore` but can be used more broadly).
+* Deprecate `Reflux.initializeGlobalStore` in favor of more broadly usable `Reflux.initStore`.
+* Major documentation refactor started, but not implemented yet (viewable in new-README.md).
+* Updated to run on `reflux-core` v0.4.2, which has more broad importing support.
+
 ## v5.0.2
 
-Reduced the need for `defineReact` by better detecting of React. Updated to run on `reflux-core` v0.4.1, which solves some memory leaks.
+* Reduced the need for `defineReact` by better detecting of React.
+* Updated to run on `reflux-core` v0.4.1, which solves some memory leaks.
 
 ## v5.0.1
 
-Adding of full ES6 API, most notably `Reflux.Component` and `Reflux.Store` (and their sub-methods/properties). Also `defineReact`, `initializeGlobalStore`, `GlobalState`, `getGlobalState`, `setGlobalState`.
+* Adding of full ES6 API, most notably `Reflux.Component` and `Reflux.Store` (and their sub-methods/properties). Also `defineReact`, `initializeGlobalStore`, `GlobalState`, `getGlobalState`, `setGlobalState`.
 
 ## v0.4.x
 
