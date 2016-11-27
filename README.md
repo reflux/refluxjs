@@ -1010,7 +1010,7 @@ This project is licensed under [BSD 3-Clause License](http://opensource.org/lice
 
 For more information about the license for this particular project [read the LICENSE.md file](LICENSE.md).
 
-This project uses [eventemitter3](https://github.com/3rd-Eden/EventEmitter3), is currently MIT licensed and [has it's license information here](https://github.com/3rd-Eden/EventEmitter3/blob/master/LICENSE).
+This project uses [eventemitter3](https://github.com/3rd-Eden/EventEmitter3), which [is currently MIT licensed](https://github.com/3rd-Eden/EventEmitter3/blob/master/LICENSE).
 
 [npm-image]: http://img.shields.io/npm/v/reflux.svg
 [downloads-image]: http://img.shields.io/npm/dm/reflux.svg
