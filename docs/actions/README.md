@@ -5,7 +5,7 @@
 
 Actions are a type of function that an Reflux store can listen for. They are similar to dispatching an event in that many stores can listen for a single action, but they are called like a simple function.
 
-#### Creating Actions
+### Creating Actions
 
 There are multiple ways to create actions in RefluxJS. The two main functions are [`Reflux.createAction`](#refluxcreateaction) (for making one) and [`Reflux.createActions`](#refluxcreateactions) (for making multiple actions at once).
 
@@ -27,7 +27,7 @@ ManyActions.action1(); // calls one of the actions made within the ManyActions o
 MoreActions.anAction(); // calls the action made within the MoreActions object
 ```
 
-#### Action Definitions
+### Action Definitions
 
 Action definitions are passed to the action creation functions (either directly to `createAction` or as an Array of them to `createActions`). As an example, a definition object may take the following format:
 
@@ -65,11 +65,11 @@ var Actions = Reflux.createActions([{actionName:'myName1', sync:false}]);
 
 You will find throughout the RefluxJS documentation that the shorthand ways for creating actions with names are extremely common, as they tend to tie in well with other shorthand methods of doing things in Reflux.
 
-#### Async vs Sync Actions
+### Async vs Sync Actions
 
 As you've read, actions can simply be invoked via `myAction()`. But internally, if the action's `sync` is set to true then the action does `myAction.trigger()` and if not it does `myAction.triggerAsync()` (you may also call these manually). The important difference is that synchronous action calls must emit immediately. Asynchronous actions (which are default) emit on the next tick of the JS event loop, and may have things such as `children` child actions in their definitions which they can call.
 
-#### Asynchronous Loading via Child Actions
+### Asynchronous Loading via Child Actions
 
 You may perform actual asynchronous actions such as file loading via child actions. An action can listen for itself to be called, and then perform an asynchronous task, calling its child action when that task is complete. In simplest form it might look something like this:
 
@@ -117,7 +117,7 @@ class MyStore extends Reflux.Store
 }
 ```
 
-#### Action Hooks
+### Action Hooks
 
 There are a couple of hooks available for each action.
 
@@ -147,7 +147,7 @@ var action = Reflux.createAction({
 });
 ```
 
-#### Reflux.ActionMethods
+### Reflux.ActionMethods
 
 If you would like to have a common set of methods available to all actions you can extend the `Reflux.ActionMethods` object, which is mixed into the actions when they are created.
 

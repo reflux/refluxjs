@@ -7,7 +7,7 @@ Of course, a main point of [actions](../actions/README.md) and [stores](../store
 
 For that Reflux gives you `Reflux.Component`. `Reflux.Component` is itself an extension of `React.Component` that was created to facilitate hooking stores into the component. You would use a `Reflux.Component` the exact same as a `React.Component`, except that you'd use its specific properties and methods to hook in the state of your stores.
 
-#### Mixing State with `this.store` and `this.stores`
+### Mixing State with `this.store` and `this.stores`
 
 The main declarative way to utilize one or more stores within a `Reflux.Component` is `this.store` (assign one store) or `this.stores` (assign an Array of stores).
 
@@ -53,7 +53,7 @@ class Counter extends Reflux.Component
 }
 ```
 
-#### Limiting Mixing with `this.storeKeys`
+### Limiting Mixing with `this.storeKeys`
 
 By default, the entire store is mixed into your component. However, it is very useful to be able to easily bring in only part of the store. This prevents A) unintended name conflicts, such as a store state property added after-the-fact overwriting a piece of normal in-component state accidentally, and B) unneeded rendering, since some components may only need certain parts of the store and therefore do not need to re-render every time other properties update.
 
@@ -76,7 +76,7 @@ class Counter extends Reflux.Component
 }
 ```
 
-#### Manually Mapping States with `this.mapStoreToState`
+### Manually Mapping States with `this.mapStoreToState`
 
 In addition to the more declarative ways to merge store state into a component that are described above (i.e. `this.store`, `this.stores`, `this.storeKeys`) there is another more imperative style for merging state. That is the `Reflux.mapStoreToState` method that is part of Reflux stores.
 
@@ -110,7 +110,7 @@ class MyComponent extends Reflux.Component
 
 Note that the `fromStore` in the example above may not always be the full state from the store. It only receives what is actually changing at that time. This way you are able to only map the parts of the store that have actually changed on each call.
 
-#### Extending a 3rd Party Class with `Reflux.Component.extend`
+### Extending a 3rd Party Class with `Reflux.Component.extend`
 
 Sometimes 3rd party libraries will have their own class that extends `React.Component` that they require you to use. Reflux handles this by exposing the `Reflux.Component.extend` method. If you have such a 3rd party class you can pass that class to this method and it will return a version of `Reflux.Component` that extends it instead of extending `React.Component` directly. Example:
 

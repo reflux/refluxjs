@@ -7,7 +7,7 @@ Stores hold data and receive action calls to update and change that data. They t
 
 One important concept to understand about stores in Reflux is that you (usually) just define them, not create them. The concept is similar to components in React: you define the class and use them in your JSX, but React itself handles instantiating them. Similarly for Reflux stores: you define a store class and assign that class to components. Then, while mounting, those components will either instantiate a singleton of the class (if it hasn't been done yet) or use the existing singleton (if it has been made yet). That singleton is assigned to the static property `singleton` on the class itself (so, for example, a class `MyStore` would end up with `MyStore.singleton` being the reference to the instance once it was created).
 
-#### Defining Stores
+### Defining Stores
 
 To define a store in Reflux you need to make a class that extends `Reflux.Store`. That store will store its state on a `this.state` property, and mutate its state via `this.setState()` in a way that is extremely similar to React classes themselves. So there's basically no learning curve on that front.
 
@@ -33,7 +33,7 @@ class MyStore extends Reflux.Store
 }
 ```
 
-#### Listening Shortcuts
+### Listening Shortcuts
 
 In many cases there are quite a few actions at once, and writing out `this.listenTo(...)` for each of them would be wasteful and less easily edited/maintained. Therefore there are two shortcuts: a method `this.listenToMany()` and a property `this.listenables`. These are both designed to take an object where each property value is an action and the property name is the function name that that is going to be the callback that's used when that action is called.
 
@@ -117,7 +117,7 @@ class MyStore extends Reflux.Store
 }
 ```
 
-#### Global State
+### Global State
 
 A great feature about Reflux stores is that Reflux is capable of keeping a global state object of all of them that can be read and manipulated. This is perfect for setting up a certain state for testing, or for storing the state of a running program for later, outputting full program state at the time of an error, state-based time travel to go back to a previously stored state, etc. And even better: it's optional on a store-by-store basis. To opt in to storing the contents of a given store globally all you need to do is give the store's class a static `id` property, like so:
 
@@ -146,7 +146,7 @@ Because of that we have 2 methods designed for use with global state: `Reflux.ge
 
 Another important feature is that when stores are created they check the global state for data relevant to them. If they have an id and the global state already has some state data they will integrate that into their default state from creation. In this way you can set your programs to a specific state right from startup if you wish.
 
-#### Reflux.initStore()
+### Reflux.initStore()
 
 In normal usage Reflux stores are created as singletons by Reflux once needed. However, there are valid cases where one would need to create a store before then. However, it's a little more complex than just calling `new MyStoreClass()`, because of the need for them to operate as singletons (and also because, on stores with id's, there needs to be some other setup upon creation of that singleton in order to integrate them into the global state). For this reason Reflux exposes `Reflux.initStore`, used as follows:
 
