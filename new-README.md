@@ -207,7 +207,7 @@ The above will mix in properties from the state of both `StatusStore` and `Anoth
 
 Reflux's simple and intuitive way of integrating stores into components is easy and powerful. You can aggregate stores together on a component-by-component basis, filter which parts of the stores come through and which don't, or even do a detailed manual mapping of exactly how you want the state from stores to map to the state in a particular component.
 
-See [Reflux Style Component Documentation](docs/components/_components.md) to learn more.
+See [Reflux Style Component Documentation](docs/components/README.md) to learn more.
 
 -----------------------------------------
 

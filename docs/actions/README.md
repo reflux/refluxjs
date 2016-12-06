@@ -162,4 +162,4 @@ Actions.statusUpdate.exampleMethod('arg1');
 
 ### Next:
 
-Next learn about [Reflux Stores](../stores/README.md).
+Next learn about [Reflux Stores](../stores/).

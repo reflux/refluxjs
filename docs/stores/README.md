@@ -156,4 +156,4 @@ This function will: create the singleton of the store and assign it properly if 
 
 ### Next:
 
-Next learn about [hooking stores to components](../components/README.md).
+Next learn about [hooking stores to components](../components/).
