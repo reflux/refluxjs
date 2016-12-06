@@ -127,4 +127,4 @@ class MyComponent extends RefluxThirdPartyComponent
 
 ### More:
 
-Learn about [Reflux Stores](../stores/) and [Actions](../actions/).
+Learn about [Reflux Stores](../stores/) and [Actions](../actions/), or go back to the overview of the [docs](../).

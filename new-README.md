@@ -16,7 +16,7 @@ A simple library for unidirectional dataflow architecture inspired by ReactJS [F
 
 You can currently install the package as a npm package, a bower component, or import it from a CDN.
 
-##### NPM
+#### NPM
 
 The following command installs RefluxJS as a npm package:
 
@@ -24,7 +24,7 @@ The following command installs RefluxJS as a npm package:
 
 Then, in your script, you can gain a reference to RefluxJS like so: `var Reflux = require('reflux');`
 
-##### Bower
+#### Bower
 
 The following command installs reflux as a bower component that can be used in the browser:
 
@@ -32,7 +32,7 @@ The following command installs reflux as a bower component that can be used in t
 	
 Then the files may be imported into your html file via `bower_components/reflux/dist/reflux.js` or `bower_components/reflux/dist/reflux.min.js`. At that point a `Reflux` variable will be globally available to you. It is suggested that you import RefluxJS after React.
 
-##### CDN
+#### CDN
 
 RefluxJS is available at [jsdelivr](http://www.jsdelivr.com/#!refluxjs).
 
@@ -45,6 +45,7 @@ You may import the CDN files directly through a script tag. At that point a `Ref
 For usage, you need to create actions which can be called from React components. Those actions are listened to by stores which hold and update data. In turn those stores are hooked up to React components and set state within them as it is updated within the store.
 
 Therefore the 3 main concepts to know are:
+
 1. [creating actions](#creating-actions)
 2. [creating stores](#creating-stores)
 3. [hooking stores to React components](#hooking-stores-to-components)
@@ -81,7 +82,7 @@ var Actions = Reflux.createActions([
 Actions.statusUpdate();
 ```
 
-###### More on Actions:  
+#### More on Actions:  
 Actions can also:
 - load files asychronously with child actions
 - do preEmit and shouldEmit checking
@@ -140,7 +141,7 @@ class StatusStore extends Reflux.Store
 }
 ```
 
-###### More on Stores:
+#### More on Stores:
   
 Reflux stores are very powerful. They can even do things like contribute to a global state that can be read and set for partial or full-state time-travel, debugging, etc.
 
@@ -203,7 +204,7 @@ class MyComponent extends Reflux.Component
 
 The above will mix in properties from the state of both `StatusStore` and `AnotherStore`. However, because of `this.storeKeys` it will only mix in the properties `flag` and `info` from them. So any other properties within those stores will not get mixed in. So even if a store contained a `type` property in its state it would not get mixed in, and the `type` value we set as a normal part of the component state is safe.
 
-###### More on using Reflux style components:
+#### More on using Reflux style components:
 
 Reflux's simple and intuitive way of integrating stores into components is easy and powerful. You can aggregate stores together on a component-by-component basis, filter which parts of the stores come through and which don't, or even do a detailed manual mapping of exactly how you want the state from stores to map to the state in a particular component.
 
