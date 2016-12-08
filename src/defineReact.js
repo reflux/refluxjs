@@ -86,8 +86,8 @@ function defineReact(react, noLongerUsed, extend)
 			// for each store in this.stores...
 			for (var i = 0, ii = this.stores.length; i < ii; i++) {
 				var str = this.stores[i];
-				// if it has the .isES6Store property then we know it's a class getting passed, not an instance
-				if (str.isES6Store) {
+				// if's a function then we know it's a class getting passed, not an instance
+				if (typeof str === 'function') {
 					var storeId = str.id;
 					// if there is NOT a .singleton property on the store then this store has not been initialized yet, so do so
 					if (!str.singleton) {
@@ -160,7 +160,7 @@ function defineReact(react, noLongerUsed, extend)
 	proto.mapStoreToState = function(store, filterFunc)
 	{
 		// make sure we have a proper singleton instance to work with
-		if (store.isES6Store) {
+		if (typeof store === 'function') {
 			if (store.singleton) {
 				store = store.singleton;
 			} else {
@@ -297,6 +297,7 @@ function defineReact(react, noLongerUsed, extend)
 	};
 	
 	// this is a static property so that other code can identify that this is a Reflux.Store class
+	// has issues specifically when using babel to transpile your ES6 stores for IE10 and below, not documented and shouldn't use yet
 	Object.defineProperty(RefluxStore, "isES6Store", {
 		get: function () {
 			return true;

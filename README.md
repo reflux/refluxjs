@@ -781,6 +781,7 @@ To create one looks something like this:
 class MyStore extends Reflux.Store
 {
     constructor() {
+        super();
         this.state = {foo:'bar'}; // <-- the store's default state
     }
 }
@@ -794,6 +795,7 @@ var Actions = Reflux.createActions(["increment"]);
 class CounterStore extends Reflux.Store
 {
     constructor() {
+        super();
         this.listenables = Actions;
         this.state = {count:0};
     }
@@ -814,6 +816,7 @@ var Actions2 = Reflux.createActions(["decrement"]);
 class CounterStore extends Reflux.Store
 {
     constructor() {
+        super();
         this.listenables = [Actions1, Actions2];
         this.state = {count:0};
     }
@@ -920,6 +923,7 @@ To make it happen you just have to use ES6 style reflux classes and stores like 
 class CounterStore extends Reflux.Store
 {
     constructor() {
+        super();
         this.listenables = Actions;
         this.state = {count:0};
     }
@@ -945,6 +949,7 @@ Notice that you can only read the GlobalState **after** the components using the
 class CounterStore extends Reflux.Store
 {
     constructor() {
+        super();
         this.listenables = Actions;
         this.state = {count:0};
     }

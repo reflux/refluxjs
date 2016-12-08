@@ -7,7 +7,7 @@ Actions are a type of function that an Reflux store can listen for. They are sim
 
 ### Creating Actions
 
-There are multiple ways to create actions in RefluxJS. The two main functions are [`Reflux.createAction`](#refluxcreateaction) (for making one) and [`Reflux.createActions`](#refluxcreateactions) (for making multiple actions at once).
+There are multiple ways to create actions in RefluxJS. The two main functions are `Reflux.createAction` (for making one) and `Reflux.createActions` (for making multiple actions at once).
 
 `Reflux.createAction` takes an optional definition object as an argument and returns the action itself.
 

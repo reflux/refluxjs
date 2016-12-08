@@ -4,6 +4,12 @@ Check for latest changes on the [milestones page](https://github.com/spoike/refl
 
 For updates on reflux core methods, check the [`CHANGELOG`](https://github.com/reflux/reflux-core/blob/master/CHANGELOG.md) at `reflux-core` project.
 
+## v5.0.4
+
+* Workaround to babel __proto__ issue with old browsers.
+* Continued documentation refactoring (viewable in new-README.md).
+* Minor doc fixes.
+
 ## v5.0.3
 
 * Implemented `Reflux.initStore` (basically clone of `Reflux.initializeGlobalStore` but can be used more broadly).

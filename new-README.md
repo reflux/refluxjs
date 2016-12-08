@@ -3,10 +3,10 @@
 
 A simple library for unidirectional dataflow architecture inspired by ReactJS [Flux](http://facebook.github.io/react/blog/2014/05/06/flux.html).
 
-[![NPM Downloads][downloads-image]][npm-url]
 [![NPM Version][npm-image]][npm-url]
 [![Bower Version][bower-image]][bower-url]
 [![Build Status][travis-image]][travis-url]
+[![NPM Downloads][downloads-image]][npm-url]
 
 [![Sauce Test Status](https://saucelabs.com/browser-matrix/refluxjs.svg)](https://saucelabs.com/u/refluxjs)
 
@@ -88,7 +88,7 @@ Actions can also:
 - do preEmit and shouldEmit checking
 - have many shortcuts for easy usage
 
-See [Reflux Action Documentation](docs/actions/README.md) for more.
+See [Reflux Action Documentation](docs/actions/) for more.
 
 ------------------
 
@@ -145,7 +145,7 @@ class StatusStore extends Reflux.Store
   
 Reflux stores are very powerful. They can even do things like contribute to a global state that can be read and set for partial or full-state time-travel, debugging, etc.
 
-See [Reflux Store Documentation](docs/stores/README.md) to learn more about stores.
+See [Reflux Store Documentation](docs/stores/) to learn more about stores.
 
 --------------------------
 
@@ -175,7 +175,8 @@ class MyComponent extends Reflux.Component
 
 When the component mounts it will either create a singleton instance of `StatusStore` (if one isn't already made) or use an already made singleton (if it was already created by another component that uses the store).
 
-Of important note is that you can:  
+Of important note is that you can:
+  
 1. Set multiple stores by setting `this.stores` (the plural) and setting it to an Array of store classes.
 2. Set a `this.storeKeys` Array to restrict only certain parts of the store being mixed into the component state.
 
@@ -208,13 +209,13 @@ The above will mix in properties from the state of both `StatusStore` and `Anoth
 
 Reflux's simple and intuitive way of integrating stores into components is easy and powerful. You can aggregate stores together on a component-by-component basis, filter which parts of the stores come through and which don't, or even do a detailed manual mapping of exactly how you want the state from stores to map to the state in a particular component.
 
-See [Reflux Style Component Documentation](docs/components/README.md) to learn more.
+See [Reflux Style Component Documentation](docs/components/) to learn more.
 
 -----------------------------------------
 
 ## Documentation
 
-What you've just read is a "view from 10,000 feet" type overview of getting started with RefluxJS. For serious learning see the [documentation](docs/README.md).
+What you've just read is a "view from 10,000 feet" type overview of getting started with RefluxJS. For serious learning see the [documentation](docs/).
 
 [npm-image]: http://img.shields.io/npm/v/reflux.svg
 [downloads-image]: http://img.shields.io/npm/dm/reflux.svg
