@@ -125,6 +125,23 @@ class MyComponent extends RefluxThirdPartyComponent
 }
 ```
 
+### componentWillMount and componentWillUnmount
+
+The `Reflux.Component` class utilizes both the `componentWillMount` and `componentWillUnmount` methods in the React lifecycle. This means that any extension you create that uses these methods will override those methods within the `Reflux.Component` class you're extending. If you run into this problem the solution is simple: just run the appropriate `super`. For example, in a `componentWillMount`:
+
+```javascript
+	// ...
+	
+	componentWillMount()
+	{
+		// ... your stuff ...
+		
+		super.componentWillMount();
+	}
+	
+	//...
+```
+
 ### More:
 
 Learn about [Reflux Stores](../stores/) and [Actions](../actions/), or go back to the overview of the [docs](../).

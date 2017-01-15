@@ -40,6 +40,23 @@ You may import the CDN files directly through a script tag. At that point a `Ref
 
 --------------------------------
 
+## Overview
+
+The main function of Reflux is to introduce a more functional programming style architecture by eschewing MVC like pattern and adopting a single data flow pattern.
+
+```
++---------+       +--------+       +-----------------+
+¦ Actions ¦------>¦ Stores ¦------>¦ View Components ¦
++---------+       +--------+       +-----------------+
+     ^                                      ¦
+     +--------------------------------------+
+
+```
+
+The pattern is composed of actions and data stores, where actions initiate new data to pass through data stores before coming back to the view components again. If a view component has an event that needs to make a change in the application's data stores, they need to do so by signaling to the stores through the actions available.
+
+--------------------------------
+
 ## Usage
 
 For usage, you need to create actions which can be called from React components. Those actions are listened to by stores which hold and update data. In turn those stores are hooked up to React components and set state within them as it is updated within the store.
