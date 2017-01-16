@@ -4,6 +4,13 @@ Check for latest changes on the [milestones page](https://github.com/spoike/refl
 
 For updates on reflux core methods, check the [`CHANGELOG`](https://github.com/reflux/reflux-core/blob/master/CHANGELOG.md) at `reflux-core` project.
 
+## v6.0.0
+
+* Switch to new docs.
+* Updated to `reflux-core` v1.0.0.
+* Allow complex definitions for child actions instead of just string for action name.
+* Breaking change: actions are sync by default unless child actions are involved.
+
 ## v5.0.4
 
 * Workaround to babel __proto__ issue with old browsers.

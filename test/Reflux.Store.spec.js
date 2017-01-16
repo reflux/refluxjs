@@ -1,8 +1,7 @@
 
 var chai = require('chai'),
     assert = chai.assert,
-    Reflux = require('../src'),
-    Q = require('q');
+    Reflux = require('../src');
 
 chai.use(require('chai-as-promised'));
 	
@@ -72,13 +71,7 @@ describe('Creating ES6 style stores', function()
 		Actions.down();
 		Actions.finish();
 		
-		var promise = Q.Promise(function(resolve) {
-			store.listenTo(Actions.finish, function() {
-				resolve(store.state.count);
-			});
-		});
-		
-		return assert.eventually.equal( promise, 2 );
+		return assert.equal(store.state.count, 2);
 	});
 	
 	it('should accept listenables with \'action\' and \'onAction\' callbacks', function()
@@ -105,13 +98,7 @@ describe('Creating ES6 style stores', function()
 		Actions.down();
 		Actions.finish();
 		
-		var promise = Q.Promise(function(resolve) {
-			store.listenTo(Actions.finish, function() {
-				resolve(store.state.count);
-			});
-		});
-		
-		return assert.eventually.equal( promise, 2 );
+		return assert.equal(store.state.count, 2);
 	});
 	
 	it('should be able to modify state with setState', function()
@@ -138,13 +125,7 @@ describe('Creating ES6 style stores', function()
 		Actions.down();
 		Actions.finish();
 		
-		var promise = Q.Promise(function(resolve) {
-			store.listenTo(Actions.finish, function() {
-				resolve(store.state.count);
-			});
-		});
-		
-		return assert.eventually.equal( promise, 2 );
+		return assert.equal(store.state.count, 2);
 	});
 	
 	it('should accept actions with arguments', function()
@@ -171,13 +152,7 @@ describe('Creating ES6 style stores', function()
 		Actions.down(2);
 		Actions.finish();
 		
-		var promise = Q.Promise(function(resolve) {
-			store.listenTo(Actions.finish, function() {
-				resolve(store.state.count);
-			});
-		});
-		
-		return assert.eventually.equal( promise, 1 );
+		return assert.equal(store.state.count, 1);
 	});
 	
 	it('should mix state in with a Reflux.Component instance', function()

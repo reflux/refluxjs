@@ -1,6 +1,6 @@
 {
   "name": "reflux",
-  "version": "5.0.4",
+  "version": "6.0.0",
   "description": "A simple library for uni-directional dataflow application architecture inspired by ReactJS Flux",
   "main": "src/index.js",
   "scripts": {
@@ -30,7 +30,7 @@
   ],
   "dependencies": {
     "eventemitter3": "^1.1.1",
-    "reflux-core": "^0.4.2"
+    "reflux-core": "^1.0.0"
   },
   "devDependencies": {
     "benchmark": "^1.0.0",

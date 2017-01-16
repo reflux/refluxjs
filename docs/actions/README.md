@@ -36,7 +36,7 @@ Action definitions are passed to the action creation functions (either directly 
 	actionName: 'myActionName', // <- the name of the action
 	children: ['childAction'], // <- Array of child action names for async operations
 	asyncResult: true, // <- true to make a shortcut to adding 'completed' and 'failed' children
-	sync: false, // <- set the action to emit synchronously or asynchronously (async by default)
+	sync: false, // <- set the action to emit synchronously or asynchronously (sync by default unless there are child actions)
 	preEmit: function(){...}, // shortcut for setting preEmit method (covered later)
 	shouldEmit: function(){...} // shortcut for setting shouldEmit method (covered later)
 }
@@ -67,7 +67,9 @@ You will find throughout the RefluxJS documentation that the shorthand ways for 
 
 ### Async vs Sync Actions
 
-As you've read, actions can simply be invoked via `myAction()`. But internally, if the action's `sync` is set to true then the action does `myAction.trigger()` and if not it does `myAction.triggerAsync()` (you may also call these manually). The important difference is that synchronous action calls must emit immediately. Asynchronous actions (which are default) emit on the next tick of the JS event loop, and may have things such as `children` child actions in their definitions which they can call.
+As you've read, actions can simply be invoked via `myAction()`. But internally, if the action's `sync` is set to true then the action does `myAction.trigger()` and if not it does `myAction.triggerAsync()` (you may also call these manually). The important difference is that synchronous action calls must emit immediately. Asynchronous actions emit on the next tick of the JS event loop, and may have things such as `children` child actions in their definitions which they can call.
+
+Actions are sync by default unless specifically defined otherwise, or unless the action has child actions within it.
 
 ### Asynchronous Loading via Child Actions
 

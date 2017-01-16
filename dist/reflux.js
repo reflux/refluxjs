@@ -778,8 +778,9 @@ function createAction(definition) {
     var i = 0,
         childActions = {};
     for (; i < definition.children.length; i++) {
-        var name = definition.children[i];
-        childActions[name] = createAction(name);
+        var chDef = definition.children[i];
+        var chName = typeof chDef === "string" ? chDef : chDef.actionName;
+        childActions[chName] = createAction(chDef);
     }
 
     var context = _.extend({
@@ -789,7 +790,13 @@ function createAction(definition) {
     }, PublisherMethods, ActionMethods, definition);
 
     var functor = function functor() {
-        var triggerType = functor.sync ? "trigger" : "triggerAsync";
+        var hasChildActions = false;
+        /* eslint no-unused-vars:0 */
+        for (var ignore in functor.childActions) {
+            hasChildActions = true;break;
+        }
+        var async = !functor.sync && typeof functor.sync !== "undefined" || hasChildActions;
+        var triggerType = async ? "triggerAsync" : "trigger";
         return functor[triggerType].apply(functor, arguments);
     };
 
@@ -927,7 +934,7 @@ var __keep = _interopRequireWildcard(_Keep);
 function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
 
 var version = {
-    "reflux-core": "0.4.2"
+    "reflux-core": "1.0.0"
 };
 
 var joinTrailing = (0, _joins.staticJoinCreator)("last");
