@@ -119,6 +119,29 @@ class MyStore extends Reflux.Store
 }
 ```
 
+### Listening
+
+The main way in which one listens to actions in Reflux is by using functionality attached to [Reflux Stores](../stores/) such as `this.listenables` and `this.listenTo` within the store. However, it is important to note that one can listen directly to an action or child action as well:
+
+```javascript
+// listen directly to an action
+myActions.actionName.listen(myCallbackFunc);
+
+// listen to a child action
+myActions.load.completed.listen(myCallbackFunc);
+```
+
+### Removing Listeners
+
+Any time listening happens in Reflux it returns an unsubscribe function. Simply call that function to unsubscribe:
+
+```javascript
+var unsubscribe = myActions.actionName.listen(myCallbackFunc);
+
+// later...
+unsubscribe(); // no longer listening
+```
+
 ### Action Hooks
 
 There are a couple of hooks available for each action.

@@ -1,5 +1,7 @@
 var Reflux = require('reflux-core');
 
+Reflux.serverMode = typeof window !== 'object';
+
 Reflux.connect = require('./connect');
 
 Reflux.connectFilter = require('./connectFilter');

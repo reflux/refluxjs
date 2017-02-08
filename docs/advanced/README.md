@@ -1,6 +1,10 @@
 
 # Advanced usage
 
+### Server Mode
+
+Reflux has a server mode which allows it to operate more efficiently for the vastly different environment of server rendering. This mode is automatically determined by Reflux by the lack of presence of the `window` object (which means it is not being run in the browser). Therefore there is no need to change anything in Reflux between server and browser for server mode to work properly. However, it is accessible for manual use via setting the `Reflux.serverMode` property to your desired boolean value.
+
 ### Switching EventEmitter
 
 Don't like to use the EventEmitter provided? You can switch to another one, such as NodeJS's own like this:

@@ -116,7 +116,9 @@ function defineReact(react, noLongerUsed, extend)
 					// if no id, then no messing with global state
 				}
 				// listen/subscribe for the ".trigger()" in the store, and track the unsubscribes so that we can unsubscribe on unmount
-				this.__storeunsubscribes__.push(str.listen(onStoreTrigger));
+				if (!Reflux.serverMode) {
+					this.__storeunsubscribes__.push(str.listen(onStoreTrigger));
+				}
 				// run set state so that it mixes in the props from the store with the component
 				var updateObj = filterByStoreKeys(this.storeKeys, str.state);
 				if (updateObj) {
@@ -139,8 +141,10 @@ function defineReact(react, noLongerUsed, extend)
 	
 	// on the unmount phase of the component unsubscribe that which we subscribed earlier to keep our garbage trail clean
 	proto.componentWillUnmount = function () {
-		for (var i = 0, ii = this.__storeunsubscribes__.length; i < ii; i++) {
-			this.__storeunsubscribes__[i]();
+		if (this.__storeunsubscribes__) {
+			for (var i = 0, ii = this.__storeunsubscribes__.length; i < ii; i++) {
+				this.__storeunsubscribes__[i]();
+			}
 		}
 		this.__readytomap__ = false;
 	};

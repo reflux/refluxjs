@@ -4,6 +4,12 @@ Check for latest changes on the [milestones page](https://github.com/spoike/refl
 
 For updates on reflux core methods, check the [`CHANGELOG`](https://github.com/reflux/reflux-core/blob/master/CHANGELOG.md) at `reflux-core` project.
 
+## v6.1.0
+
+* Documentation about Action listening/unsubscribing added.
+* Reflux.serverMode added, only adds listeners when hooking store to component if not in server mode, eliminating memory leak.
+* Bugfix with unmounting of reflux components that did not have any store attached to them.
+
 ## v6.0.0
 
 * Switch to new docs.
