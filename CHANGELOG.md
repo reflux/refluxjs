@@ -4,6 +4,10 @@ Check for latest changes on the [milestones page](https://github.com/spoike/refl
 
 For updates on reflux core methods, check the [`CHANGELOG`](https://github.com/reflux/reflux-core/blob/master/CHANGELOG.md) at `reflux-core` project.
 
+## v6.2.0
+
+* React.Component constructor arguments for `context` and `updater` added to Reflux.Component contructor.
+
 ## v6.1.0
 
 * Documentation about Action listening/unsubscribing added.

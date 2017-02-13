@@ -1467,8 +1467,8 @@ function defineReact(react, noLongerUsed, extend)
 	 * further `trigger` calls from that store will update properties passed
 	 * in the trigger into the component automatically.
 	 */
-	var RefluxComponent = function(props) {
-		_extend.call(this, props);
+	var RefluxComponent = function(props, context, updater) {
+		_extend.call(this, props, context, updater);
 	};
 	
 	// equivalent of `extends React.Component` or other class if provided via `extend` param
