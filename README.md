@@ -29,7 +29,7 @@ Then, in your script, you can gain a reference to RefluxJS like so: `var Reflux 
 The following command installs reflux as a bower component that can be used in the browser:
 
     bower install reflux
-	
+
 Then the files may be imported into your html file via `bower_components/reflux/dist/reflux.js` or `bower_components/reflux/dist/reflux.min.js`. At that point a `Reflux` variable will be globally available to you. It is suggested that you import RefluxJS after React.
 
 #### CDN
@@ -99,9 +99,9 @@ var Actions = Reflux.createActions([
 Actions.statusUpdate();
 ```
 
-#### More on Actions:  
+#### More on Actions:
 Actions can also:
-- load files asychronously with child actions
+- load files asynchronously with child actions
 - do preEmit and shouldEmit checking
 - have many shortcuts for easy usage
 
@@ -150,7 +150,7 @@ class StatusStore extends Reflux.Store
     {
         // calls on Actions.firstAction();
     }
-	
+
 	onSecondAction()
 	{
 		// calls on Actions.secondAction();
@@ -159,7 +159,7 @@ class StatusStore extends Reflux.Store
 ```
 
 #### More on Stores:
-  
+
 Reflux stores are very powerful. They can even do things like contribute to a global state that can be read and set for partial or full-state time-travel, debugging, etc.
 
 See [Reflux Store Documentation](docs/stores/) to learn more about stores.
@@ -193,7 +193,7 @@ class MyComponent extends Reflux.Component
 When the component mounts it will either create a singleton instance of `StatusStore` (if one isn't already made) or use an already made singleton (if it was already created by another component that uses the store).
 
 Of important note is that you can:
-  
+
 1. Set multiple stores by setting `this.stores` (the plural) and setting it to an Array of store classes.
 2. Set a `this.storeKeys` Array to restrict only certain parts of the store being mixed into the component state.
 
