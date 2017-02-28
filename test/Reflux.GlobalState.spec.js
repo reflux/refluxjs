@@ -9,19 +9,6 @@ var ReactDOMServer = require('react-dom/server');
 var Reflux;
 
 
-function __extends (d, b) {
-    for (var p in b) {
-		if (b.hasOwnProperty(p)) {
-			d[p] = b[p];
-		}
-	}
-    function __() {
-		this.constructor = d;
-	}
-    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-}
-
-
 describe('Working with Reflux.GlobalState', function()
 {
 	it('should allow defining of React with Reflux.defineReact without error and empty', function()
@@ -40,7 +27,7 @@ describe('Working with Reflux.GlobalState', function()
 	it('should remain empty when a store is created without a static id', function()
 	{
 		var MyStore = (function (_super) {
-			__extends(Store, _super);
+			Reflux.utils.inherits(Store, _super);
 			function Store() {
 				_super.call(this);
 				this.state = {foo:'bar'};
@@ -49,7 +36,7 @@ describe('Working with Reflux.GlobalState', function()
 		}(Reflux.Store));
 		
 		var MyComponent = (function (_super) {
-			__extends(Component, _super);
+			Reflux.utils.inherits(Component, _super);
 			function Component(props) {
 				_super.call(this, props);
 				this.state = {};
@@ -73,7 +60,7 @@ describe('Working with Reflux.GlobalState', function()
 		Reflux.stores = {};
 		
 		var MyStore = (function (_super) {
-			__extends(Store, _super);
+			Reflux.utils.inherits(Store, _super);
 			function Store() {
 				_super.call(this);
 				this.state = {foo:'bar'};
@@ -83,7 +70,7 @@ describe('Working with Reflux.GlobalState', function()
 		MyStore.id = "MyStore";
 		
 		var MyComponent = (function (_super) {
-			__extends(Component, _super);
+			Reflux.utils.inherits(Component, _super);
 			function Component(props) {
 				_super.call(this, props);
 				this.state = {};
@@ -107,7 +94,7 @@ describe('Working with Reflux.GlobalState', function()
 		Reflux.stores = {};
 		
 		var MyStore = (function (_super) {
-			__extends(Store, _super);
+			Reflux.utils.inherits(Store, _super);
 			function Store() {
 				_super.call(this);
 				this.state = {foo:'bar'};
@@ -127,7 +114,7 @@ describe('Working with Reflux.GlobalState', function()
 		Reflux.stores = {};
 		
 		var MyStore = (function (_super) {
-			__extends(Store, _super);
+			Reflux.utils.inherits(Store, _super);
 			function Store() {
 				_super.call(this);
 				this.state = {foo:'bar'};
@@ -137,7 +124,7 @@ describe('Working with Reflux.GlobalState', function()
 		MyStore.id = "MyStore";
 		
 		var MyComponent = (function (_super) {
-			__extends(Component, _super);
+			Reflux.utils.inherits(Component, _super);
 			function Component(props) {
 				_super.call(this, props);
 				this.state = {};
@@ -165,7 +152,7 @@ describe('Working with Reflux.GlobalState', function()
 		Reflux.stores = {};
 		
 		var MyStore = (function (_super) {
-			__extends(Store, _super);
+			Reflux.utils.inherits(Store, _super);
 			function Store() {
 				_super.call(this);
 				this.state = {foo:'bar'};
@@ -189,7 +176,7 @@ describe('Working with Reflux.GlobalState', function()
 		Reflux.stores = {};
 		
 		var MyStore = (function (_super) {
-			__extends(Store, _super);
+			Reflux.utils.inherits(Store, _super);
 			function Store() {
 				_super.call(this);
 				this.state = {foo:'bar'};
@@ -199,7 +186,7 @@ describe('Working with Reflux.GlobalState', function()
 		MyStore.id = "MyStore";
 		
 		var MyComponent = (function (_super) {
-			__extends(Component, _super);
+			Reflux.utils.inherits(Component, _super);
 			function Component(props) {
 				_super.call(this, props);
 				this.state = {};
@@ -225,7 +212,7 @@ describe('Working with Reflux.GlobalState', function()
 		Reflux.stores = {};
 		
 		var MyStore = (function (_super) {
-			__extends(Store, _super);
+			Reflux.utils.inherits(Store, _super);
 			function Store() {
 				_super.call(this);
 				this.state = {foo:'bar'};
@@ -248,7 +235,7 @@ describe('Working with Reflux.GlobalState', function()
 		Reflux.stores = {};
 		
 		var MyStore = (function (_super) {
-			__extends(Store, _super);
+			Reflux.utils.inherits(Store, _super);
 			function Store() {
 				_super.call(this);
 				this.state = {foo:'bar'};
@@ -258,7 +245,7 @@ describe('Working with Reflux.GlobalState', function()
 		MyStore.id = "MyStore";
 		
 		var MyComponent = (function (_super) {
-			__extends(Component, _super);
+			Reflux.utils.inherits(Component, _super);
 			function Component(props) {
 				_super.call(this, props);
 				this.state = {};
@@ -284,7 +271,7 @@ describe('Working with Reflux.GlobalState', function()
 		Reflux.stores = {};
 		
 		var MyStore = (function (_super) {
-			__extends(Store, _super);
+			Reflux.utils.inherits(Store, _super);
 			function Store() {
 				_super.call(this);
 				this.state = {foo:'bar'};
@@ -294,7 +281,7 @@ describe('Working with Reflux.GlobalState', function()
 		MyStore.id = "MyStore";
 		
 		var MyComponent = (function (_super) {
-			__extends(Component, _super);
+			Reflux.utils.inherits(Component, _super);
 			function Component(props) {
 				_super.call(this, props);
 				this.state = {};
@@ -325,7 +312,7 @@ describe('Working with Reflux.GlobalState', function()
 		Reflux.stores = {};
 		
 		var MyStore = (function (_super) {
-			__extends(Store, _super);
+			Reflux.utils.inherits(Store, _super);
 			function Store() {
 				_super.call(this);
 				this.state = {foo:'bar'};
@@ -335,7 +322,7 @@ describe('Working with Reflux.GlobalState', function()
 		MyStore.id = "MyStore";
 		
 		var MyComponent = (function (_super) {
-			__extends(Component, _super);
+			Reflux.utils.inherits(Component, _super);
 			function Component(props) {
 				_super.call(this, props);
 				this.state = {};
@@ -363,7 +350,7 @@ describe('Working with Reflux.GlobalState', function()
 		Reflux.stores = {};
 		
 		var MyStore = (function (_super) {
-			__extends(Store, _super);
+			Reflux.utils.inherits(Store, _super);
 			function Store() {
 				_super.call(this);
 				this.state = {foo:'bar'};
@@ -376,7 +363,7 @@ describe('Working with Reflux.GlobalState', function()
 		Reflux.stores.MyStore = singleton;
 		
 		var MyComponent = (function (_super) {
-			__extends(Component, _super);
+			Reflux.utils.inherits(Component, _super);
 			function Component(props) {
 				_super.call(this, props);
 				this.state = {};

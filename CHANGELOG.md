@@ -4,6 +4,12 @@ Check for latest changes on the [milestones page](https://github.com/spoike/refl
 
 For updates on reflux core methods, check the [`CHANGELOG`](https://github.com/reflux/reflux-core/blob/master/CHANGELOG.md) at `reflux-core` project.
 
+## v6.4.0
+
+* Improved on class extending function used internally.
+* Made that extending function available externally at `Reflux.utils.inherits(NewClass, InheritsFrom)` so that it can be used for testing.
+* Made `MyStore.state` work as shortcut access to `MyStore.singleton.state`.
+
 ## v6.3.0
 
 * Added Reflux.PureComponent which extends from React.PureComponent instead of React.Component.

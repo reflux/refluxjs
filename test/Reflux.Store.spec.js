@@ -11,19 +11,6 @@ var ReactDOMServer = require('react-dom/server');
 Reflux.defineReact(React);
 
 
-function __extends (d, b) {
-    for (var p in b) {
-		if (b.hasOwnProperty(p)) {
-			d[p] = b[p];
-		}
-	}
-    function __() {
-		this.constructor = d;
-	}
-    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-}
-
-
 describe('Creating ES6 style stores', function()
 {
 	it('should allow defining of React with Reflux.defineReact without error', function()
@@ -36,7 +23,7 @@ describe('Creating ES6 style stores', function()
 	it('should construct with a default empty state object', function()
 	{
 		var MyStore = (function (_super) {
-			__extends(Store, _super);
+			Reflux.utils.inherits(Store, _super);
 			function Store() {
 				_super.call(this);
 			}
@@ -53,7 +40,7 @@ describe('Creating ES6 style stores', function()
 		var Actions = Reflux.createActions(['up', 'down', 'finish']);
 		
 		var MyStore = (function (_super) {
-			__extends(Store, _super);
+			Reflux.utils.inherits(Store, _super);
 			function Store() {
 				_super.call(this);
 				this.listenTo(Actions.up, function(){ this.state.count++; });
@@ -79,7 +66,7 @@ describe('Creating ES6 style stores', function()
 		var Actions = Reflux.createActions(['up', 'down', 'finish']);
 		
 		var MyStore = (function (_super) {
-			__extends(Store, _super);
+			Reflux.utils.inherits(Store, _super);
 			function Store() {
 				_super.call(this);
 				this.listenables = Actions;
@@ -106,7 +93,7 @@ describe('Creating ES6 style stores', function()
 		var Actions = Reflux.createActions(['up', 'down', 'finish']);
 		
 		var MyStore = (function (_super) {
-			__extends(Store, _super);
+			Reflux.utils.inherits(Store, _super);
 			function Store() {
 				_super.call(this);
 				this.listenables = Actions;
@@ -133,7 +120,7 @@ describe('Creating ES6 style stores', function()
 		var Actions = Reflux.createActions(['up', 'down', 'finish']);
 		
 		var MyStore = (function (_super) {
-			__extends(Store, _super);
+			Reflux.utils.inherits(Store, _super);
 			function Store() {
 				_super.call(this);
 				this.listenables = Actions;
@@ -158,7 +145,7 @@ describe('Creating ES6 style stores', function()
 	it('should mix state in with a Reflux.Component instance', function()
 	{
 		var MyStore = (function (_super) {
-			__extends(Store, _super);
+			Reflux.utils.inherits(Store, _super);
 			function Store() {
 				_super.call(this);
 				this.state = {foo:'bar'};
@@ -167,7 +154,7 @@ describe('Creating ES6 style stores', function()
 		}(Reflux.Store));
 		
 		var MyComponent = (function (_super) {
-			__extends(Component, _super);
+			Reflux.utils.inherits(Component, _super);
 			function Component(props) {
 				_super.call(this, props);
 				this.state = {};
@@ -187,7 +174,7 @@ describe('Creating ES6 style stores', function()
 	it('should use singleton instance when applied to multiple components', function()
 	{
 		var MyStore = (function (_super) {
-			__extends(Store, _super);
+			Reflux.utils.inherits(Store, _super);
 			function Store() {
 				_super.call(this);
 				this.state = {foo:'bar'};
@@ -199,7 +186,7 @@ describe('Creating ES6 style stores', function()
 		MyStore.instanceCount = 0;
 		
 		var MyComponent1 = (function (_super) {
-			__extends(Component1, _super);
+			Reflux.utils.inherits(Component1, _super);
 			function Component1(props) {
 				_super.call(this, props);
 				this.state = {};
@@ -212,7 +199,7 @@ describe('Creating ES6 style stores', function()
 		}(Reflux.Component));
 		
 		var MyComponent2 = (function (_super) {
-			__extends(Component2, _super);
+			Reflux.utils.inherits(Component2, _super);
 			function Component2(props) {
 				_super.call(this, props);
 				this.state = {};
@@ -233,7 +220,7 @@ describe('Creating ES6 style stores', function()
 	it('should mix state in with a Reflux.Component instance via mapStoreToState', function()
 	{
 		var MyStore = (function (_super) {
-			__extends(Store, _super);
+			Reflux.utils.inherits(Store, _super);
 			function Store() {
 				_super.call(this);
 				this.state = {foo:'bar'};
@@ -242,7 +229,7 @@ describe('Creating ES6 style stores', function()
 		}(Reflux.Store));
 		
 		var MyComponent = (function (_super) {
-			__extends(Component, _super);
+			Reflux.utils.inherits(Component, _super);
 			function Component(props) {
 				_super.call(this, props);
 				this.state = {};
@@ -264,7 +251,7 @@ describe('Creating ES6 style stores', function()
 	it('should mix state separately with two Reflux.Component instances via mapStoreToState', function()
 	{
 		var MyStore = (function (_super) {
-			__extends(Store, _super);
+			Reflux.utils.inherits(Store, _super);
 			function Store() {
 				_super.call(this);
 				this.state = {foo:'bar', bar:'foo'};
@@ -273,7 +260,7 @@ describe('Creating ES6 style stores', function()
 		}(Reflux.Store));
 		
 		var MyComponent1 = (function (_super) {
-			__extends(Component, _super);
+			Reflux.utils.inherits(Component, _super);
 			function Component(props) {
 				_super.call(this, props);
 				this.state = {foo:'?'};
@@ -288,7 +275,7 @@ describe('Creating ES6 style stores', function()
 		}(Reflux.Component));
 		
 		var MyComponent2 = (function (_super) {
-			__extends(Component, _super);
+			Reflux.utils.inherits(Component, _super);
 			function Component(props) {
 				_super.call(this, props);
 				this.state = {bar:'?'};
@@ -307,5 +294,22 @@ describe('Creating ES6 style stores', function()
 		
 		assert.equal( result1, '<p>foo?</p>' );
 		assert.equal( result2, '<p>bar?</p>' );
+	});
+	
+	it('should allow shortcut access to MyStore.singleton.state via MyStore.state', function()
+	{
+		var MyStore = (function (_super) {
+			Reflux.utils.inherits(Store, _super);
+			function Store() {
+				_super.call(this);
+				this.state = {foo:'bar', bar:'foo'};
+			}
+			return Store;
+		}(Reflux.Store));
+		
+		Reflux.initStore(MyStore);
+		
+		assert.equal( MyStore.state.foo, MyStore.singleton.state.foo );
+		assert.equal( MyStore.state.bar, MyStore.singleton.state.bar );
 	});
 });

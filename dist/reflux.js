@@ -1344,6 +1344,29 @@ module.exports = _.extend({
 var Reflux = require('reflux-core');
 Reflux.defineReact = require('./defineReact');
 
+// useful utility for ES6 work, mimics the ability to extend
+Reflux.utils.inherits = function(subClass, superClass) {
+	if (typeof superClass !== "function" && superClass !== null) {
+		throw new TypeError("Super expression must either be null or a function, not " + typeof superClass);
+	}
+	subClass.prototype = Object.create(superClass && superClass.prototype, {
+		constructor: {
+			value: subClass,
+			enumerable: false,
+			writable: true,
+			configurable: true
+		}
+	});
+	if (superClass) {
+		if (Object.setPrototypeOf) {
+			Object.setPrototypeOf(subClass, superClass);
+		} else {
+			/* jshint proto: true */
+			subClass.__proto__ = superClass;
+		}
+	}
+};
+
 // first try to see if there's a global React var and use it
 if (typeof React !== 'undefined' && React) {
 	Reflux.defineReact(React);
@@ -1472,7 +1495,7 @@ function defineReact(react, noLongerUsed, extend)
 	};
 	
 	// equivalent of `extends React.Component` or other class if provided via `extend` param
-	ext(RefluxComponent, _extend);
+	Reflux.utils.inherits(RefluxComponent, _extend);
 	
 	proto = RefluxComponent.prototype;
 	
@@ -1741,6 +1764,18 @@ function defineReact(react, noLongerUsed, extend)
 		configurable: true
 	});
 	
+	// allows a shortcut for accessing MyStore.singleton.state as MyStore.state (since common usage makes a singleton)
+	Object.defineProperty(RefluxStore, "state", {
+		get: function () {
+			if (!this.singleton) {
+				throw new Error('Reflux.Store.state is inaccessible before the store has been initialized.');
+			}
+			return this.singleton.state;
+		},
+		enumerable: true,
+		configurable: true
+	});
+	
 	/* NOTE:
 	If a Reflux.Store definition is given a static id property and used
 	properly within a Reflux.Component or with Reflux.initStore then
@@ -1859,19 +1894,6 @@ function filterByStoreKeys(storeKeys, obj)
 		}
 	}
 	return doUpdate ? updateObj : false;
-}
-
-// used as a well tested way to mimic ES6 class `extends` in ES5 code
-function ext(d, b) {
-    for (var p in b) {
-		if (b.hasOwnProperty(p)) {
-			d[p] = b[p];
-		}
-	}
-    function __() {
-		this.constructor = d;
-	}
-    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 }
 
 // this is utilized by some of the global state functionality in order to get a clone that will
