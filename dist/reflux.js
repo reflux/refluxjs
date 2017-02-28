@@ -1653,6 +1653,12 @@ function defineReact(react, noLongerUsed, extend)
 	
 	// otherwise set as Reflux.Component and continue with other normal definitions
 	Reflux.Component = RefluxComponent;
+	
+	// also set Reflux.PureComponent (if it exists) using the .extend feature
+	if (_react.PureComponent) {
+		Reflux.PureComponent = RefluxComponent.extend(_react.PureComponent);
+	}
+	
 	// ------------ END Reflux.Component ------------
 	
 	// --------- BEGIN Reflux.Store ------------

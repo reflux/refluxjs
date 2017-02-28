@@ -5,7 +5,7 @@
 
 Of course, a main point of [actions](../actions/README.md) and [stores](../stores/README.md) is to eventually tie the data being stored/manipulated in them into a React component.
 
-For that Reflux gives you `Reflux.Component`. `Reflux.Component` is itself an extension of `React.Component` that was created to facilitate hooking stores into the component. You would use a `Reflux.Component` the exact same as a `React.Component`, except that you'd use its specific properties and methods to hook in the state of your stores.
+For that Reflux gives you `Reflux.Component` and `Reflux.PureComponent`. `Reflux.Component` is itself an extension of `React.Component` that was created to facilitate hooking stores into the component. You would use a `Reflux.Component` the exact same as a `React.Component`, except that you'd use its specific properties and methods to hook in the state of your stores. `Reflux.PureComponent` is used the exact same, except it inherits the same behavior as `React.PureComponent` as for shallow checking state to see if updates are needed.
 
 ### Mixing State with `this.store` and `this.stores`
 
