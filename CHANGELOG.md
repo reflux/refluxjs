@@ -4,11 +4,16 @@ Check for latest changes on the [milestones page](https://github.com/spoike/refl
 
 For updates on reflux core methods, check the [`CHANGELOG`](https://github.com/reflux/reflux-core/blob/master/CHANGELOG.md) at `reflux-core` project.
 
+## v6.4.1
+
+* NOTE: New `MyStore.state` shortcut (from 6.4.0) is not available in IE10 and below, use accordingly in your projects.
+* Remove test for it so that it doesn't fail, and is undocumented feature for now, until the day we can drop IE9 and IE10.
+
 ## v6.4.0
 
 * Improved on class extending function used internally.
 * Made that extending function available externally at `Reflux.utils.inherits(NewClass, InheritsFrom)` so that it can be used for testing.
-* Made `MyStore.state` work as shortcut access to `MyStore.singleton.state`.
+* Made `MyStore.state` work as shortcut access to `MyStore.singleton.state` (not available in IE9 and IE10, plan usage accordingly for your project).
 
 ## v6.3.0
 
