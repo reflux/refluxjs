@@ -3,7 +3,7 @@
 
 ## Overview 
 
-Actions are a type of function that an Reflux store can listen for. They are similar to dispatching an event in that many stores can listen for a single action, but they are called like a simple function.
+Actions are a type of function that a Reflux store can listen for. They are similar to dispatching an event in that many stores can listen for a single action, but they are called like a simple function.
 
 ### Creating Actions
 

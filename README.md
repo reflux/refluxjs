@@ -170,7 +170,7 @@ See [Reflux Store Documentation](docs/stores/) to learn more about stores.
 
 Once you've created actions and stores, now the last step in working RefluxJS is to hook those stores to a React component.
 
-This is done as simply as extending `Reflux.Component` instead of `React.Component` and setting the store(s) to use. `Reflux.Component` itself extends `React.Component`, so you use them the exact same. The only difference is that `Reflux.Component` allows you to set stores for the component to get state from:
+This is done as simply as extending `Reflux.Component` instead of `React.Component` and setting the store(s) to use. `Reflux.Component` itself extends `React.Component`, so you use them the exact same way. The only difference is that `Reflux.Component` allows you to set stores for the component to get state from:
 
 ```javascript
 class MyComponent extends Reflux.Component
