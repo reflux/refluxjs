@@ -56,10 +56,10 @@
     "matchdep": "^0.3.0",
     "mocha": "latest",
     "q": "^1.0.1",
-    "react-dom": "^15.0.2",
+    "react-dom": "^15.0.2 || ^16.0.0",
     "sinon": "^1.10.3"
   },
   "peerDependencies": {
-    "react": "^15.0.2"
+    "react": "^15.0.2 || ^16.0.0"
   }
 }

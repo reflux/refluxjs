@@ -15,7 +15,7 @@ before_install:
   - "sh -e /etc/init.d/xvfb start"
 
 before_script:
-  - "npm install react@$REACT_VERSION"
+  - "npm install react@$REACT_VERSION react-dom@$REACT_VERSION"
 
 script:
   - npm test
