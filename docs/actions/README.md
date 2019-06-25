@@ -85,7 +85,7 @@ action.listen(function(){
 
 Anywhere listening to that action could then use `this.listenTo(action.delayComplete, onActionDelayComplete)`. And what arguments you send when calling the `delayComplete` child are what get sent through to the callback of the listener. This way you can do things like load files and have the completed action send the contents of the file to whatever is listening.
 
-The most common way in which this is used is to use `createActions` and its shorthand object form while taking advantage of a Reflux store's ability to listen to many actions at once with its `this.listenables` and `this.listenToMany` (see Reflux store documentation). Where the store can be made to automatically have actions call the stores methods named after the action's `actionName` (or the camecased `onActionName`), the child actions can be tacked on to that to read `actionNmeChildAction` or `onActionNmeChildAction`. Here is a full example of that:
+The most common way in which this is used is to use `createActions` and its shorthand object form while taking advantage of a Reflux store's ability to listen to many actions at once with its `this.listenables` and `this.listenToMany` (see Reflux store documentation). Where the store can be made to automatically have actions call the stores methods named after the action's `actionName` (or the camecased `onActionName`), the child actions can be tacked on to that to read `actionNameChildAction` or `onActionNameChildAction`. Here is a full example of that:
 
 ```javascript
 var Actions = Reflux.createActions({
