@@ -151,10 +151,10 @@ class StatusStore extends Reflux.Store
         // calls on Actions.firstAction();
     }
 
-	onSecondAction()
-	{
-		// calls on Actions.secondAction();
-	}
+    onSecondAction()
+    {
+        // calls on Actions.secondAction();
+    }
 }
 ```
 
